@@ -1,5 +1,7 @@
 <?php namespace Illuminate\Html;
 
+use Illuminate\Support\Facades\Facade;
+
 /**
  * @see \Illuminate\Html\HtmlBuilder
  */
