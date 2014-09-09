@@ -16,7 +16,10 @@
     "autoload": {
         "psr-4": {
             "Illuminate\\Html\\": ""
-        }
+        },
+        "files": [
+            "helpers.php"
+        ]
     },
     "extra": {
         "branch-alias": {
