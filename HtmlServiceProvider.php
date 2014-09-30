@@ -21,6 +21,9 @@ class HtmlServiceProvider extends ServiceProvider {
 		$this->registerHtmlBuilder();
 
 		$this->registerFormBuilder();
+
+		$this->app->alias('html', 'Illuminate\Html\HtmlBuilder');
+		$this->app->alias('form', 'Illuminate\Html\FormBuilder');
 	}
 
 	/**
@@ -30,7 +33,6 @@ class HtmlServiceProvider extends ServiceProvider {
 	 */
 	protected function registerHtmlBuilder()
 	{
-		$this->app->alias('html', 'Illuminate\Html\HtmlBuilder');
 		$this->app->bindShared('html', function($app)
 		{
 			return new HtmlBuilder($app['url']);
@@ -44,7 +46,6 @@ class HtmlServiceProvider extends ServiceProvider {
 	 */
 	protected function registerFormBuilder()
 	{
-		$this->app->alias('form', 'Illuminate\Html\FormBuilder');
 		$this->app->bindShared('form', function($app)
 		{
 			$form = new FormBuilder($app['html'], $app['url'], $app['session.store']->getToken());
