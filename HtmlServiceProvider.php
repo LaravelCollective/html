@@ -21,6 +21,9 @@ class HtmlServiceProvider extends ServiceProvider {
 		$this->registerHtmlBuilder();
 
 		$this->registerFormBuilder();
+
+		$this->app->alias('html', 'Illuminate\Html\HtmlBuilder');
+		$this->app->alias('form', 'Illuminate\Html\FormBuilder');
 	}
 
 	/**
