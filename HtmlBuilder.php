@@ -1,11 +1,11 @@
 <?php namespace Illuminate\Html;
 
 use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Traits\MacroableTrait;
+use Illuminate\Support\Traits\Macroable;
 
 class HtmlBuilder {
 
-	use MacroableTrait;
+	use Macroable;
 
 	/**
 	 * The URL generator instance.
