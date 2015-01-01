@@ -2,11 +2,11 @@
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
-use Illuminate\Support\Traits\MacroableTrait;
+use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder {
 
-	use MacroableTrait;
+	use Macroable;
 
 	/**
 	 * The HTML builder instance.
