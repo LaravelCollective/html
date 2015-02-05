@@ -1,4 +1,4 @@
-<?php namespace Illuminate\Html;
+<?php namespace Collective\Html;
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
@@ -11,7 +11,7 @@ class FormBuilder {
 	/**
 	 * The HTML builder instance.
 	 *
-	 * @var \Illuminate\Html\HtmlBuilder
+	 * @var \Collective\Html\HtmlBuilder
 	 */
 	protected $html;
 
@@ -75,7 +75,7 @@ class FormBuilder {
 	 * Create a new form builder instance.
 	 *
 	 * @param  \Illuminate\Routing\UrlGenerator  $url
-	 * @param  \Illuminate\Html\HtmlBuilder  $html
+	 * @param  \Collective\Html\HtmlBuilder  $html
 	 * @param  string  $csrfToken
 	 * @return void
 	 */

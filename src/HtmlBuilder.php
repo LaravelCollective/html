@@ -1,4 +1,4 @@
-<?php namespace Illuminate\Html;
+<?php namespace Collective\Html;
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Traits\Macroable;
