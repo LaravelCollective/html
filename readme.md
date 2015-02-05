@@ -33,14 +33,25 @@ Next, update Composer from the Terminal:
 
     composer update
 
-Finally, add your new provider to the `providers` array of `config/app.php`:
+Next, add your new provider to the `providers` array of `config/app.php`:
 
 ```php
   'providers' => [
     // ...
     'Collective\Html\HtmlServiceProvider',
     // ...
-  ];
+  ],
+```
+
+Finally, add two class aliases to the `aliases` array of `config/app.php`:
+
+```php
+  'aliases' => [
+    // ...
+      'Form' => 'Collective\Html\FormFacade',
+      'Html' => 'Collective\Html\HtmlFacade',
+    // ...
+  ],
 ```
 
 <a name="opening-a-form"></a>
