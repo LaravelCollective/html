@@ -48,9 +48,9 @@ Finally, add your new provider to the `providers` array of `config/app.php`:
 
 #### Opening A Form
 
-	{{ Form::open(array('url' => 'foo/bar')) }}
+	{!! Form::open(array('url' => 'foo/bar')) !!}
 		//
-	{{ Form::close() }}
+	{!! Form::close() !!}
 
 By default, a `POST` method will be assumed; however, you are free to specify another method:
 
