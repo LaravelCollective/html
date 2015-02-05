@@ -33,14 +33,25 @@ Next, update Composer from the Terminal:
 
     composer update
 
-Finally, add your new provider to the `providers` array of `config/app.php`:
+Next, add your new provider to the `providers` array of `config/app.php`:
 
 ```php
   'providers' => [
     // ...
     'Collective\Html\HtmlServiceProvider',
     // ...
-  ];
+  ],
+```
+
+Finally, add two class aliases to the `aliases` array of `config/app.php`:
+
+```php
+  'aliases' => [
+    // ...
+      'Form' => 'Collective\Html\FormFacade',
+      'Html' => 'Collective\Html\HtmlFacade',
+    // ...
+  ],
 ```
 
 <a name="opening-a-form"></a>
@@ -48,9 +59,9 @@ Finally, add your new provider to the `providers` array of `config/app.php`:
 
 #### Opening A Form
 
-	{{ Form::open(array('url' => 'foo/bar')) }}
+	{!! Form::open(array('url' => 'foo/bar')) !!}
 		//
-	{{ Form::close() }}
+	{!! Form::close() !!}
 
 By default, a `POST` method will be assumed; however, you are free to specify another method:
 
