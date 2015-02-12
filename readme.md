@@ -49,7 +49,7 @@ Finally, add two class aliases to the `aliases` array of `config/app.php`:
   'aliases' => [
     // ...
       'Form' => 'Collective\Html\FormFacade',
-      'Html' => 'Collective\Html\HtmlFacade',
+      'HTML' => 'Collective\Html\HtmlFacade',
     // ...
   ],
 ```
