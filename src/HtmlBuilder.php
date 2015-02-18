@@ -247,20 +247,20 @@ class HtmlBuilder {
 	 * @return string
 	 */
 	public function dl(array $list, array $attributes = [])
-    {
-        $attributes = $this->attributes($attributes);
+	{
+		$attributes = $this->attributes($attributes);
 
-        $html = "<dl{$attributes}>";
+		$html = "<dl{$attributes}>";
 
-        foreach ($list as $key => $value)
-        {
-            $html .= "<dt>$key</dt><dd>$value</dd>";
-        }
+		foreach ($list as $key => $value)
+		{
+			$html .= "<dt>$key</dt><dd>$value</dd>";
+		}
 
-        $html .= '</dl>';
+		$html .= '</dl>';
 
-        return $html;
-    }
+		return $html;
+	}
 
 	/**
 	 * Create a listing HTML element.
