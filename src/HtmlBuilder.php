@@ -240,6 +240,29 @@ class HtmlBuilder {
 	}
 
 	/**
+	 * Generate a description list of items.
+	 *
+	 * @param  array   $list
+	 * @param  array   $attributes
+	 * @return string
+	 */
+	public function dl(array $list, array $attributes = [])
+    {
+        $attributes = $this->attributes($attributes);
+
+        $html = "<dl{$attributes}>";
+
+        foreach ($list as $key => $value)
+        {
+            $html .= "<dt>$key</dt><dd>$value</dd>";
+        }
+
+        $html .= '</dl>';
+
+        return $html;
+    }
+
+	/**
 	 * Create a listing HTML element.
 	 *
 	 * @param  string  $type
