@@ -1,5 +1,6 @@
 <?php namespace Collective\Html;
 
+use Illuminate\Routing\Router;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
@@ -79,10 +80,11 @@ class FormBuilder {
 	 * @param  string  $csrfToken
 	 * @return void
 	 */
-	public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+	public function __construct(HtmlBuilder $html, UrlGenerator $url, Router $router, $csrfToken)
 	{
 		$this->url = $url;
 		$this->html = $html;
+		$this->router = $router;
 		$this->csrfToken = $csrfToken;
 	}
 
@@ -94,7 +96,7 @@ class FormBuilder {
 	 */
 	public function open(array $options = array())
 	{
-		$method = array_get($options, 'method', 'post');
+		$method = $this->getHttpVerb($options);
 
 		// We need to extract the proper method from the attributes. If the method is
 		// something other than GET or POST we'll use POST since we will spoof the
@@ -820,6 +822,70 @@ class FormBuilder {
 		}
 
 		return $this->url->action($options);
+	}
+
+	/**
+	 * Get the method for the route
+	 *
+	 * @param  array  $options
+	 * @return string
+	 */
+	protected function getHttpVerb( array $options )
+	{
+		$method = 'post';
+
+		// Look up named or controller routes, and get a method for them
+		if (isset($options['route']))
+		{
+			$method = $this->getMethodFromRouteAction($options['route']);
+		}
+		elseif (isset($options['action']))
+		{
+			$method = $this->getMethodFromControllerAction($options['action']);
+		}
+
+		// Override with explicitly defined method
+		return array_get($options, 'method', $method);
+	}
+
+	/**
+	 * Get the method from a named route
+	 *
+	 * @param  array|string $options
+	 * @return string
+	 */
+	protected function getMethodFromRouteAction($options)
+	{
+		if (is_array($options))
+		{
+			$name = $options[0];
+		}
+
+		$name = $options;
+
+		$route = $this->router->getRoutes()->findByName($name);
+
+		return $route->methods()[0];
+	}
+
+	/**
+	 * Get the method from a controller route
+	 *
+	 * @param  array|string $options
+	 * @return string
+	 */
+	protected function getMethodFromControllerAction($options)
+	{
+		if (is_array($options))
+		{
+			$action = $options[0];
+		}
+
+		$action = $options;
+
+		$route = $this->router->getRoutes()->findByAction($action);
+
+		return $route->methods()[0];
 	}
 
 	/**
