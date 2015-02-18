@@ -837,11 +837,11 @@ class FormBuilder {
 		// Look up named or controller routes, and get a method for them
 		if (isset($options['route']))
 		{
-			$method = $this->getMethodFromRouteAction($options['route']);
+			$method = $this->getVerbFromRouteAction($options['route']);
 		}
 		elseif (isset($options['action']))
 		{
-			$method = $this->getMethodFromControllerAction($options['action']);
+			$method = $this->getVerbFromControllerAction($options['action']);
 		}
 
 		// Override with explicitly defined method
@@ -854,7 +854,7 @@ class FormBuilder {
 	 * @param  array|string $options
 	 * @return string
 	 */
-	protected function getMethodFromRouteAction($options)
+	protected function getVerbFromRouteAction($options)
 	{
 		if (is_array($options))
 		{
@@ -863,7 +863,7 @@ class FormBuilder {
 
 		$name = $options;
 
-		$route = $this->router->getRoutes()->findByName($name);
+		$route = $this->router->getRoutes()->getByName($name);
 
 		return $route->methods()[0];
 	}
@@ -874,7 +874,7 @@ class FormBuilder {
 	 * @param  array|string $options
 	 * @return string
 	 */
-	protected function getMethodFromControllerAction($options)
+	protected function getVerbFromControllerAction($options)
 	{
 		if (is_array($options))
 		{
@@ -883,7 +883,7 @@ class FormBuilder {
 
 		$action = $options;
 
-		$route = $this->router->getRoutes()->findByAction($action);
+		$route = $this->router->getRoutes()->getByAction($action);
 
 		return $route->methods()[0];
 	}
