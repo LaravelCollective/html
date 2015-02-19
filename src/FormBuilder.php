@@ -299,6 +299,19 @@ class FormBuilder {
 	}
 
 	/**
+	 * Create a number input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function number($name, $value = null, $options = array())
+	{
+		return $this->input('number', $name, $value, $options);
+	}
+
+	/**
 	 * Create a url input field.
 	 *
 	 * @param  string  $name
