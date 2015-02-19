@@ -23,15 +23,9 @@
 <a name="installation"></a>
 ## Installation
 
-Begin by installing this package through Composer. Edit your project's `composer.json` file to require `laravelcollective/html`.
+Begin by installing this package through Composer from the Terminal:
 
-    "require": {
-        "laravelcollective/html": "~5.0"
-    }
-
-Next, update Composer from the Terminal:
-
-    composer update
+    composer require "laravelcollective/html:~5.0"
 
 Next, add your new provider to the `providers` array of `config/app.php`:
 
