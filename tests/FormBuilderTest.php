@@ -171,6 +171,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
   }
 
 
+  public function testFormNumber()
+  {
+    $form1 = $this->formBuilder->number('foo');
+    $form2 = $this->formBuilder->number('foo', 1);
+    $form3 = $this->formBuilder->number('foo', null, ['class' => 'span2']);
+
+    $this->assertEquals('<input name="foo" type="number">', $form1);
+    $this->assertEquals('<input name="foo" type="number" value="1">', $form2);
+    $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
+  }
+
+
   public function testFormFile()
   {
     $form1 = $this->formBuilder->file('foo');
