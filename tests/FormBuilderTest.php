@@ -182,6 +182,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
   }
 
+  public function testFormDate()
+  {
+    $form1 = $this->formBuilder->date('foo');
+    $form2 = $this->formBuilder->date('foo', '2015-08-20');
+    $form3 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
+
+    $this->assertEquals('<input name="foo" type="date">', $form1);
+    $this->assertEquals('<input name="foo" type="date" value="2015-08-20">', $form2);
+    $this->assertEquals('<input class="span2" name="foo" type="date">', $form3);
+  }
+
 
   public function testFormFile()
   {

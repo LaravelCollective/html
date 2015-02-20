@@ -312,6 +312,19 @@ class FormBuilder {
 	}
 
 	/**
+	 * Create a date input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function date($name, $value = null, $options = array())
+	{
+		return $this->input('date', $name, $value, $options);
+	}
+
+	/**
 	 * Create a url input field.
 	 *
 	 * @param  string  $name
