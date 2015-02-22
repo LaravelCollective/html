@@ -1,5 +1,6 @@
 <?php namespace Collective\Html;
 
+use Carbon\Carbon;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
@@ -77,6 +78,7 @@ class FormBuilder {
 	 *
 	 * @param  \Illuminate\Routing\UrlGenerator  $url
 	 * @param  \Collective\Html\HtmlBuilder  $html
+	 * @param  \Illuminate\Routing\Router  $router
 	 * @param  string  $csrfToken
 	 * @return void
 	 */
@@ -298,6 +300,37 @@ class FormBuilder {
 	public function email($name, $value = null, $options = array())
 	{
 		return $this->input('email', $name, $value, $options);
+	}
+
+	/**
+	 * Create a number input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function number($name, $value = null, $options = array())
+	{
+		return $this->input('number', $name, $value, $options);
+	}
+
+	/**
+	 * Create a date input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function date($name, $value = null, $options = array())
+	{
+		if ($value instanceof Carbon)
+		{
+			$value = $value->format('Y-m-d');
+		}
+
+		return $this->input('date', $name, $value, $options);
 	}
 
 	/**
