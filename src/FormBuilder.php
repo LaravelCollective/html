@@ -858,10 +858,16 @@ class FormBuilder {
 	{
 		if (is_array($options))
 		{
+			// if $options is an array, the first argument should be
+			// the route name. This is the same assumption that is made
+			// in getRouteAction()
 			$name = $options[0];
 		}
-
-		$name = $options;
+		else
+		{
+			// otherwise options should be the action name
+			$name = $options;
+		}
 
 		$route = $this->router->getRoutes()->getByName($name);
 
@@ -878,10 +884,15 @@ class FormBuilder {
 	{
 		if (is_array($options))
 		{
+			// if $options is an array, the first argument should be
+			// the action name. This is the same assumption that is made
+			// in getControllerAction()
 			$action = $options[0];
 		}
-
-		$action = $options;
+		else
+		{
+			$action = $options;
+		}
 
 		$route = $this->router->getRoutes()->getByAction($action);
 
