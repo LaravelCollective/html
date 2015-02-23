@@ -17,7 +17,8 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
   {
     $this->urlGenerator = new UrlGenerator(new RouteCollection, Request::create('/foo', 'GET'));
     $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
-    $this->formBuilder =  new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
+    $this->router = m::mock('Illuminate\Routing\RouteCollection');
+    $this->formBuilder =  new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->router, 'abc');
   }
 
 

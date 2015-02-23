@@ -1,6 +1,7 @@
 <?php namespace Collective\Html;
 
 use Carbon\Carbon;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
@@ -22,6 +23,13 @@ class FormBuilder {
 	 * @var \Illuminate\Routing\UrlGenerator  $url
 	 */
 	protected $url;
+
+	/**
+	 * The route collection instance.
+	 *
+	 * @var \Illuminate\Routing\RouteCollection
+	 */
+	protected $routes;
 
 	/**
 	 * The CSRF token used by the form builder.
@@ -77,13 +85,15 @@ class FormBuilder {
 	 *
 	 * @param  \Illuminate\Routing\UrlGenerator  $url
 	 * @param  \Collective\Html\HtmlBuilder  $html
+	 * @param  \Illuminate\Routing\RouteCollection  $router
 	 * @param  string  $csrfToken
 	 * @return void
 	 */
-	public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+	public function __construct(HtmlBuilder $html, UrlGenerator $url, RouteCollection $routes, $csrfToken)
 	{
 		$this->url = $url;
 		$this->html = $html;
+		$this->routes = $routes;
 		$this->csrfToken = $csrfToken;
 	}
 
@@ -95,7 +105,7 @@ class FormBuilder {
 	 */
 	public function open(array $options = array())
 	{
-		$method = array_get($options, 'method', 'post');
+		$method = $this->getHttpVerb($options);
 
 		// We need to extract the proper method from the attributes. If the method is
 		// something other than GET or POST we'll use POST since we will spoof the
@@ -852,6 +862,81 @@ class FormBuilder {
 		}
 
 		return $this->url->action($options);
+	}
+
+	/**
+	 * Get the method for the route
+	 *
+	 * @param  array  $options
+	 * @return string
+	 */
+	protected function getHttpVerb( array $options )
+	{
+		$method = 'post';
+
+		// Look up named or controller routes, and get a method for them
+		if (isset($options['route']))
+		{
+			$method = $this->getVerbFromRouteAction($options['route']);
+		}
+		elseif (isset($options['action']))
+		{
+			$method = $this->getVerbFromControllerAction($options['action']);
+		}
+
+		// Override with explicitly defined method
+		return array_get($options, 'method', $method);
+	}
+
+	/**
+	 * Get the method from a named route
+	 *
+	 * @param  array|string $options
+	 * @return string
+	 */
+	protected function getVerbFromRouteAction($options)
+	{
+		if (is_array($options))
+		{
+			// if $options is an array, the first argument should be
+			// the route name. This is the same assumption that is made
+			// in getRouteAction()
+			$name = $options[0];
+		}
+		else
+		{
+			// otherwise options should be the action name
+			$name = $options;
+		}
+
+		$route = $this->routes->getByName($name);
+
+		return $route->methods()[0];
+	}
+
+	/**
+	 * Get the method from a controller route
+	 *
+	 * @param  array|string $options
+	 * @return string
+	 */
+	protected function getVerbFromControllerAction($options)
+	{
+		if (is_array($options))
+		{
+			// if $options is an array, the first argument should be
+			// the action name. This is the same assumption that is made
+			// in getControllerAction()
+			$action = $options[0];
+		}
+		else
+		{
+			$action = $options;
+		}
+
+		$route = $this->routes->getByAction($action);
+
+		return $route->methods()[0];
 	}
 
 	/**
