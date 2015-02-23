@@ -1,7 +1,7 @@
 <?php namespace Collective\Html;
 
 use Carbon\Carbon;
-use Illuminate\Routing\Router;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
@@ -23,6 +23,13 @@ class FormBuilder {
 	 * @var \Illuminate\Routing\UrlGenerator  $url
 	 */
 	protected $url;
+
+	/**
+	 * The route collection instance.
+	 *
+	 * @var \Illuminate\Routing\RouteCollection
+	 */
+	protected $routes;
 
 	/**
 	 * The CSRF token used by the form builder.
@@ -78,15 +85,15 @@ class FormBuilder {
 	 *
 	 * @param  \Illuminate\Routing\UrlGenerator  $url
 	 * @param  \Collective\Html\HtmlBuilder  $html
-	 * @param  \Illuminate\Routing\Router  $router
+	 * @param  \Illuminate\Routing\RouteCollection  $router
 	 * @param  string  $csrfToken
 	 * @return void
 	 */
-	public function __construct(HtmlBuilder $html, UrlGenerator $url, Router $router, $csrfToken)
+	public function __construct(HtmlBuilder $html, UrlGenerator $url, RouteCollection $routes, $csrfToken)
 	{
 		$this->url = $url;
 		$this->html = $html;
-		$this->router = $router;
+		$this->routes = $routes;
 		$this->csrfToken = $csrfToken;
 	}
 
@@ -902,7 +909,7 @@ class FormBuilder {
 			$name = $options;
 		}
 
-		$route = $this->router->getRoutes()->getByName($name);
+		$route = $this->routes->getByName($name);
 
 		return $route->methods()[0];
 	}
@@ -927,7 +934,7 @@ class FormBuilder {
 			$action = $options;
 		}
 
-		$route = $this->router->getRoutes()->getByAction($action);
+		$route = $this->routes->getByAction($action);
 
 		return $route->methods()[0];
 	}
