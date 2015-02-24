@@ -583,6 +583,11 @@ class FormBuilder {
 		{
 			return in_array($value, $selected) ? 'selected' : null;
 		}
+		if($selected instanceof \Illuminate\Database\Eloquent\Collection)
+		{
+			return in_array($value, $selected->modelKeys()) ? 'selected' : null;
+		}
+
 
 		return ((string) $value == (string) $selected) ? 'selected' : null;
 	}
