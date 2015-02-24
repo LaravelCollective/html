@@ -7,6 +7,7 @@ use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
+use Illuminate\Database\Eloquent\Collection;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase {
 
@@ -312,6 +313,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertContains('<select id="foo" name="month"><option value="1">January</option>', $month3);
   }
 
+  public function testFormSelectRelatedModle()
+  {
+	  $this->setModel($model = ['languages' => new Collection([
+			new RelatedModelStub(2),
+			new RelatedModelStub(1)
+		])]);
+	  $languages = [1 => 'English', 2 => 'German', 3 => 'French'];
+	  $select = $this->formBuilder->select('languages', $languages, null, ['multiple' => 'multiple']);
+
+	  $this->assertEquals($select, '<select multiple="multiple" name="languages"><option value="1" selected="selected">English</option><option value="2" selected="selected">German</option><option value="3">French</option></select>');
+  }
+
 
   public function testFormCheckbox()
   {
@@ -451,7 +464,6 @@ class FormBuilderModelStub {
     }
   }
 
-
   public function __get($key)
   {
     return $this->data[$key];
@@ -462,4 +474,17 @@ class FormBuilderModelStub {
   {
     return isset($this->data[$key]);
   }
+}
+
+class RelatedModelStub {
+
+	protected $id;
+
+	public function __construct($id) {
+		$this->id = $id;
+	}
+
+	public function getKey() {
+		return $this->id;
+	}
 }
