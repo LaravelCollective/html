@@ -1,6 +1,6 @@
 <?php namespace Collective\Html;
 
-use Carbon\Carbon;
+use DateTime;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
@@ -322,7 +322,7 @@ class FormBuilder {
 	 */
 	public function date($name, $value = null, $options = array())
 	{
-		if ($value instanceof Carbon)
+		if ($value instanceof DateTime)
 		{
 			$value = $value->format('Y-m-d');
 		}
