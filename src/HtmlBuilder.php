@@ -399,4 +399,21 @@ class HtmlBuilder {
 		return $safe;
 	}
 
+	/**
+	 * Generate a meta tag.
+	 *
+	 * @param  string  $name
+	 * @param  string  $content
+	 * @param  array   $attributes
+	 * @return string
+	 */
+	public function meta($name, $content, array $attributes = [])
+	{
+		$defaults = compact('name', 'content');
+
+		$attributes = array_merge($defaults, $attributes);
+
+		return '<meta'.$this->attributes($attributes).'>'.PHP_EOL;
+	}
+
 }
