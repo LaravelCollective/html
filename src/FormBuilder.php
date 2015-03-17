@@ -329,6 +329,24 @@ class FormBuilder {
 
 		return $this->input('date', $name, $value, $options);
 	}
+	
+	/**
+	 * Create a datetime input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function datetime($name, $value = null, $options = array())
+	{
+		if ($value instanceof DateTime)
+		{
+			$value = $value->format('Y-m-d H:i');
+		}
+
+		return $this->input('datetime-local', $name, $value, $options);
+	}
 
 	/**
 	 * Create a url input field.
