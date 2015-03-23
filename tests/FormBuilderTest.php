@@ -195,6 +195,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
   }
 
+  public function testFormDateTime()
+  {
+    $currentDateTime = \Carbon\Carbon::now();
+
+    $form1 = $this->formBuilder->datetime('foo');
+    $form2 = $this->formBuilder->datetime('foo', '2015-02-20T12:04');
+    $form3 = $this->formBuilder->datetime('foo', $currentDateTime);
+    $form4 = $this->formBuilder->datetime('foo', null, ['class' => 'span2']);
+
+    $this->assertEquals('<input name="foo" type="datetime-local">', $form1);
+    $this->assertEquals('<input name="foo" type="datetime-local" value="2015-02-20T12:04">', $form2);
+    $this->assertEquals('<input name="foo" type="datetime-local" value="' . $currentDateTime->format('Y-m-d\TH:i:s') . '">', $form3);
+    $this->assertEquals('<input class="span2" name="foo" type="datetime-local">', $form4);
+  }
 
   public function testFormFile()
   {
