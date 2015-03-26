@@ -1,6 +1,7 @@
 <?php namespace Collective\Html;
 
 use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
@@ -676,7 +677,7 @@ class FormBuilder {
 
 		$posted = $this->getValueAttribute($name);
 		
-		$posted =  ($posted instanceof \Illuminate\Database\Eloquent\Collection ? $this->checkRelationship($posted, $value) : $posted);
+		$posted =  $posted instanceof Collection ? $this->checkRelationship($posted, $value) : $posted;
 
 		return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
 	}
@@ -956,7 +957,7 @@ class FormBuilder {
 	 * @param  string $attribute
 	 * @return bool
 	 */
-	protected function checkRelationship($collection, $value, $attribute = 'id')
+	protected function checkRelationship(Collection $collection, $value, $attribute = 'id')
 	{
 		foreach ($collection as $relation)
 		{
