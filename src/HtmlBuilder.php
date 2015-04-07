@@ -96,6 +96,25 @@ class HtmlBuilder {
 
 		return '<img src="'.$this->url->asset($url, $secure).'"'.$this->attributes($attributes).'>';
 	}
+	
+	/**
+	 * Generate a link to a Favicon file.
+	 *
+	 * @param  string  $url
+	 * @param  array   $attributes
+	 * @param  bool    $secure
+	 * @return string
+	 */
+	public function favicon($url, $attributes = array(), $secure = null)
+	{
+		$defaults = array('rel' => 'shortcut icon', 'type' => 'image/x-icon');
+
+		$attributes = $attributes + $defaults;
+
+		$attributes['href'] = $this->url->asset($url, $secure);
+
+		return '<link'.$this->attributes($attributes).'>'.PHP_EOL;
+	}
 
 	/**
 	 * Generate a HTML link.
