@@ -220,7 +220,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
   }
 
 
-  public function testSelect()
+  public function testFormSelect()
   {
     $select = $this->formBuilder->select(
       'size',
