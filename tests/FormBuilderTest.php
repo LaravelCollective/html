@@ -207,6 +207,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
   }
 
+  public function testFormDateModelPopulation()
+  {
+    $this->setModel($model = ['date' => \Carbon\Carbon::now()]);
+
+    $form1 = $this->formBuilder->date('date', null);
+
+    $this->assertEquals('<input name="date" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">', $form1);
+  }
+
 
   public function testFormFile()
   {
@@ -232,7 +241,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
   }
 
 
-  public function testSelect()
+  public function testFormSelect()
   {
     $select = $this->formBuilder->select(
       'size',

@@ -322,6 +322,7 @@ class FormBuilder {
 	 */
 	public function date($name, $value = null, $options = array())
 	{
+        $value = $this->getValueAttribute($name, $value);
 		if ($value instanceof DateTime)
 		{
 			$value = $value->format('Y-m-d');
