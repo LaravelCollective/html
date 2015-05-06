@@ -55,4 +55,13 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('<meta content="website" property="og:type">'.PHP_EOL, $result);
 	}
 
+    public function testFavicon()
+    {
+        $this->urlGenerator->forceRootUrl('http://foo.com');
+        $target = $this->urlGenerator->to('bar.ico');
+        $result = $this->htmlBuilder->favicon('http://foo.com/bar.ico');
+
+        $this->assertEquals('<link rel="shortcut icon" type="image/x-icon" href="'.$target.'">' . PHP_EOL, $result);
+    }
+
 }
