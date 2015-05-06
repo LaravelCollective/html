@@ -137,6 +137,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
   }
 
 
+  public function testFormRepopulationWithMixOfArraysAndObjects()
+  {
+    $this->formBuilder->model(['user' => (object)['password' => 'apple']]);
+    $input = $this->formBuilder->text('user[password]');
+    $this->assertEquals('<input name="user[password]" type="text" value="apple">', $input);
+
+    $this->formBuilder->model((object)['letters' => ['a', 'b', 'c']]);
+    $input = $this->formBuilder->text('letters[1]');
+    $this->assertEquals('<input name="letters[1]" type="text" value="b">', $input);
+  }
+
+
   public function testFormPassword()
   {
     $form1 = $this->formBuilder->password('foo');

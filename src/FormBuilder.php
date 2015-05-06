@@ -935,14 +935,7 @@ class FormBuilder {
 	 */
 	protected function getModelValueAttribute($name)
 	{
-		if (is_object($this->model))
-		{
-			return object_get($this->model, $this->transformKey($name));
-		}
-		elseif (is_array($this->model))
-		{
-			return array_get($this->model, $this->transformKey($name));
-		}
+		return data_get($this->model, $this->transformKey($name));
 	}
 
 	/**
