@@ -676,7 +676,14 @@ class FormBuilder {
 
 		$posted = $this->getValueAttribute($name);
 
-		return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
+		
+        	if (is_array($posted)) {
+            		return in_array($value, $posted);
+        	} else if ($posted instanceof \Illuminate\Database\Eloquent\Collection) {
+            		return $posted->contains('id', $value);
+        	} else {
+            		return (bool) $posted;
+        	}
 	}
 
 	/**
