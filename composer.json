@@ -29,5 +29,11 @@
     "files": [
       "src/helpers.php"
     ]
-  }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "5.1-dev"
+    }
+  },
+  "minimum-stability": "dev"
 }
