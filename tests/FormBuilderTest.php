@@ -7,6 +7,7 @@ use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
+use Illuminate\Support\Collection;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase {
 
@@ -365,6 +366,30 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('<input checked="checked" name="multicheck[]" type="checkbox" value="1">', $check1);
     $this->assertEquals('<input name="multicheck[]" type="checkbox" value="2">', $check2);
     $this->assertEquals('<input checked="checked" name="multicheck[]" type="checkbox" value="3">', $check3);
+  }
+
+
+  public function testFormCheckboxWithModelRelation()
+  {
+    $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+    $session->shouldReceive('getOldInput')->withNoArgs()->andReturn(array());
+    $session->shouldReceive('getOldInput')->with('items')->andReturn(null);
+
+    $mockModel2 = new StdClass;
+    $mockModel2->id = 2;
+    $mockModel3 = new StdClass;
+    $mockModel3->id = 3;
+    $this->setModel(array('items' => new Collection(array($mockModel2, $mockModel3))));
+
+    $check1 = $this->formBuilder->checkbox('items[]', 1);
+    $check2 = $this->formBuilder->checkbox('items[]', 2);
+    $check3 = $this->formBuilder->checkbox('items[]', 3, false);
+    $check4 = $this->formBuilder->checkbox('items[]', 4, true);
+
+    $this->assertEquals('<input name="items[]" type="checkbox" value="1">', $check1);
+    $this->assertEquals('<input checked="checked" name="items[]" type="checkbox" value="2">', $check2);
+    $this->assertEquals('<input name="items[]" type="checkbox" value="3">', $check3);
+    $this->assertEquals('<input checked="checked" name="items[]" type="checkbox" value="4">', $check4);
   }
 
 
