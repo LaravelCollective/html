@@ -438,10 +438,10 @@ class FormBuilder {
 		// should provide a convenient method of re-populating the forms on post.
 		$selected = $this->getValueAttribute($name, $selected);
 		// Transform to array if it is a collection
-        if ($selected instanceof Collection)
-        {
-            $selected = $selected->all();
-        }
+		if ($selected instanceof Collection)
+		{
+			$selected = $selected->all();
+		}
 
 		$options['id'] = $this->getIdAttribute($name, $options);
 
