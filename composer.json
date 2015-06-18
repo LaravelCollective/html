@@ -12,11 +12,11 @@
     }
   ],
   "require": {
-    "php": ">=5.4.0",
-    "illuminate/http": "~5.1",
-    "illuminate/routing": "~5.1",
-    "illuminate/session": "~5.1",
-    "illuminate/support": "~5.1"
+    "php": ">=5.5.9",
+    "illuminate/http": "5.1.*",
+    "illuminate/routing": "5.1.*",
+    "illuminate/session": "5.1.*",
+    "illuminate/support": "5.1.*"
   },
   "require-dev": {
     "mockery/mockery": "~0.9",
@@ -29,11 +29,5 @@
     "files": [
       "src/helpers.php"
     ]
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "5.1-dev"
-    }
-  },
-  "minimum-stability": "dev"
+  }
 }
