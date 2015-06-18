@@ -670,13 +670,25 @@ class FormBuilder {
 	 */
 	protected function getCheckboxCheckedState($name, $value, $checked)
 	{
-		if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) return false;
+		// 1) check if an empty value has been flashed to session
+		if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) {
+			return false;
+		}
 
+		// 2) if no old value or model binding then return provided $checked value
 		if ($this->missingOldAndModel($name)) return $checked;
 
-		$posted = $this->getValueAttribute($name);
+		// 3) get value attribute: from session, or provided $checked, or model attribute which may be a Collection
+		$posted = $this->getValueAttribute($name, $checked);
 
-		return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
+		if (is_array($posted)) {
+			return in_array($value, $posted);
+		} elseif ($posted instanceof \Illuminate\Database\Eloquent\Collection) {
+			// check if value is a key in the Collection
+			return (bool)$posted->contains($value);
+		} else {
+			return (bool)$posted;
+		}
 	}
 
 	/**
