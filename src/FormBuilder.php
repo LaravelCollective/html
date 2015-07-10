@@ -300,6 +300,19 @@ class FormBuilder {
 	}
 
 	/**
+	 * Create a tel input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function tel($name, $value = null, $options = array())
+	{
+		return $this->input('tel', $name, $value, $options);
+	}
+
+	/**
 	 * Create a number input field.
 	 *
 	 * @param  string  $name
@@ -329,7 +342,7 @@ class FormBuilder {
 
 		return $this->input('date', $name, $value, $options);
 	}
-	
+
 	/**
      	 * Create a time input field.
      	 *
