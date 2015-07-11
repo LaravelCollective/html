@@ -70,7 +70,7 @@ class FormBuilder {
 	 *
 	 * @var array
 	 */
-	protected $skipValueTypes = array('file', 'password', 'checkbox', 'radio');
+	protected $skipValueTypes = array('file', 'password', 'checkbox', 'radio', 'datetime-local');
 
 	/**
 	 * Create a new form builder instance.
@@ -328,6 +328,26 @@ class FormBuilder {
 		}
 
 		return $this->input('date', $name, $value, $options);
+	}
+
+	/**
+	 * Create a datetime input field.
+	 *
+	 * @param  string  $name
+	 * @param  string  $value
+	 * @param  array   $options
+	 * @return string
+	 */
+	public function datetime($name, $value = null, $options = array())
+	{
+		$value = $this->getValueAttribute($name, $value);
+
+		if ($value instanceof DateTime)
+		{
+			$value = $value->format('Y-m-d\TH:i:s');
+		}
+
+		return $this->input('datetime-local', $name, $value, $options);
 	}
 
 	/**
