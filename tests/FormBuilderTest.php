@@ -314,6 +314,24 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($select, '<select name="size[key]"><option value="L">Large</option><option value="M">Medium</option><option value="S" selected="selected">Small</option></select>');
   }
 
+  public function testFormWithOptionalPlaceholder()
+  {
+    $select = $this->formBuilder->select(
+      'size',
+      ['L' => 'Large', 'S' => 'Small'],
+      null,
+      ['optional' => 'Select One...']
+    );
+    $this->assertEquals($select, '<select name="size"><option selected="selected">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+
+    $select = $this->formBuilder->select(
+      'size',
+      ['L' => 'Large', 'S' => 'Small'],
+      'L',
+      ['optional' => 'Select One...']
+    );
+    $this->assertEquals($select, '<select name="size"><option>Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+  }
 
   public function testFormSelectYear()
   {
