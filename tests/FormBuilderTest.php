@@ -320,7 +320,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
       'size',
       ['L' => 'Large', 'S' => 'Small'],
       null,
-      ['optional' => 'Select One...']
+      ['placeholder' => 'Select One...']
     );
     $this->assertEquals($select, '<select name="size"><option selected="selected">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
@@ -328,7 +328,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
       'size',
       ['L' => 'Large', 'S' => 'Small'],
       'L',
-      ['optional' => 'Select One...']
+      ['placeholder' => 'Select One...']
     );
     $this->assertEquals($select, '<select name="size"><option>Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
   }

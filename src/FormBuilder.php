@@ -494,10 +494,10 @@ class FormBuilder {
     // all together into one single HTML element that can be put on the form.
     $html = [];
 
-    if(isset($options['optional']))
+    if(isset($options['placeholder']))
     {
-      $html[] = $this->placeholderOption($options['optional'], $selected);
-      unset($options['optional']);
+      $html[] = $this->placeholderOption($options['placeholder'], $selected);
+      unset($options['placeholder']);
     }
 
     foreach($list as $value => $display)
