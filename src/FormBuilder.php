@@ -4,6 +4,7 @@ use DateTime;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support\Collection;
 
 class FormBuilder {
 
@@ -694,9 +695,20 @@ class FormBuilder {
 
 		if ($this->missingOldAndModel($name)) return $checked;
 
-		$posted = $this->getValueAttribute($name);
+		$posted = $this->getValueAttribute($name, $checked);
 
-		return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
+		if (is_array($posted))
+		{
+			return in_array($value, $posted);
+		}
+		else if ($posted instanceof Collection)
+		{
+			return $posted->contains('id', $value);
+		}
+		else
+		{
+			return (bool) $posted;
+		}
 	}
 
 	/**
