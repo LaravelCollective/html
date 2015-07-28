@@ -642,6 +642,7 @@ class FormBuilder {
     $selected = $this->getSelectedValue(null, $selected);
 
     $options = compact('selected');
+    $options['value'] = '';
 
     return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
   }
