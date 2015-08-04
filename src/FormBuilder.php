@@ -4,6 +4,7 @@ use DateTime;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support\Collection;
 
 class FormBuilder {
 

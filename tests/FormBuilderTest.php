@@ -7,6 +7,7 @@ use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Routing\RouteCollection;
+use Illuminate\Support\Collection;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase {
 
@@ -269,6 +270,35 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
       ['name' => 'select-name']
     );
     $this->assertEquals($select, '<select name="select-name" id="select-name-id"></select>');
+
+    // Test selects with multiple items selected
+    $select = $this->formBuilder->select(
+      'sizes',
+      ['L' => 'Large', 'S' => 'Small'],
+      ['L', 'S'],
+      ['class' => 'class-name', 'id' => 'select-id', 'multiple' => 'multiple', 'name' => 'sizes[]']
+    );
+    $this->assertEquals($select, '<select class="class-name" id="select-id" multiple="multiple" name="sizes[]"><option value="L" selected="selected">Large</option><option value="S" selected="selected">Small</option></select>');
+
+    // Test selects with a option Collection
+    $list = new Collection(['L' => 'Large', 'S' => 'Small']);
+    $select = $this->formBuilder->select(
+      'sizes',
+      $list,
+      ['L', 'S'],
+      ['class' => 'class-name', 'id' => 'select-id', 'multiple' => 'multiple', 'name' => 'sizes[]']
+    );
+    $this->assertEquals($select, '<select class="class-name" id="select-id" multiple="multiple" name="sizes[]"><option value="L" selected="selected">Large</option><option value="S" selected="selected">Small</option></select>');
+
+    // Test selects with a selected Collection
+    $selected = new Collection(['L', 'S']);
+    $select = $this->formBuilder->select(
+      'sizes',
+      ['L' => 'Large', 'S' => 'Small'],
+      $selected,
+      ['class' => 'class-name', 'id' => 'select-id', 'multiple' => 'multiple', 'name' => 'sizes[]']
+    );
+    $this->assertEquals($select, '<select class="class-name" id="select-id" multiple="multiple" name="sizes[]"><option value="L" selected="selected">Large</option><option value="S" selected="selected">Small</option></select>');
   }
 
 
