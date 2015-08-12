@@ -20,3 +20,8 @@ Added the ability to display messages of Validator:
 ## Added function to display IMG and HTML-tags within the Label.
     {!! Form::label('name', 'Lorem ipsum <a href="#">dolor sit amet</a>, consectetur adipiscing elit', null, true) !!}
     {!! Form::labelImage('name', 'image.png', null, ['alt'=>'Title']) !!}
+
+## Present
+    <label for="name">Lorem ipsum <a href="#">dolor sit amet</a>, consectetur adipiscing elit</a></label>
+
+    <label for="name"><img src="http://mysite.ru/image.png" alt="Title" /></label>
