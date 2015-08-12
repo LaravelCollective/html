@@ -11,8 +11,12 @@ Official documentation for Forms & Html for The Laravel Framework can be found a
 Added the ability to display messages of Validator:
 
 ## Specifying Messages of Validator
-    echo Form::text('email', null, null, $errors);
-    echo Form::password('password', null, null, $errors);
-    echo Form::email('email', null, null, $errors);
-    echo Form::textarea('textarea', null, null, $errors);
-    echo Form::radio('textarea', null, null, null, $errors);
+    {!! Form::text('email', null, null, $errors) !!}
+    {!! Form::password('password', null, null, $errors) !!}
+    {!! Form::email('email', null, null, $errors) !!}
+    {!! Form::textarea('textarea', null, null, $errors) !!}
+    {!! Form::radio('textarea', null, null, null, $errors) !!}
+
+## Added function to display IMG and HTML-tags within the Label.
+    {!! Form::label('name', 'Lorem ipsum <a href="#">dolor sit amet</a>, consectetur adipiscing elit', null, true) !!}
+    {!! Form::labelImage('name', 'image.png', null, ['alt'=>'Title']) !!}
