@@ -1,5 +1,5 @@
 {
-  "name": "laravelcollective/html",
+  "name": "andrey-helldar/html",
   "license": "MIT",
   "authors": [
     {
@@ -9,6 +9,10 @@
     {
       "name": "Taylor Otwell",
       "email": "taylorotwell@gmail.com"
+    },
+    {
+      "name": "Andrey Helldar",
+      "email": "helldar@ai-rus.com"
     }
   ],
   "require": {
