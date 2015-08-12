@@ -15,3 +15,4 @@ Added the ability to display messages of Validator:
     echo Form::password('password', null, null, $errors);
     echo Form::email('email', null, null, $errors);
     echo Form::textarea('textarea', null, null, $errors);
+    echo Form::radio('textarea', null, null, null, $errors);
