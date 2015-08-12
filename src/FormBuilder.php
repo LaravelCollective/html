@@ -262,7 +262,7 @@ class FormBuilder {
             foreach($errors->get($name) as $error)
                 $error_messages.= '<p class = "help-block">'.$error.'</p>';
         
-            return '<span class="has-error"><input'.$this->html->attributes($options).'/></span>' . $error_messages;
+            return '<span class="has-error"><input'.$this->html->attributes($options).'/>' . $error_messages . '</span>';
         }
 
     return '<input' . $this->html->attributes($options) . '>';
@@ -450,7 +450,7 @@ class FormBuilder {
             foreach($errors->get($name) as $error)
                 $error_messages.= '<p class = "help-block">'.$error.'</p>';
         
-            return '<span class="has-error"><textarea' . $options . '>' . e($value) . '</textarea></span>' . $error_messages;
+            return '<span class="has-error"><textarea' . $options . '>' . e($value) . '</textarea>' . $error_messages . '</span>';
         }
 
     return '<textarea' . $options . '>' . e($value) . '</textarea>';
@@ -548,7 +548,7 @@ class FormBuilder {
             foreach($errors->get($name) as $error)
                 $error_messages.= '<p class = "help-block">'.$error.'</p>';
         
-            return '<span class="has-error"><select' . $options . '>' . $list . '</select></span>' . $error_messages;
+            return '<span class="has-error"><select' . $options . '>' . $list . '</select>' . $error_messages . '</span>';
         }
 
     return "<select{$options}>{$list}</select>";
@@ -895,7 +895,7 @@ class FormBuilder {
             foreach($errors->get($name) as $error)
                 $error_messages.= '<p class = "help-block">'.$error.'</p>';
         
-            return '<span class="has-error"><button' . $this->html->attributes($options) . '>' . $value . '</button></span>' . $error_messages;
+            return '<span class="has-error"><button' . $this->html->attributes($options) . '>' . $value . '</button>' . $error_messages . '</span>';
         }
 
     return '<button' . $this->html->attributes($options) . '>' . $value . '</button>';
