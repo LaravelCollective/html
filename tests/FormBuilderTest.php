@@ -322,7 +322,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
       null,
       ['placeholder' => 'Select One...']
     );
-    $this->assertEquals($select, '<select name="size"><option selected="selected">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+    $this->assertEquals($select, '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
     $select = $this->formBuilder->select(
       'size',
@@ -330,7 +330,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase {
       'L',
       ['placeholder' => 'Select One...']
     );
-    $this->assertEquals($select, '<select name="size"><option>Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+    $this->assertEquals($select, '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
   }
 
   public function testFormSelectYear()
