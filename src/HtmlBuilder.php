@@ -96,7 +96,7 @@ class HtmlBuilder {
 
 		return '<img src="'.$this->url->asset($url, $secure).'"'.$this->attributes($attributes).'>';
 	}
-	
+
 	/**
 	 * Generate a link to a Favicon file.
 	 *
@@ -313,7 +313,7 @@ class HtmlBuilder {
 	 *
 	 * @param  mixed    $key
 	 * @param  string  $type
-	 * @param  string  $value
+	 * @param  mixed   $value
 	 * @return string
 	 */
 	protected function listingElement($key, $type, $value)
@@ -333,7 +333,7 @@ class HtmlBuilder {
 	 *
 	 * @param  mixed    $key
 	 * @param  string  $type
-	 * @param  string  $value
+	 * @param  mixed   $value
 	 * @return string
 	 */
 	protected function nestedListing($key, $type, $value)
