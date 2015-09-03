@@ -377,10 +377,12 @@ class HtmlBuilder {
 	 */
 	protected function attributeElement($key, $value)
 	{
-		// For numeric keys we will assume that the key and the value are the same
-		// as this will convert HTML attributes such as "required" to a correct
-		// form like required="required" instead of using incorrect numerics.
-		if (is_numeric($key)) $key = $value;
+		// For numeric keys we will assume that the value is a boolean attribute
+		// where the presence of the attribute represents a true value and the
+		// absence represents a false value.
+		// This will convert HTML attributes such as "required" to a correct
+		// form instead of using incorrect numerics.
+		if (is_numeric($key)) return $value;
 
 		if ( ! is_null($value)) return $key.'="'.e($value).'"';
 	}
