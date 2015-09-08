@@ -4,7 +4,6 @@ use Collective\Html\HtmlBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
-use Mockery as m;
 
 class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 {
@@ -15,14 +14,6 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
     {
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
-    }
-
-    /**
-     * Destroy the test environment.
-     */
-    public function tearDown()
-    {
-        m::close();
     }
 
     public function testDl()
