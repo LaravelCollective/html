@@ -236,6 +236,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
     }
 
+    public function testSelectWithFirst()
+    {
+        $select = $this->formBuilder->select(
+      'size',
+      ['L' => 'Large', 'S' => 'Small'], null, [], 'Make Your Choice'
+    );
+
+        $this->assertEquals($select, '<select name="size"><option value="0">Make Your Choice</option><option value="L">Large</option><option value="S">Small</option></select>');
+    }
+
     public function testSelect()
     {
         $select = $this->formBuilder->select(
