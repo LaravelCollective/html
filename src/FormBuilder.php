@@ -508,7 +508,7 @@ class FormBuilder
           $html[] = $this->getSelectOption($display, $value, $selected);
       }
 
-      if( !is_null($first) ) {
+      if (!is_null($first)) {
           array_unshift($html, $this->getSelectOption($first, 0, $selected));
       }
 
