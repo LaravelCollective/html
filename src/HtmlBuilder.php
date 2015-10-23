@@ -293,14 +293,12 @@ class HtmlBuilder
 
         $html = "<dl{$attributes}>";
 
-        foreach ($list as $key => $value)
-        {
+        foreach ($list as $key => $value) {
             $value = (array) $value;
             
             $html .= "<dt>$key</dt>";
             
-            foreach ($value as $v_key => $v_value)
-            {
+            foreach ($value as $v_key => $v_value) {
                 $html .= "<dd>$v_value</dd>";
             }
         }
