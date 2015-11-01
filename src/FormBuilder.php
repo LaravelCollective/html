@@ -10,6 +10,7 @@ use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder
 {
+
     use Macroable;
     /**
      * The HTML builder instance.
@@ -232,6 +233,52 @@ class FormBuilder
     protected function formatLabel($name, $value)
     {
         return $value ? : ucwords(str_replace('_', ' ', $name));
+    }
+
+    /**
+     * Create the block elements, including label and field
+     * 
+     * @param string $type
+     * @param string $name
+     * @param string $title
+     * @param string $value
+     * @param array $optionsLabel
+     * @param array $optionsType
+     * @param array $errors
+     * @param string $selected For a Select
+     * @param string $template
+     * @return string
+     */
+    public function group($type, $name, $title, $value = null, $optionsLabel = [], $optionsType = [], $errors = null, $selected = null, $template = null)
+    {
+        if (is_null($template)) {
+            $template = "<div class=\"form-group\">%s<div class=\"col-md-8\">%s</div></div>";
+        }
+
+        $el = "";
+
+        switch ($type) {
+            case "password": $el = $this->password($name, $optionsType, $errors);
+                break;
+            case "email": $el = $this->email($name, $value, $optionsType, $errors);
+                break;
+            case "checkbox": $el = $this->checkbox($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "radio": $el = $this->radio($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "number": $el = $this->number($name, $value, $optionsType, $errors);
+                break;
+            case "date": $el = $this->date($name, $value, $optionsType, $errors);
+                break;
+            case "select": $el = $this->select($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "url": $el = $this->url($name, $value, $optionsType, $errors);
+                break;
+
+            default : $el = $this->text($name, $value, $optionsType, $errors);
+        }
+
+        return sprintf($template, $this->label($name, $title, $optionsLabel), $el);
     }
 
     /**
