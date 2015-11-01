@@ -10,7 +10,6 @@ use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder
 {
-
     use Macroable;
     /**
      * The HTML builder instance.
