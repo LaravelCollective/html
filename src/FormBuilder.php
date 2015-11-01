@@ -10,9 +10,7 @@ use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder
 {
-
     use Macroable;
-
     /**
      * The HTML builder instance.
      *
@@ -248,8 +246,9 @@ class FormBuilder
      */
     public function input($type, $name, $value = null, $options = [], $errors = null)
     {
-        if (!isset($options['name']))
+        if (!isset($options['name'])) {
             $options['name'] = $name;
+        }
 
 // We will get the appropriate value for the given field. We will look for the
 // value in the session for the value in the old input data then we'll look
@@ -748,8 +747,9 @@ class FormBuilder
      */
     public function radio($name, $value = null, $checked = null, $options = [], $errors = null)
     {
-        if (is_null($value))
+        if (is_null($value)) {
             $value = $name;
+        }
 
         return $this->checkable('radio', $name, $value, $checked, $options, $errors);
     }
@@ -1171,5 +1171,4 @@ class FormBuilder
 
         return $this;
     }
-
 }

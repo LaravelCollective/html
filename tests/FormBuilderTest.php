@@ -10,7 +10,6 @@ use Illuminate\Routing\RouteCollection;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * Setup the test environment.
      */
@@ -440,24 +439,24 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     protected function setModel(array $data, $object = true)
     {
-        if ($object)
+        if ($object) {
             $data = new FormBuilderModelStub($data);
+        }
 
         $this->formBuilder->model($data, ['method' => 'GET']);
     }
-
 }
 
 class FormBuilderModelStub
 {
-
     protected $data;
 
     public function __construct(array $data = [])
     {
         foreach ($data as $key => $val) {
-            if (is_array($val))
+            if (is_array($val)) {
                 $val = new self($val);
+            }
 
             $this->data[$key] = $val;
         }
@@ -472,5 +471,4 @@ class FormBuilderModelStub
     {
         return isset($this->data[$key]);
     }
-
 }

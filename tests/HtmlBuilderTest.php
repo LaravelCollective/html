@@ -10,7 +10,6 @@ use Illuminate\Routing\RouteCollection;
 
 class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * Setup the test environment.
      */
@@ -64,5 +63,4 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('<link rel="shortcut icon" type="image/x-icon" href="' . $target . '">' . PHP_EOL, $result);
     }
-
 }
