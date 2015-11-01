@@ -5,6 +5,7 @@ namespace Collective\Html;
 use DateTime;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder {
@@ -21,7 +22,7 @@ class FormBuilder {
     /**
      * The URL generator instance.
      *
-     * @var \Illuminate\Routing\UrlGenerator $url
+     * @var \Illuminate\Routing\UrlGenerator
      */
     protected $url;
 
@@ -238,9 +239,9 @@ class FormBuilder {
         if (!isset($options['name']))
             $options['name'] = $name;
 
-        // We will get the appropriate value for the given field. We will look for the
-        // value in the session for the value in the old input data then we'll look
-        // in the model instance if one is set. Otherwise we will just use empty.
+// We will get the appropriate value for the given field. We will look for the
+// value in the session for the value in the old input data then we'll look
+// in the model instance if one is set. Otherwise we will just use empty.
         $id = $this->getIdAttribute($name, $options);
 
         if (!in_array($type, $this->skipValueTypes)) {
@@ -500,8 +501,9 @@ class FormBuilder {
 
         $options['id'] = $this->getIdAttribute($name, $options);
 
-        if (!isset($options['name']))
+        if (!isset($options['name'])) {
             $options['name'] = $name;
+        }
 
         // We will simply loop through the options and build an HTML value for each of
         // them until we have an array of HTML declarations. Then we will join them
@@ -640,7 +642,7 @@ class FormBuilder {
     protected function option($display, $value, $selected) {
         $selected = $this->getSelectedValue($value, $selected);
 
-        $options = ['value' => e($value), 'selected' => $selected];
+        $options = ['value' => $value, 'selected' => $selected];
 
         return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
     }
@@ -657,6 +659,7 @@ class FormBuilder {
         $selected = $this->getSelectedValue(null, $selected);
 
         $options = compact('selected');
+        $options['value'] = '';
 
         return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
     }
@@ -722,8 +725,9 @@ class FormBuilder {
     protected function checkable($type, $name, $value, $checked, $options, $errors = null) {
         $checked = $this->getCheckedState($type, $name, $value, $checked);
 
-        if ($checked)
+        if ($checked) {
             $options['checked'] = 'checked';
+        }
 
         return $this->input($type, $name, $value, $options, $errors);
     }
@@ -761,15 +765,23 @@ class FormBuilder {
      * @return bool
      */
     protected function getCheckboxCheckedState($name, $value, $checked) {
-        if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name)))
+        if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name))) {
             return false;
+        }
 
-        if ($this->missingOldAndModel($name))
+        if ($this->missingOldAndModel($name)) {
             return $checked;
+        }
 
-        $posted = $this->getValueAttribute($name);
+        $posted = $this->getValueAttribute($name, $checked);
 
-        return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
+        if (is_array($posted)) {
+            return in_array($value, $posted);
+        } elseif ($posted instanceof Collection) {
+            return $posted->contains('id', $value);
+        } else {
+            return (bool) $posted;
+        }
     }
 
     /**
@@ -782,8 +794,9 @@ class FormBuilder {
      * @return bool
      */
     protected function getRadioCheckedState($name, $value, $checked) {
-        if ($this->missingOldAndModel($name))
+        if ($this->missingOldAndModel($name)) {
             return $checked;
+        }
 
         return $this->getValueAttribute($name) == $value;
     }
@@ -1008,15 +1021,17 @@ class FormBuilder {
      * @return mixed
      */
     public function getValueAttribute($name, $value = null) {
-        if (is_null($name))
+        if (is_null($name)) {
             return $value;
+        }
 
         if (!is_null($this->old($name))) {
             return $this->old($name);
         }
 
-        if (!is_null($value))
+        if (!is_null($value)) {
             return $value;
+        }
 
         if (isset($this->model)) {
             return $this->getModelValueAttribute($name);

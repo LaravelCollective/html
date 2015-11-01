@@ -8,6 +8,7 @@
 
 Official documentation for Forms & Html for The Laravel Framework can be found at the [LaravelCollective](http://laravelcollective.com) website.
 
+
 Added the ability to display messages of Validator:
 
 ## Specifying Messages of Validator
@@ -16,6 +17,7 @@ Added the ability to display messages of Validator:
     {!! Form::email('email', null, null, $errors) !!}
     {!! Form::textarea('textarea', null, null, $errors) !!}
     {!! Form::radio('textarea', null, null, null, $errors) !!}
+    {!! Form::url('url', null, null, $errors) !!}
 
 ## Added function to display IMG and HTML-tags within the Label.
     {!! Form::label('name', 'Lorem ipsum <a href="#">dolor sit amet</a>, consectetur adipiscing elit', null, true) !!}
