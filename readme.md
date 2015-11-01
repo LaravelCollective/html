@@ -8,6 +8,33 @@
 
 Official documentation for Forms & Html for The Laravel Framework can be found at the [LaravelCollective](http://laravelcollective.com) website.
 
+## Create the block elements, including label and field
+
+    {!! Form::group('type', 'name', 'title_label', 'value', [], [], $errors) !!}
+
+    /**
+     * Create the block elements, including label and field
+     * 
+     * @param string $type
+     * @param string $name
+     * @param string $title
+     * @param string $value String a fields or a Array for Select, Checkbox, Radio
+     * @param array $optionsLabel
+     * @param array $optionsType
+     * @param array $errors
+     * @param string $selected For a Select
+     * @param string $template
+     * @return string
+     */
+
+Return:
+
+        return '<div class="form-group">'
+                . $this->label($name, $title, $optionsLabel)
+                . '<div class = "col-md-8">'
+                . $element
+                . '</div></div>';
+
 
 Added the ability to display messages of Validator:
 
