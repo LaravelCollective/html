@@ -10,7 +10,7 @@ Official documentation for Forms & Html for The Laravel Framework can be found a
 
 ## Create the block elements, including label and field
 
-    {!! Form::group('type', 'name', 'title_label', 'value', [], [], $errors) !!}
+    {!! Form::group('type', 'name', 'title_label', 'value', [], [], $errors, $selected, $template) !!}
 
     /**
      * Create the block elements, including label and field
