@@ -360,6 +360,42 @@ class FormBuilder
   }
 
   /**
+   * Create a datetime input field.
+   *
+   * @param  string $name
+   * @param  string $value
+   * @param  array  $options
+   *
+   * @return string
+   */
+  public function datetime($name, $value = null, $options = [])
+  {
+      if ($value instanceof DateTime) {
+          $value = $value->format(DateTime::RFC3339);
+      }
+
+      return $this->input('datetime', $name, $value, $options);
+  }
+
+  /**
+   * Create a datetime-local input field.
+   *
+   * @param  string $name
+   * @param  string $value
+   * @param  array  $options
+   *
+   * @return string
+   */
+  public function datetimeLocal($name, $value = null, $options = [])
+  {
+      if ($value instanceof DateTime) {
+          $value = $value->format('Y-m-d\TH:i');
+      }
+
+      return $this->input('datetime-local', $name, $value, $options);
+  }
+
+  /**
    * Create a time input field.
    *
    * @param  string $name
