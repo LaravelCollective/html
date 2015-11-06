@@ -1,13 +1,16 @@
-<?php namespace Collective\Html;
+<?php
+
+namespace Collective\Html;
 
 use DateTime;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
 
-class FormBuilder {
-
-  use Macroable;
+class FormBuilder
+{
+    use Macroable;
 
   /**
    * The HTML builder instance.
@@ -19,7 +22,7 @@ class FormBuilder {
   /**
    * The URL generator instance.
    *
-   * @var \Illuminate\Routing\UrlGenerator $url
+   * @var \Illuminate\Routing\UrlGenerator
    */
   protected $url;
 
@@ -83,9 +86,9 @@ class FormBuilder {
    */
   public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
   {
-    $this->url = $url;
-    $this->html = $html;
-    $this->csrfToken = $csrfToken;
+      $this->url = $url;
+      $this->html = $html;
+      $this->csrfToken = $csrfToken;
   }
 
   /**
@@ -97,26 +100,25 @@ class FormBuilder {
    */
   public function open(array $options = [])
   {
-    $method = array_get($options, 'method', 'post');
+      $method = array_get($options, 'method', 'post');
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
     // actual method since forms don't support the reserved methods in HTML.
     $attributes['method'] = $this->getMethod($method);
 
-    $attributes['action'] = $this->getAction($options);
+      $attributes['action'] = $this->getAction($options);
 
-    $attributes['accept-charset'] = 'UTF-8';
+      $attributes['accept-charset'] = 'UTF-8';
 
     // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
     // field that will instruct the Symfony request to pretend the method is a
     // different method than it actually is, for convenience from the forms.
     $append = $this->getAppendage($method);
 
-    if(isset($options['files']) && $options['files'])
-    {
-      $options['enctype'] = 'multipart/form-data';
-    }
+      if (isset($options['files']) && $options['files']) {
+          $options['enctype'] = 'multipart/form-data';
+      }
 
     // Finally we're ready to create the final form HTML field. We will attribute
     // format the array of attributes. We will also add on the appendage which
@@ -132,7 +134,7 @@ class FormBuilder {
     // extra value for the hidden _method field if it's needed for the form.
     $attributes = $this->html->attributes($attributes);
 
-    return '<form' . $attributes . '>' . $append;
+      return '<form'.$attributes.'>'.$append;
   }
 
   /**
@@ -145,9 +147,9 @@ class FormBuilder {
    */
   public function model($model, array $options = [])
   {
-    $this->model = $model;
+      $this->model = $model;
 
-    return $this->open($options);
+      return $this->open($options);
   }
 
   /**
@@ -159,7 +161,7 @@ class FormBuilder {
    */
   public function setModel($model)
   {
-    $this->model = $model;
+      $this->model = $model;
   }
 
   /**
@@ -169,11 +171,11 @@ class FormBuilder {
    */
   public function close()
   {
-    $this->labels = [];
+      $this->labels = [];
 
-    $this->model = null;
+      $this->model = null;
 
-    return '</form>';
+      return '</form>';
   }
 
   /**
@@ -183,9 +185,9 @@ class FormBuilder {
    */
   public function token()
   {
-    $token = ! empty($this->csrfToken) ? $this->csrfToken : $this->session->getToken();
+      $token = !empty($this->csrfToken) ? $this->csrfToken : $this->session->getToken();
 
-    return $this->hidden('_token', $token);
+      return $this->hidden('_token', $token);
   }
 
   /**
@@ -199,13 +201,13 @@ class FormBuilder {
    */
   public function label($name, $value = null, $options = [])
   {
-    $this->labels[] = $name;
+      $this->labels[] = $name;
 
-    $options = $this->html->attributes($options);
+      $options = $this->html->attributes($options);
 
-    $value = e($this->formatLabel($name, $value));
+      $value = e($this->formatLabel($name, $value));
 
-    return '<label for="' . $name . '"' . $options . '>' . $value . '</label>';
+      return '<label for="'.$name.'"'.$options.'>'.$value.'</label>';
   }
 
   /**
@@ -218,7 +220,7 @@ class FormBuilder {
    */
   protected function formatLabel($name, $value)
   {
-    return $value ?: ucwords(str_replace('_', ' ', $name));
+      return $value ?: ucwords(str_replace('_', ' ', $name));
   }
 
   /**
@@ -233,26 +235,27 @@ class FormBuilder {
    */
   public function input($type, $name, $value = null, $options = [])
   {
-    if( ! isset($options['name'])) $options['name'] = $name;
+      if (!isset($options['name'])) {
+          $options['name'] = $name;
+      }
 
     // We will get the appropriate value for the given field. We will look for the
     // value in the session for the value in the old input data then we'll look
     // in the model instance if one is set. Otherwise we will just use empty.
     $id = $this->getIdAttribute($name, $options);
 
-    if( ! in_array($type, $this->skipValueTypes))
-    {
-      $value = $this->getValueAttribute($name, $value);
-    }
+      if (!in_array($type, $this->skipValueTypes)) {
+          $value = $this->getValueAttribute($name, $value);
+      }
 
     // Once we have the type, value, and ID we can merge them into the rest of the
     // attributes array so we can convert them into their HTML attribute format
     // when creating the HTML element. Then, we will return the entire input.
     $merge = compact('type', 'value', 'id');
 
-    $options = array_merge($options, $merge);
+      $options = array_merge($options, $merge);
 
-    return '<input' . $this->html->attributes($options) . '>';
+      return '<input'.$this->html->attributes($options).'>';
   }
 
   /**
@@ -266,7 +269,7 @@ class FormBuilder {
    */
   public function text($name, $value = null, $options = [])
   {
-    return $this->input('text', $name, $value, $options);
+      return $this->input('text', $name, $value, $options);
   }
 
   /**
@@ -279,7 +282,7 @@ class FormBuilder {
    */
   public function password($name, $options = [])
   {
-    return $this->input('password', $name, '', $options);
+      return $this->input('password', $name, '', $options);
   }
 
   /**
@@ -293,7 +296,7 @@ class FormBuilder {
    */
   public function hidden($name, $value = null, $options = [])
   {
-    return $this->input('hidden', $name, $value, $options);
+      return $this->input('hidden', $name, $value, $options);
   }
 
   /**
@@ -307,7 +310,7 @@ class FormBuilder {
    */
   public function email($name, $value = null, $options = [])
   {
-    return $this->input('email', $name, $value, $options);
+      return $this->input('email', $name, $value, $options);
   }
 
   /**
@@ -321,7 +324,7 @@ class FormBuilder {
    */
   public function tel($name, $value = null, $options = [])
   {
-    return $this->input('tel', $name, $value, $options);
+      return $this->input('tel', $name, $value, $options);
   }
 
   /**
@@ -335,7 +338,7 @@ class FormBuilder {
    */
   public function number($name, $value = null, $options = [])
   {
-    return $this->input('number', $name, $value, $options);
+      return $this->input('number', $name, $value, $options);
   }
 
   /**
@@ -349,12 +352,47 @@ class FormBuilder {
    */
   public function date($name, $value = null, $options = [])
   {
-    if($value instanceof DateTime)
-    {
-      $value = $value->format('Y-m-d');
-    }
+      if ($value instanceof DateTime) {
+          $value = $value->format('Y-m-d');
+      }
 
-    return $this->input('date', $name, $value, $options);
+      return $this->input('date', $name, $value, $options);
+  }
+
+  /**
+   * Create a datetime input field.
+   *
+   * @param  string $name
+   * @param  string $value
+   * @param  array  $options
+   *
+   * @return string
+   */
+  public function datetime($name, $value = null, $options = [])
+  {
+      if ($value instanceof DateTime) {
+          $value = $value->format(DateTime::RFC3339);
+      }
+
+      return $this->input('datetime', $name, $value, $options);
+  }
+
+  /**
+   * Create a datetime-local input field.
+   *
+   * @param  string $name
+   * @param  string $value
+   * @param  array  $options
+   *
+   * @return string
+   */
+  public function datetimeLocal($name, $value = null, $options = [])
+  {
+      if ($value instanceof DateTime) {
+          $value = $value->format('Y-m-d\TH:i');
+      }
+
+      return $this->input('datetime-local', $name, $value, $options);
   }
 
   /**
@@ -368,7 +406,7 @@ class FormBuilder {
    */
   public function time($name, $value = null, $options = [])
   {
-    return $this->input('time', $name, $value, $options);
+      return $this->input('time', $name, $value, $options);
   }
 
   /**
@@ -382,7 +420,7 @@ class FormBuilder {
    */
   public function url($name, $value = null, $options = [])
   {
-    return $this->input('url', $name, $value, $options);
+      return $this->input('url', $name, $value, $options);
   }
 
   /**
@@ -395,7 +433,7 @@ class FormBuilder {
    */
   public function file($name, $options = [])
   {
-    return $this->input('file', $name, null, $options);
+      return $this->input('file', $name, null, $options);
   }
 
   /**
@@ -409,25 +447,27 @@ class FormBuilder {
    */
   public function textarea($name, $value = null, $options = [])
   {
-    if( ! isset($options['name'])) $options['name'] = $name;
+      if (!isset($options['name'])) {
+          $options['name'] = $name;
+      }
 
     // Next we will look for the rows and cols attributes, as each of these are put
     // on the textarea element definition. If they are not present, we will just
     // assume some sane default values for these attributes for the developer.
     $options = $this->setTextAreaSize($options);
 
-    $options['id'] = $this->getIdAttribute($name, $options);
+      $options['id'] = $this->getIdAttribute($name, $options);
 
-    $value = (string) $this->getValueAttribute($name, $value);
+      $value = (string) $this->getValueAttribute($name, $value);
 
-    unset($options['size']);
+      unset($options['size']);
 
     // Next we will convert the attributes into a string form. Also we have removed
     // the size attribute, as it was merely a short-cut for the rows and cols on
     // the element. Then we'll create the final textarea elements HTML for us.
     $options = $this->html->attributes($options);
 
-    return '<textarea' . $options . '>' . e($value) . '</textarea>';
+      return '<textarea'.$options.'>'.e($value).'</textarea>';
   }
 
   /**
@@ -439,19 +479,18 @@ class FormBuilder {
    */
   protected function setTextAreaSize($options)
   {
-    if(isset($options['size']))
-    {
-      return $this->setQuickTextAreaSize($options);
-    }
+      if (isset($options['size'])) {
+          return $this->setQuickTextAreaSize($options);
+      }
 
     // If the "size" attribute was not specified, we will just look for the regular
     // columns and rows attributes, using sane defaults if these do not exist on
     // the attributes array. We'll then return this entire options array back.
     $cols = array_get($options, 'cols', 50);
 
-    $rows = array_get($options, 'rows', 10);
+      $rows = array_get($options, 'rows', 10);
 
-    return array_merge($options, compact('cols', 'rows'));
+      return array_merge($options, compact('cols', 'rows'));
   }
 
   /**
@@ -463,9 +502,9 @@ class FormBuilder {
    */
   protected function setQuickTextAreaSize($options)
   {
-    $segments = explode('x', $options['size']);
+      $segments = explode('x', $options['size']);
 
-    return array_merge($options, ['cols' => $segments[0], 'rows' => $segments[1]]);
+      return array_merge($options, ['cols' => $segments[0], 'rows' => $segments[1]]);
   }
 
   /**
@@ -480,39 +519,39 @@ class FormBuilder {
    */
   public function select($name, $list = [], $selected = null, $options = [])
   {
-    // When building a select box the "value" attribute is really the selected one
+      // When building a select box the "value" attribute is really the selected one
     // so we will use that when checking the model or session for a value which
     // should provide a convenient method of re-populating the forms on post.
     $selected = $this->getValueAttribute($name, $selected);
 
-    $options['id'] = $this->getIdAttribute($name, $options);
+      $options['id'] = $this->getIdAttribute($name, $options);
 
-    if( ! isset($options['name'])) $options['name'] = $name;
+      if (!isset($options['name'])) {
+          $options['name'] = $name;
+      }
 
     // We will simply loop through the options and build an HTML value for each of
     // them until we have an array of HTML declarations. Then we will join them
     // all together into one single HTML element that can be put on the form.
     $html = [];
 
-    if(isset($options['placeholder']))
-    {
-      $html[] = $this->placeholderOption($options['placeholder'], $selected);
-      unset($options['placeholder']);
-    }
+      if (isset($options['placeholder'])) {
+          $html[] = $this->placeholderOption($options['placeholder'], $selected);
+          unset($options['placeholder']);
+      }
 
-    foreach($list as $value => $display)
-    {
-      $html[] = $this->getSelectOption($display, $value, $selected);
-    }
+      foreach ($list as $value => $display) {
+          $html[] = $this->getSelectOption($display, $value, $selected);
+      }
 
     // Once we have all of this HTML, we can join this into a single element after
     // formatting the attributes into an HTML "attributes" string, then we will
     // build out a final select statement, which will contain all the values.
     $options = $this->html->attributes($options);
 
-    $list = implode('', $html);
+      $list = implode('', $html);
 
-    return "<select{$options}>{$list}</select>";
+      return "<select{$options}>{$list}</select>";
   }
 
   /**
@@ -528,9 +567,9 @@ class FormBuilder {
    */
   public function selectRange($name, $begin, $end, $selected = null, $options = [])
   {
-    $range = array_combine($range = range($begin, $end), $range);
+      $range = array_combine($range = range($begin, $end), $range);
 
-    return $this->select($name, $range, $selected, $options);
+      return $this->select($name, $range, $selected, $options);
   }
 
   /**
@@ -546,7 +585,7 @@ class FormBuilder {
    */
   public function selectYear()
   {
-    return call_user_func_array([$this, 'selectRange'], func_get_args());
+      return call_user_func_array([$this, 'selectRange'], func_get_args());
   }
 
   /**
@@ -561,14 +600,13 @@ class FormBuilder {
    */
   public function selectMonth($name, $selected = null, $options = [], $format = '%B')
   {
-    $months = [];
+      $months = [];
 
-    foreach(range(1, 12) as $month)
-    {
-      $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
-    }
+      foreach (range(1, 12) as $month) {
+          $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+      }
 
-    return $this->select($name, $months, $selected, $options);
+      return $this->select($name, $months, $selected, $options);
   }
 
   /**
@@ -582,12 +620,11 @@ class FormBuilder {
    */
   public function getSelectOption($display, $value, $selected)
   {
-    if(is_array($display))
-    {
-      return $this->optionGroup($display, $value, $selected);
-    }
+      if (is_array($display)) {
+          return $this->optionGroup($display, $value, $selected);
+      }
 
-    return $this->option($display, $value, $selected);
+      return $this->option($display, $value, $selected);
   }
 
   /**
@@ -601,14 +638,13 @@ class FormBuilder {
    */
   protected function optionGroup($list, $label, $selected)
   {
-    $html = [];
+      $html = [];
 
-    foreach($list as $value => $display)
-    {
-      $html[] = $this->option($display, $value, $selected);
-    }
+      foreach ($list as $value => $display) {
+          $html[] = $this->option($display, $value, $selected);
+      }
 
-    return '<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>';
+      return '<optgroup label="'.e($label).'">'.implode('', $html).'</optgroup>';
   }
 
   /**
@@ -622,11 +658,11 @@ class FormBuilder {
    */
   protected function option($display, $value, $selected)
   {
-    $selected = $this->getSelectedValue($value, $selected);
+      $selected = $this->getSelectedValue($value, $selected);
 
-    $options = ['value' => e($value), 'selected' => $selected];
+      $options = ['value' => $value, 'selected' => $selected];
 
-    return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
+      return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
   }
 
   /**
@@ -639,11 +675,12 @@ class FormBuilder {
    */
   protected function placeholderOption($display, $selected)
   {
-    $selected = $this->getSelectedValue(null, $selected);
+      $selected = $this->getSelectedValue(null, $selected);
 
-    $options = compact('selected');
+      $options = compact('selected');
+      $options['value'] = '';
 
-    return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
+      return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
   }
 
   /**
@@ -656,12 +693,11 @@ class FormBuilder {
    */
   protected function getSelectedValue($value, $selected)
   {
-    if(is_array($selected))
-    {
-      return in_array($value, $selected) ? 'selected' : null;
-    }
+      if (is_array($selected)) {
+          return in_array($value, $selected) ? 'selected' : null;
+      }
 
-    return ((string) $value == (string) $selected) ? 'selected' : null;
+      return ((string) $value == (string) $selected) ? 'selected' : null;
   }
 
   /**
@@ -676,7 +712,7 @@ class FormBuilder {
    */
   public function checkbox($name, $value = 1, $checked = null, $options = [])
   {
-    return $this->checkable('checkbox', $name, $value, $checked, $options);
+      return $this->checkable('checkbox', $name, $value, $checked, $options);
   }
 
   /**
@@ -691,9 +727,11 @@ class FormBuilder {
    */
   public function radio($name, $value = null, $checked = null, $options = [])
   {
-    if(is_null($value)) $value = $name;
+      if (is_null($value)) {
+          $value = $name;
+      }
 
-    return $this->checkable('radio', $name, $value, $checked, $options);
+      return $this->checkable('radio', $name, $value, $checked, $options);
   }
 
   /**
@@ -709,11 +747,13 @@ class FormBuilder {
    */
   protected function checkable($type, $name, $value, $checked, $options)
   {
-    $checked = $this->getCheckedState($type, $name, $value, $checked);
+      $checked = $this->getCheckedState($type, $name, $value, $checked);
 
-    if($checked) $options['checked'] = 'checked';
+      if ($checked) {
+          $options['checked'] = 'checked';
+      }
 
-    return $this->input($type, $name, $value, $options);
+      return $this->input($type, $name, $value, $options);
   }
 
   /**
@@ -728,8 +768,7 @@ class FormBuilder {
    */
   protected function getCheckedState($type, $name, $value, $checked)
   {
-    switch($type)
-    {
+      switch ($type) {
       case 'checkbox':
         return $this->getCheckboxCheckedState($name, $value, $checked);
 
@@ -752,13 +791,23 @@ class FormBuilder {
    */
   protected function getCheckboxCheckedState($name, $value, $checked)
   {
-    if(isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) return false;
+      if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name))) {
+          return false;
+      }
 
-    if($this->missingOldAndModel($name)) return $checked;
+      if ($this->missingOldAndModel($name)) {
+          return $checked;
+      }
 
-    $posted = $this->getValueAttribute($name);
+      $posted = $this->getValueAttribute($name, $checked);
 
-    return is_array($posted) ? in_array($value, $posted) : (bool) $posted;
+      if (is_array($posted)) {
+          return in_array($value, $posted);
+      } elseif ($posted instanceof Collection) {
+          return $posted->contains('id', $value);
+      } else {
+          return (bool) $posted;
+      }
   }
 
   /**
@@ -772,9 +821,11 @@ class FormBuilder {
    */
   protected function getRadioCheckedState($name, $value, $checked)
   {
-    if($this->missingOldAndModel($name)) return $checked;
+      if ($this->missingOldAndModel($name)) {
+          return $checked;
+      }
 
-    return $this->getValueAttribute($name) == $value;
+      return $this->getValueAttribute($name) == $value;
   }
 
   /**
@@ -786,7 +837,7 @@ class FormBuilder {
    */
   protected function missingOldAndModel($name)
   {
-    return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
+      return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
   }
 
   /**
@@ -799,7 +850,7 @@ class FormBuilder {
    */
   public function reset($value, $attributes = [])
   {
-    return $this->input('reset', null, $value, $attributes);
+      return $this->input('reset', null, $value, $attributes);
   }
 
   /**
@@ -813,9 +864,9 @@ class FormBuilder {
    */
   public function image($url, $name = null, $attributes = [])
   {
-    $attributes['src'] = $this->url->asset($url);
+      $attributes['src'] = $this->url->asset($url);
 
-    return $this->input('image', $name, null, $attributes);
+      return $this->input('image', $name, null, $attributes);
   }
 
   /**
@@ -828,7 +879,7 @@ class FormBuilder {
    */
   public function submit($value = null, $options = [])
   {
-    return $this->input('submit', null, $value, $options);
+      return $this->input('submit', null, $value, $options);
   }
 
   /**
@@ -841,12 +892,11 @@ class FormBuilder {
    */
   public function button($value = null, $options = [])
   {
-    if( ! array_key_exists('type', $options))
-    {
-      $options['type'] = 'button';
-    }
+      if (!array_key_exists('type', $options)) {
+          $options['type'] = 'button';
+      }
 
-    return '<button' . $this->html->attributes($options) . '>' . $value . '</button>';
+      return '<button'.$this->html->attributes($options).'>'.$value.'</button>';
   }
 
   /**
@@ -858,9 +908,9 @@ class FormBuilder {
    */
   protected function getMethod($method)
   {
-    $method = strtoupper($method);
+      $method = strtoupper($method);
 
-    return $method != 'GET' ? 'POST' : $method;
+      return $method != 'GET' ? 'POST' : $method;
   }
 
   /**
@@ -872,28 +922,25 @@ class FormBuilder {
    */
   protected function getAction(array $options)
   {
-    // We will also check for a "route" or "action" parameter on the array so that
+      // We will also check for a "route" or "action" parameter on the array so that
     // developers can easily specify a route or controller action when creating
     // a form providing a convenient interface for creating the form actions.
-    if(isset($options['url']))
-    {
-      return $this->getUrlAction($options['url']);
+    if (isset($options['url'])) {
+        return $this->getUrlAction($options['url']);
     }
 
-    if(isset($options['route']))
-    {
-      return $this->getRouteAction($options['route']);
-    }
+      if (isset($options['route'])) {
+          return $this->getRouteAction($options['route']);
+      }
 
     // If an action is available, we are attempting to open a form to a controller
     // action route. So, we will use the URL generator to get the path to these
     // actions and return them from the method. Otherwise, we'll use current.
-    elseif(isset($options['action']))
-    {
-      return $this->getControllerAction($options['action']);
+    elseif (isset($options['action'])) {
+        return $this->getControllerAction($options['action']);
     }
 
-    return $this->url->current();
+      return $this->url->current();
   }
 
   /**
@@ -905,12 +952,11 @@ class FormBuilder {
    */
   protected function getUrlAction($options)
   {
-    if(is_array($options))
-    {
-      return $this->url->to($options[0], array_slice($options, 1));
-    }
+      if (is_array($options)) {
+          return $this->url->to($options[0], array_slice($options, 1));
+      }
 
-    return $this->url->to($options);
+      return $this->url->to($options);
   }
 
   /**
@@ -922,12 +968,11 @@ class FormBuilder {
    */
   protected function getRouteAction($options)
   {
-    if(is_array($options))
-    {
-      return $this->url->route($options[0], array_slice($options, 1));
-    }
+      if (is_array($options)) {
+          return $this->url->route($options[0], array_slice($options, 1));
+      }
 
-    return $this->url->route($options);
+      return $this->url->route($options);
   }
 
   /**
@@ -939,12 +984,11 @@ class FormBuilder {
    */
   protected function getControllerAction($options)
   {
-    if(is_array($options))
-    {
-      return $this->url->action($options[0], array_slice($options, 1));
-    }
+      if (is_array($options)) {
+          return $this->url->action($options[0], array_slice($options, 1));
+      }
 
-    return $this->url->action($options);
+      return $this->url->action($options);
   }
 
   /**
@@ -956,25 +1000,23 @@ class FormBuilder {
    */
   protected function getAppendage($method)
   {
-    list($method, $appendage) = [strtoupper($method), ''];
+      list($method, $appendage) = [strtoupper($method), ''];
 
     // If the HTTP method is in this list of spoofed methods, we will attach the
     // method spoofer hidden input to the form. This allows us to use regular
     // form to initiate PUT and DELETE requests in addition to the typical.
-    if(in_array($method, $this->spoofedMethods))
-    {
-      $appendage .= $this->hidden('_method', $method);
+    if (in_array($method, $this->spoofedMethods)) {
+        $appendage .= $this->hidden('_method', $method);
     }
 
     // If the method is something other than GET we will go ahead and attach the
     // CSRF token to the form, as this can't hurt and is convenient to simply
     // always have available on every form the developers creates for them.
-    if($method != 'GET')
-    {
-      $appendage .= $this->token();
+    if ($method != 'GET') {
+        $appendage .= $this->token();
     }
 
-    return $appendage;
+      return $appendage;
   }
 
   /**
@@ -987,15 +1029,13 @@ class FormBuilder {
    */
   public function getIdAttribute($name, $attributes)
   {
-    if(array_key_exists('id', $attributes))
-    {
-      return $attributes['id'];
-    }
+      if (array_key_exists('id', $attributes)) {
+          return $attributes['id'];
+      }
 
-    if(in_array($name, $this->labels))
-    {
-      return $name;
-    }
+      if (in_array($name, $this->labels)) {
+          return $name;
+      }
   }
 
   /**
@@ -1008,19 +1048,21 @@ class FormBuilder {
    */
   public function getValueAttribute($name, $value = null)
   {
-    if(is_null($name)) return $value;
+      if (is_null($name)) {
+          return $value;
+      }
 
-    if( ! is_null($this->old($name)))
-    {
-      return $this->old($name);
-    }
+      if (!is_null($this->old($name))) {
+          return $this->old($name);
+      }
 
-    if( ! is_null($value)) return $value;
+      if (!is_null($value)) {
+          return $value;
+      }
 
-    if(isset($this->model))
-    {
-      return $this->getModelValueAttribute($name);
-    }
+      if (isset($this->model)) {
+          return $this->getModelValueAttribute($name);
+      }
   }
 
   /**
@@ -1032,7 +1074,7 @@ class FormBuilder {
    */
   protected function getModelValueAttribute($name)
   {
-    return data_get($this->model, $this->transformKey($name));
+      return data_get($this->model, $this->transformKey($name));
   }
 
   /**
@@ -1044,10 +1086,9 @@ class FormBuilder {
    */
   public function old($name)
   {
-    if(isset($this->session))
-    {
-      return $this->session->getOldInput($this->transformKey($name));
-    }
+      if (isset($this->session)) {
+          return $this->session->getOldInput($this->transformKey($name));
+      }
   }
 
   /**
@@ -1057,7 +1098,7 @@ class FormBuilder {
    */
   public function oldInputIsEmpty()
   {
-    return (isset($this->session) && count($this->session->getOldInput()) == 0);
+      return (isset($this->session) && count($this->session->getOldInput()) == 0);
   }
 
   /**
@@ -1069,7 +1110,7 @@ class FormBuilder {
    */
   protected function transformKey($key)
   {
-    return str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
+      return str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
   }
 
   /**
@@ -1079,7 +1120,7 @@ class FormBuilder {
    */
   public function getSessionStore()
   {
-    return $this->session;
+      return $this->session;
   }
 
   /**
@@ -1091,8 +1132,8 @@ class FormBuilder {
    */
   public function setSessionStore(Session $session)
   {
-    $this->session = $session;
+      $this->session = $session;
 
-    return $this;
+      return $this;
   }
 }
