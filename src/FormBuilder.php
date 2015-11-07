@@ -976,7 +976,7 @@ class FormBuilder
    *
    * @return string
    */
-  public function image($url, $name = null, $attributes = [] $errors = null)
+  public function image($url, $name = null, $attributes = [], $errors = null)
   {
       $attributes['src'] = $this->url->asset($url);
 
