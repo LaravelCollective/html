@@ -196,16 +196,21 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  boolean $html
    *
    * @return string
    */
-  public function label($name, $value = null, $options = [])
+  public function label($name, $value = null, $options = [], $html = false)
   {
       $this->labels[] = $name;
 
       $options = $this->html->attributes($options);
 
-      $value = e($this->formatLabel($name, $value));
+      if ($html) {
+         $value = $this->formatLabel($name, $value);
+      } else {
+         $value = e($this->formatLabel($name, $value));
+      }
 
       return '<label for="'.$name.'"'.$options.'>'.$value.'</label>';
   }
@@ -223,6 +228,52 @@ class FormBuilder
       return $value ?: ucwords(str_replace('_', ' ', $name));
   }
 
+    /**
+     * Create the block elements, including label and field
+     * 
+     * @param string $type
+     * @param string $name
+     * @param string $title
+     * @param string $value
+     * @param array $optionsLabel
+     * @param array $optionsType
+     * @param array $errors
+     * @param string $selected For a Select
+     * @param string $template
+     * @return string
+     */
+    public function group($type, $name, $title, $value = null, $optionsLabel = [], $optionsType = [], $errors = null, $selected = null, $template = null)
+    {
+        if (is_null($template)) {
+            $template = "<div class=\"form-group\">%s<div class=\"col-md-8\">%s</div></div>";
+        }
+
+        $el = "";
+
+        switch ($type) {
+            case "password": $el = $this->password($name, $optionsType, $errors);
+                break;
+            case "email": $el = $this->email($name, $value, $optionsType, $errors);
+                break;
+            case "checkbox": $el = $this->checkbox($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "radio": $el = $this->radio($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "number": $el = $this->number($name, $value, $optionsType, $errors);
+                break;
+            case "date": $el = $this->date($name, $value, $optionsType, $errors);
+                break;
+            case "select": $el = $this->select($name, $value, $selected, $optionsType, $errors);
+                break;
+            case "url": $el = $this->url($name, $value, $optionsType, $errors);
+                break;
+
+            default : $el = $this->text($name, $value, $optionsType, $errors);
+        }
+
+        return sprintf($template, $this->label($name, $title, $optionsLabel), $el);
+    }
+
   /**
    * Create a form input field.
    *
@@ -230,10 +281,11 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function input($type, $name, $value = null, $options = [])
+  public function input($type, $name, $value = null, $options = [], $errors = null)
   {
       if (!isset($options['name'])) {
           $options['name'] = $name;
@@ -254,6 +306,21 @@ class FormBuilder
     $merge = compact('type', 'value', 'id');
 
       $options = array_merge($options, $merge);
+	  
+	    /*
+         * Validator messages
+         */
+        if (!is_null($errors)) {
+            if ($errors->has($name)) {
+                $error_messages = "";
+
+                foreach ($errors->get($name) as $error) {
+                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
+                }
+
+                return '<span class="has-error"><input' . $this->html->attributes($options) . '/>' . $error_messages . '</span>';
+            }
+        }
 
       return '<input'.$this->html->attributes($options).'>';
   }
@@ -264,12 +331,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function text($name, $value = null, $options = [])
+  public function text($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('text', $name, $value, $options);
+      return $this->input('text', $name, $value, $options, $errors);
   }
 
   /**
@@ -277,12 +345,13 @@ class FormBuilder
    *
    * @param  string $name
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function password($name, $options = [])
+  public function password($name, $options = [], $errors = null)
   {
-      return $this->input('password', $name, '', $options);
+      return $this->input('password', $name, '', $options, $errors);
   }
 
   /**
@@ -305,12 +374,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function email($name, $value = null, $options = [])
+  public function email($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('email', $name, $value, $options);
+      return $this->input('email', $name, $value, $options, $errors);
   }
 
   /**
@@ -319,12 +389,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function tel($name, $value = null, $options = [])
+  public function tel($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('tel', $name, $value, $options);
+      return $this->input('tel', $name, $value, $options, $errors);
   }
 
   /**
@@ -333,12 +404,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function number($name, $value = null, $options = [])
+  public function number($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('number', $name, $value, $options);
+      return $this->input('number', $name, $value, $options, $errors);
   }
 
   /**
@@ -347,16 +419,17 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function date($name, $value = null, $options = [])
+  public function date($name, $value = null, $options = [], $errors = null)
   {
       if ($value instanceof DateTime) {
           $value = $value->format('Y-m-d');
       }
 
-      return $this->input('date', $name, $value, $options);
+      return $this->input('date', $name, $value, $options, $errors);
   }
 
   /**
@@ -365,16 +438,17 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function datetime($name, $value = null, $options = [])
+  public function datetime($name, $value = null, $options = [], $errors = null)
   {
       if ($value instanceof DateTime) {
           $value = $value->format(DateTime::RFC3339);
       }
 
-      return $this->input('datetime', $name, $value, $options);
+      return $this->input('datetime', $name, $value, $options, $errors);
   }
 
   /**
@@ -383,16 +457,17 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function datetimeLocal($name, $value = null, $options = [])
+  public function datetimeLocal($name, $value = null, $options = [], $errors = null)
   {
       if ($value instanceof DateTime) {
           $value = $value->format('Y-m-d\TH:i');
       }
 
-      return $this->input('datetime-local', $name, $value, $options);
+      return $this->input('datetime-local', $name, $value, $options, $errors);
   }
 
   /**
@@ -401,12 +476,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function time($name, $value = null, $options = [])
+  public function time($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('time', $name, $value, $options);
+      return $this->input('time', $name, $value, $options, $errors);
   }
 
   /**
@@ -415,12 +491,13 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function url($name, $value = null, $options = [])
+  public function url($name, $value = null, $options = [], $errors = null)
   {
-      return $this->input('url', $name, $value, $options);
+      return $this->input('url', $name, $value, $options, $errors);
   }
 
   /**
@@ -428,12 +505,13 @@ class FormBuilder
    *
    * @param  string $name
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function file($name, $options = [])
+  public function file($name, $options = [], $errors = null)
   {
-      return $this->input('file', $name, null, $options);
+      return $this->input('file', $name, null, $options, $errors);
   }
 
   /**
@@ -442,10 +520,11 @@ class FormBuilder
    * @param  string $name
    * @param  string $value
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function textarea($name, $value = null, $options = [])
+  public function textarea($name, $value = null, $options = [], $errors = null)
   {
       if (!isset($options['name'])) {
           $options['name'] = $name;
@@ -466,6 +545,21 @@ class FormBuilder
     // the size attribute, as it was merely a short-cut for the rows and cols on
     // the element. Then we'll create the final textarea elements HTML for us.
     $options = $this->html->attributes($options);
+
+        /*
+         * Validator messages
+         */
+        if (!is_null($errors)) {
+            if ($errors->has($name)) {
+                $error_messages = "";
+
+                foreach ($errors->get($name) as $error) {
+                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
+                }
+
+                return '<span class="has-error"><textarea' . $options . '>' . e($value) . '</textarea>' . $error_messages . '</span>';
+            }
+        }
 
       return '<textarea'.$options.'>'.e($value).'</textarea>';
   }
@@ -514,10 +608,11 @@ class FormBuilder
    * @param  array  $list
    * @param  string $selected
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function select($name, $list = [], $selected = null, $options = [])
+  public function select($name, $list = [], $selected = null, $options = [], $errors = null)
   {
       // When building a select box the "value" attribute is really the selected one
     // so we will use that when checking the model or session for a value which
@@ -550,6 +645,21 @@ class FormBuilder
     $options = $this->html->attributes($options);
 
       $list = implode('', $html);
+
+        /*
+         * Validator messages
+         */
+        if (!is_null($errors)) {
+            if ($errors->has($name)) {
+                $error_messages = "";
+
+                foreach ($errors->get($name) as $error) {
+                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
+                }
+
+                return '<span class="has-error"><select' . $options . '>' . $list . '</select>' . $error_messages . '</span>';
+            }
+        }
 
       return "<select{$options}>{$list}</select>";
   }
@@ -707,12 +817,13 @@ class FormBuilder
    * @param  mixed  $value
    * @param  bool   $checked
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function checkbox($name, $value = 1, $checked = null, $options = [])
+  public function checkbox($name, $value = 1, $checked = null, $options = [], $errors = null)
   {
-      return $this->checkable('checkbox', $name, $value, $checked, $options);
+      return $this->checkable('checkbox', $name, $value, $checked, $options, $errors);
   }
 
   /**
@@ -722,16 +833,17 @@ class FormBuilder
    * @param  mixed  $value
    * @param  bool   $checked
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  public function radio($name, $value = null, $checked = null, $options = [])
+  public function radio($name, $value = null, $checked = null, $options = [], $errors = null)
   {
       if (is_null($value)) {
           $value = $name;
       }
 
-      return $this->checkable('radio', $name, $value, $checked, $options);
+      return $this->checkable('radio', $name, $value, $checked, $options, $errors);
   }
 
   /**
@@ -742,10 +854,11 @@ class FormBuilder
    * @param  mixed  $value
    * @param  bool   $checked
    * @param  array  $options
+   * @param  array  $errors
    *
    * @return string
    */
-  protected function checkable($type, $name, $value, $checked, $options)
+  protected function checkable($type, $name, $value, $checked, $options, $errors = null)
   {
       $checked = $this->getCheckedState($type, $name, $value, $checked);
 
@@ -753,7 +866,7 @@ class FormBuilder
           $options['checked'] = 'checked';
       }
 
-      return $this->input($type, $name, $value, $options);
+      return $this->input($type, $name, $value, $options, $errors);
   }
 
   /**
@@ -859,14 +972,15 @@ class FormBuilder
    * @param  string $url
    * @param  string $name
    * @param  array  $attributes
+   * @param  array  $errors
    *
    * @return string
    */
-  public function image($url, $name = null, $attributes = [])
+  public function image($url, $name = null, $attributes = [] $errors = null)
   {
       $attributes['src'] = $this->url->asset($url);
 
-      return $this->input('image', $name, null, $attributes);
+      return $this->input('image', $name, null, $attributes, $errors);
   }
 
   /**
