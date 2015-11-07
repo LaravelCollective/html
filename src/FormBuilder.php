@@ -207,9 +207,9 @@ class FormBuilder
       $options = $this->html->attributes($options);
 
       if ($html) {
-         $value = $this->formatLabel($name, $value);
+          $value = $this->formatLabel($name, $value);
       } else {
-         $value = e($this->formatLabel($name, $value));
+          $value = e($this->formatLabel($name, $value));
       }
 
       return '<label for="'.$name.'"'.$options.'>'.$value.'</label>';
@@ -306,8 +306,8 @@ class FormBuilder
     $merge = compact('type', 'value', 'id');
 
       $options = array_merge($options, $merge);
-	  
-	    /*
+      
+        /*
          * Validator messages
          */
         if (!is_null($errors)) {
