@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
 use Illuminate\Http\Request;
@@ -10,23 +11,24 @@ use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
-    /**
-   * Setup the test environment.
-   */
-  public function setUp()
-  {
-      $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
-      $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
-      $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
-  }
 
-  /**
-   * Destroy the test environment.
-   */
-  public function tearDown()
-  {
-      m::close();
-  }
+    /**
+     * Setup the test environment.
+     */
+    public function setUp()
+    {
+        $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
+        $this->htmlBuilder  = new HtmlBuilder($this->urlGenerator);
+        $this->formBuilder  = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
+    }
+
+    /**
+     * Destroy the test environment.
+     */
+    public function tearDown()
+    {
+        m::close();
+    }
 
     public function testOpeningForm()
     {
@@ -55,6 +57,44 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('<label for="foo">Foobar</label>', $form1);
         $this->assertEquals('<label for="foo" class="control-label">Foobar</label>', $form2);
+    }
+
+    public function testFormGroup()
+    {
+        $formPsw           = $this->formBuilder->group('password', 'foo', 'foo');
+        $formEmail         = $this->formBuilder->group('email', 'foo', 'foo');
+        $formCheckbox      = $this->formBuilder->group('checkbox', 'foo', 'foo');
+        $formRadio         = $this->formBuilder->group('radio', 'foo', 'foo');
+        $formNumber        = $this->formBuilder->group('number', 'foo', 'foo');
+        $formDate          = $this->formBuilder->group('date', 'foo', 'foo');
+        $formSelect        = $this->formBuilder->group('select', 'foo', 'foo');
+        $formUrl           = $this->formBuilder->group('url', 'foo', 'foo');
+        $formDateTime      = $this->formBuilder->group('datetime', 'foo', 'foo');
+        $formDateTimeLocal = $this->formBuilder->group('datetimeLocal', 'foo', 'foo');
+        $formTextarea      = $this->formBuilder->group('textarea', 'foo', 'foo');
+        $formFile          = $this->formBuilder->group('file', 'foo', 'foo');
+        $formImage         = $this->formBuilder->group('image', 'foo', 'foo');
+        $formTel           = $this->formBuilder->group('tel', 'foo', 'foo');
+        $formTime          = $this->formBuilder->group('time', 'foo', 'foo');
+        $formFoo           = $this->formBuilder->group('foo', 'foo', 'foo');
+
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="password" value=""></div></div>', $formPsw);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="email" id="foo"></div></div>', $formEmail);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="checkbox" id="foo"></div></div>', $formCheckbox);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="radio" value="foo" id="foo"></div></div>', $formRadio);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="number" id="foo"></div></div>', $formNumber);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="date" id="foo"></div></div>', $formDate);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><select id="foo" name="foo"></select></div></div>', $formSelect);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="url" id="foo"></div></div>', $formUrl);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="datetime" id="foo"></div></div>', $formDateTime);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="datetime-local" id="foo"></div></div>', $formDateTimeLocal);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><textarea name="foo" cols="50" rows="10" id="foo"></textarea></div></div>', $formTextarea);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="file" id="foo"></div></div>', $formFile);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input src="http://localhost/" name="foo" type="image" id="foo"></div></div>', $formImage);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input type="tel" value="foo"></div></div>', $formTel);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input type="time" value="foo"></div></div>', $formTime);
+
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="text" id="foo"></div></div>', $formFoo);
     }
 
     public function testFormInput()
@@ -106,7 +146,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function testFormTextRepopulation()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
-        $this->setModel($model = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
+        $this->setModel($model   = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('some value');
         $input = $this->formBuilder->text('name.with.dots', 'default value');
@@ -194,23 +234,23 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     {
         $form1 = $this->formBuilder->date('foo');
         $form2 = $this->formBuilder->date('foo', '2015-02-20');
-        $form3 = $this->formBuilder->date('foo', \Carbon\Carbon::now());
+        $form3 = $this->formBuilder->date('foo', Carbon::now());
         $form4 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
 
         $this->assertEquals('<input name="foo" type="date">', $form1);
         $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form2);
-        $this->assertEquals('<input name="foo" type="date" value="'.\Carbon\Carbon::now()->format('Y-m-d').'">', $form3);
+        $this->assertEquals('<input name="foo" type="date" value="' . Carbon::now()->format('Y-m-d') . '">', $form3);
         $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
     }
 
     public function testFormTime()
     {
         $form1 = $this->formBuilder->time('foo');
-        $form2 = $this->formBuilder->time('foo', \Carbon\Carbon::now()->format('H:i'));
+        $form2 = $this->formBuilder->time('foo', Carbon::now()->format('H:i'));
         $form3 = $this->formBuilder->time('foo', null, ['class' => 'span2']);
 
         $this->assertEquals('<input name="foo" type="time">', $form1);
-        $this->assertEquals('<input name="foo" type="time" value="'.\Carbon\Carbon::now()->format('H:i').'">', $form2);
+        $this->assertEquals('<input name="foo" type="time" value="' . Carbon::now()->format('H:i') . '">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="time">', $form3);
     }
 
@@ -239,41 +279,32 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function testSelect()
     {
         $select = $this->formBuilder->select(
-      'size',
-      ['L' => 'Large', 'S' => 'Small']
-    );
+                'size', ['L' => 'Large', 'S' => 'Small']
+        );
         $this->assertEquals($select, '<select name="size"><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
-      'size',
-      ['L' => 'Large', 'S' => 'Small'],
-      'L'
-    );
+                'size', ['L' => 'Large', 'S' => 'Small'], 'L'
+        );
         $this->assertEquals($select, '<select name="size"><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
-      'size',
-      ['L' => 'Large', 'S' => 'Small'],
-      null,
-      ['class' => 'class-name', 'id' => 'select-id']
-    );
+                'size', ['L' => 'Large', 'S' => 'Small'], null, ['class' => 'class-name', 'id' => 'select-id']
+        );
         $this->assertEquals($select, '<select class="class-name" id="select-id" name="size"><option value="L">Large</option><option value="S">Small</option></select>');
 
         $this->formBuilder->label('select-name-id');
         $select = $this->formBuilder->select(
-      'select-name-id',
-      [],
-      null,
-      ['name' => 'select-name']
-    );
+                'select-name-id', [], null, ['name' => 'select-name']
+        );
         $this->assertEquals($select, '<select name="select-name" id="select-name-id"></select>');
     }
 
     public function testFormSelectRepopulation()
     {
-        $list = ['L' => 'Large', 'M' => 'Medium', 'S' => 'Small'];
+        $list    = ['L' => 'Large', 'M' => 'Medium', 'S' => 'Small'];
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
-        $this->setModel($model = ['size' => ['key' => 'S'], 'other' => 'val']);
+        $this->setModel($model   = ['size' => ['key' => 'S'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('size')->andReturn('M');
         $select = $this->formBuilder->select('size', $list, 'S');
@@ -291,19 +322,13 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function testFormWithOptionalPlaceholder()
     {
         $select = $this->formBuilder->select(
-      'size',
-      ['L' => 'Large', 'S' => 'Small'],
-      null,
-      ['placeholder' => 'Select One...']
-    );
+                'size', ['L' => 'Large', 'S' => 'Small'], null, ['placeholder' => 'Select One...']
+        );
         $this->assertEquals($select, '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
-      'size',
-      ['L' => 'Large', 'S' => 'Small'],
-      'L',
-      ['placeholder' => 'Select One...']
-    );
+                'size', ['L' => 'Large', 'S' => 'Small'], 'L', ['placeholder' => 'Select One...']
+        );
         $this->assertEquals($select, '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
     }
 
@@ -384,9 +409,9 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([]);
         $session->shouldReceive('getOldInput')->with('items')->andReturn(null);
 
-        $mockModel2 = new StdClass();
+        $mockModel2     = new StdClass();
         $mockModel2->id = 2;
-        $mockModel3 = new StdClass();
+        $mockModel3     = new StdClass();
         $mockModel3->id = 3;
         $this->setModel(['items' => new Collection([$mockModel2, $mockModel3])]);
 
@@ -462,10 +487,10 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testImageInput()
     {
-        $url = 'http://laravel.com/';
+        $url   = 'http://laravel.com/';
         $image = $this->formBuilder->image($url);
 
-        $this->assertEquals('<input src="'.$url.'" type="image">', $image);
+        $this->assertEquals('<input src="' . $url . '" type="image">', $image);
     }
 
     protected function setModel(array $data, $object = true)

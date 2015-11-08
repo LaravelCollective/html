@@ -10,227 +10,232 @@ use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder
 {
+
     use Macroable;
+    /**
+     * The HTML builder instance.
+     *
+     * @var \Collective\Html\HtmlBuilder
+     */
+    protected $html;
 
-  /**
-   * The HTML builder instance.
-   *
-   * @var \Collective\Html\HtmlBuilder
-   */
-  protected $html;
+    /**
+     * The URL generator instance.
+     *
+     * @var \Illuminate\Routing\UrlGenerator
+     */
+    protected $url;
 
-  /**
-   * The URL generator instance.
-   *
-   * @var \Illuminate\Routing\UrlGenerator
-   */
-  protected $url;
+    /**
+     * The CSRF token used by the form builder.
+     *
+     * @var string
+     */
+    protected $csrfToken;
 
-  /**
-   * The CSRF token used by the form builder.
-   *
-   * @var string
-   */
-  protected $csrfToken;
+    /**
+     * The session store implementation.
+     *
+     * @var \Illuminate\Session\Store
+     */
+    protected $session;
 
-  /**
-   * The session store implementation.
-   *
-   * @var \Illuminate\Session\Store
-   */
-  protected $session;
+    /**
+     * The current model instance for the form.
+     *
+     * @var mixed
+     */
+    protected $model;
 
-  /**
-   * The current model instance for the form.
-   *
-   * @var mixed
-   */
-  protected $model;
+    /**
+     * An array of label names we've created.
+     *
+     * @var array
+     */
+    protected $labels = [];
 
-  /**
-   * An array of label names we've created.
-   *
-   * @var array
-   */
-  protected $labels = [];
+    /**
+     * The reserved form open attributes.
+     *
+     * @var array
+     */
+    protected $reserved = ['method', 'url', 'route', 'action', 'files'];
 
-  /**
-   * The reserved form open attributes.
-   *
-   * @var array
-   */
-  protected $reserved = ['method', 'url', 'route', 'action', 'files'];
+    /**
+     * The form methods that should be spoofed, in uppercase.
+     *
+     * @var array
+     */
+    protected $spoofedMethods = ['DELETE', 'PATCH', 'PUT'];
 
-  /**
-   * The form methods that should be spoofed, in uppercase.
-   *
-   * @var array
-   */
-  protected $spoofedMethods = ['DELETE', 'PATCH', 'PUT'];
+    /**
+     * The types of inputs to not fill values on by default.
+     *
+     * @var array
+     */
+    protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
-  /**
-   * The types of inputs to not fill values on by default.
-   *
-   * @var array
-   */
-  protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
+    /**
+     * Create a new form builder instance.
+     *
+     * @param  \Illuminate\Routing\UrlGenerator $url
+     * @param  \Collective\Html\HtmlBuilder     $html
+     * @param  string                           $csrfToken
+     *
+     * @return void
+     */
+    public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+    {
+        $this->url       = $url;
+        $this->html      = $html;
+        $this->csrfToken = $csrfToken;
+    }
 
-  /**
-   * Create a new form builder instance.
-   *
-   * @param  \Illuminate\Routing\UrlGenerator $url
-   * @param  \Collective\Html\HtmlBuilder     $html
-   * @param  string                           $csrfToken
-   *
-   * @return void
-   */
-  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
-  {
-      $this->url = $url;
-      $this->html = $html;
-      $this->csrfToken = $csrfToken;
-  }
+    /**
+     * Open up a new HTML form.
+     *
+     * @param  array $options
+     *
+     * @return string
+     */
+    public function open(array $options = [])
+    {
+        $method = array_get($options, 'method', 'post');
 
-  /**
-   * Open up a new HTML form.
-   *
-   * @param  array $options
-   *
-   * @return string
-   */
-  public function open(array $options = [])
-  {
-      $method = array_get($options, 'method', 'post');
+        // We need to extract the proper method from the attributes. If the method is
+        // something other than GET or POST we'll use POST since we will spoof the
+        // actual method since forms don't support the reserved methods in HTML.
+        $attributes['method'] = $this->getMethod($method);
 
-    // We need to extract the proper method from the attributes. If the method is
-    // something other than GET or POST we'll use POST since we will spoof the
-    // actual method since forms don't support the reserved methods in HTML.
-    $attributes['method'] = $this->getMethod($method);
+        $attributes['action'] = $this->getAction($options);
 
-      $attributes['action'] = $this->getAction($options);
+        $attributes['accept-charset'] = 'UTF-8';
 
-      $attributes['accept-charset'] = 'UTF-8';
+        // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
+        // field that will instruct the Symfony request to pretend the method is a
+        // different method than it actually is, for convenience from the forms.
+        $append = $this->getAppendage($method);
 
-    // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
-    // field that will instruct the Symfony request to pretend the method is a
-    // different method than it actually is, for convenience from the forms.
-    $append = $this->getAppendage($method);
+        if (isset($options['files']) && $options['files']) {
+            $options['enctype'] = 'multipart/form-data';
+        }
 
-      if (isset($options['files']) && $options['files']) {
-          $options['enctype'] = 'multipart/form-data';
-      }
+        // Finally we're ready to create the final form HTML field. We will attribute
+        // format the array of attributes. We will also add on the appendage which
+        // is used to spoof requests for this PUT, PATCH, etc. methods on forms.
+        $attributes = array_merge(
+                $attributes, array_except($options, $this->reserved)
+        );
 
-    // Finally we're ready to create the final form HTML field. We will attribute
-    // format the array of attributes. We will also add on the appendage which
-    // is used to spoof requests for this PUT, PATCH, etc. methods on forms.
-    $attributes = array_merge(
+        // Finally, we will concatenate all of the attributes into a single string so
+        // we can build out the final form open statement. We'll also append on an
+        // extra value for the hidden _method field if it's needed for the form.
+        $attributes = $this->html->attributes($attributes);
 
-      $attributes, array_except($options, $this->reserved)
+        return '<form' . $attributes . '>' . $append;
+    }
 
-    );
+    /**
+     * Create a new model based form builder.
+     *
+     * @param  mixed $model
+     * @param  array $options
+     *
+     * @return string
+     */
+    public function model($model, array $options = [])
+    {
+        $this->model = $model;
 
-    // Finally, we will concatenate all of the attributes into a single string so
-    // we can build out the final form open statement. We'll also append on an
-    // extra value for the hidden _method field if it's needed for the form.
-    $attributes = $this->html->attributes($attributes);
+        return $this->open($options);
+    }
 
-      return '<form'.$attributes.'>'.$append;
-  }
+    /**
+     * Set the model instance on the form builder.
+     *
+     * @param  mixed $model
+     *
+     * @return void
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+    }
 
-  /**
-   * Create a new model based form builder.
-   *
-   * @param  mixed $model
-   * @param  array $options
-   *
-   * @return string
-   */
-  public function model($model, array $options = [])
-  {
-      $this->model = $model;
+    /**
+     * Close the current form.
+     *
+     * @return string
+     */
+    public function close()
+    {
+        $this->labels = [];
 
-      return $this->open($options);
-  }
+        $this->model = null;
 
-  /**
-   * Set the model instance on the form builder.
-   *
-   * @param  mixed $model
-   *
-   * @return void
-   */
-  public function setModel($model)
-  {
-      $this->model = $model;
-  }
+        return '</form>';
+    }
 
-  /**
-   * Close the current form.
-   *
-   * @return string
-   */
-  public function close()
-  {
-      $this->labels = [];
+    /**
+     * Generate a hidden field with the current CSRF token.
+     *
+     * @return string
+     */
+    public function token()
+    {
+        $token = !empty($this->csrfToken) ? $this->csrfToken : $this->session->getToken();
 
-      $this->model = null;
+        return $this->hidden('_token', $token);
+    }
 
-      return '</form>';
-  }
+    /**
+     * Create a form label element.
+     *
+     * @param  string  $name
+     * @param  string  $value
+     * @param  array   $options
+     * @param  boolean $html
+     * @param  string  $css
+     *
+     * @return string
+     */
+    public function label($name, $value = null, $options = [], $html = false)
+    {
+        $this->labels[] = $name;
 
-  /**
-   * Generate a hidden field with the current CSRF token.
-   *
-   * @return string
-   */
-  public function token()
-  {
-      $token = !empty($this->csrfToken) ? $this->csrfToken : $this->session->getToken();
+        $options = $this->html->attributes($options);
 
-      return $this->hidden('_token', $token);
-  }
+        if ($html) {
+            $value = $this->formatLabel($name, $value);
+        } else {
+            $value = e($this->formatLabel($name, $value));
+        }
 
-  /**
-   * Create a form label element.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  boolean $html
-   *
-   * @return string
-   */
-  public function label($name, $value = null, $options = [], $html = false)
-  {
-      $this->labels[] = $name;
+        return '<label for="' . $name . '"' . $options . '>' . $value . '</label>';
+    }
 
-      $options = $this->html->attributes($options);
-
-      if ($html) {
-          $value = $this->formatLabel($name, $value);
-      } else {
-          $value = e($this->formatLabel($name, $value));
-      }
-
-      return '<label for="'.$name.'"'.$options.'>'.$value.'</label>';
-  }
-
-  /**
-   * Format the label value.
-   *
-   * @param  string      $name
-   * @param  string|null $value
-   *
-   * @return string
-   */
-  protected function formatLabel($name, $value)
-  {
-      return $value ?: ucwords(str_replace('_', ' ', $name));
-  }
+    /**
+     * Format the label value.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     *
+     * @return string
+     */
+    protected function formatLabel($name, $value)
+    {
+        return $value ? : ucwords(str_replace('_', ' ', $name));
+    }
 
     /**
      * Create the block elements, including label and field
-     * 
+     *
+     * The variable "$template" can be either an string or a array:
+     * [
+     *      'group'   => '<div class="form-group">%s<div class="col-md-8">%s</div></div>',
+     *      'element' => 'has-error', // A Class of CSS
+     * ]
+     *
      * @param string $type
      * @param string $name
      * @param string $title
@@ -239,312 +244,93 @@ class FormBuilder
      * @param array $optionsType
      * @param array $errors
      * @param string $selected For a Select
-     * @param string $template
+     * @param string $template For a Errors (string or array)
+     *
      * @return string
      */
     public function group($type, $name, $title, $value = null, $optionsLabel = [], $optionsType = [], $errors = null, $selected = null, $template = null)
     {
+        $css = null;
+
         if (is_null($template)) {
             $template = "<div class=\"form-group\">%s<div class=\"col-md-8\">%s</div></div>";
+        } else {
+            if (is_array($template)) {
+                $css = (object) $template;
+            }
         }
 
-        $el = "";
+        switch ( $type ) {
+            case "password": $element = $this->password($name, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "email": $element = $this->email($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "checkbox": $element = $this->checkbox($name, $value, $selected, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "radio": $element = $this->radio($name, $value, $selected, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "number": $element = $this->number($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "date": $element = $this->date($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "datetime": $element = $this->datetime($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "datetimeLocal": $element = $this->datetimeLocal($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "select": $element = $this->select($name, !is_null($value) ? $value : [], $selected, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "url": $element = $this->url($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "textarea": $element = $this->textarea($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "file": $element = $this->file($name, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "image": $element = $this->image($value, $name, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "tel": $element = $this->tel($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
+            case "time": $element = $this->time($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
+                break;
 
-        switch ($type) {
-            case "password": $el = $this->password($name, $optionsType, $errors);
-                break;
-            case "email": $el = $this->email($name, $value, $optionsType, $errors);
-                break;
-            case "checkbox": $el = $this->checkbox($name, $value, $selected, $optionsType, $errors);
-                break;
-            case "radio": $el = $this->radio($name, $value, $selected, $optionsType, $errors);
-                break;
-            case "number": $el = $this->number($name, $value, $optionsType, $errors);
-                break;
-            case "date": $el = $this->date($name, $value, $optionsType, $errors);
-                break;
-            case "select": $el = $this->select($name, $value, $selected, $optionsType, $errors);
-                break;
-            case "url": $el = $this->url($name, $value, $optionsType, $errors);
-                break;
-
-            default : $el = $this->text($name, $value, $optionsType, $errors);
+            default : $element = $this->text($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
         }
 
-        return sprintf($template, $this->label($name, $title, $optionsLabel), $el);
+        return sprintf(is_null($css) ? $template : $css->block, $this->label($name, $title, $optionsLabel), $element);
     }
 
-  /**
-   * Create a form input field.
-   *
-   * @param  string $type
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function input($type, $name, $value = null, $options = [], $errors = null)
-  {
-      if (!isset($options['name'])) {
-          $options['name'] = $name;
-      }
-
-    // We will get the appropriate value for the given field. We will look for the
-    // value in the session for the value in the old input data then we'll look
-    // in the model instance if one is set. Otherwise we will just use empty.
-    $id = $this->getIdAttribute($name, $options);
-
-      if (!in_array($type, $this->skipValueTypes)) {
-          $value = $this->getValueAttribute($name, $value);
-      }
-
-    // Once we have the type, value, and ID we can merge them into the rest of the
-    // attributes array so we can convert them into their HTML attribute format
-    // when creating the HTML element. Then, we will return the entire input.
-    $merge = compact('type', 'value', 'id');
-
-      $options = array_merge($options, $merge);
-      
-        /*
-         * Validator messages
-         */
-        if (!is_null($errors)) {
-            if ($errors->has($name)) {
-                $error_messages = "";
-
-                foreach ($errors->get($name) as $error) {
-                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
-                }
-
-                return '<span class="has-error"><input' . $this->html->attributes($options) . '/>' . $error_messages . '</span>';
-            }
+    /**
+     * Create a form input field.
+     *
+     * @param  string $type
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function input($type, $name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        if (!isset($options['name'])) {
+            $options['name'] = $name;
         }
 
-      return '<input'.$this->html->attributes($options).'>';
-  }
+        // We will get the appropriate value for the given field. We will look for the
+        // value in the session for the value in the old input data then we'll look
+        // in the model instance if one is set. Otherwise we will just use empty.
+        $id = $this->getIdAttribute($name, $options);
 
-  /**
-   * Create a text input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function text($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('text', $name, $value, $options, $errors);
-  }
+        if (!in_array($type, $this->skipValueTypes)) {
+            $value = $this->getValueAttribute($name, $value);
+        }
 
-  /**
-   * Create a password input field.
-   *
-   * @param  string $name
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function password($name, $options = [], $errors = null)
-  {
-      return $this->input('password', $name, '', $options, $errors);
-  }
+        // Once we have the type, value, and ID we can merge them into the rest of the
+        // attributes array so we can convert them into their HTML attribute format
+        // when creating the HTML element. Then, we will return the entire input.
+        $merge = compact('type', 'value', 'id');
 
-  /**
-   * Create a hidden input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   *
-   * @return string
-   */
-  public function hidden($name, $value = null, $options = [])
-  {
-      return $this->input('hidden', $name, $value, $options);
-  }
-
-  /**
-   * Create an e-mail input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function email($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('email', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a tel input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function tel($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('tel', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a number input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function number($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('number', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a date input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function date($name, $value = null, $options = [], $errors = null)
-  {
-      if ($value instanceof DateTime) {
-          $value = $value->format('Y-m-d');
-      }
-
-      return $this->input('date', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a datetime input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function datetime($name, $value = null, $options = [], $errors = null)
-  {
-      if ($value instanceof DateTime) {
-          $value = $value->format(DateTime::RFC3339);
-      }
-
-      return $this->input('datetime', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a datetime-local input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function datetimeLocal($name, $value = null, $options = [], $errors = null)
-  {
-      if ($value instanceof DateTime) {
-          $value = $value->format('Y-m-d\TH:i');
-      }
-
-      return $this->input('datetime-local', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a time input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function time($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('time', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a url input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function url($name, $value = null, $options = [], $errors = null)
-  {
-      return $this->input('url', $name, $value, $options, $errors);
-  }
-
-  /**
-   * Create a file input field.
-   *
-   * @param  string $name
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function file($name, $options = [], $errors = null)
-  {
-      return $this->input('file', $name, null, $options, $errors);
-  }
-
-  /**
-   * Create a textarea input field.
-   *
-   * @param  string $name
-   * @param  string $value
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function textarea($name, $value = null, $options = [], $errors = null)
-  {
-      if (!isset($options['name'])) {
-          $options['name'] = $name;
-      }
-
-    // Next we will look for the rows and cols attributes, as each of these are put
-    // on the textarea element definition. If they are not present, we will just
-    // assume some sane default values for these attributes for the developer.
-    $options = $this->setTextAreaSize($options);
-
-      $options['id'] = $this->getIdAttribute($name, $options);
-
-      $value = (string) $this->getValueAttribute($name, $value);
-
-      unset($options['size']);
-
-    // Next we will convert the attributes into a string form. Also we have removed
-    // the size attribute, as it was merely a short-cut for the rows and cols on
-    // the element. Then we'll create the final textarea elements HTML for us.
-    $options = $this->html->attributes($options);
+        $options = array_merge($options, $merge);
 
         /*
          * Validator messages
@@ -554,97 +340,247 @@ class FormBuilder
                 $error_messages = "";
 
                 foreach ($errors->get($name) as $error) {
-                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
+                    $error_messages.= '<p>' . $error . '</p>';
                 }
 
-                return '<span class="has-error"><textarea' . $options . '>' . e($value) . '</textarea>' . $error_messages . '</span>';
+                return '<span class="' . is_null($css) ? 'has-error' : $css . '"><input' . $this->html->attributes($options) . '/>' . $error_messages . '</span>';
             }
         }
 
-      return '<textarea'.$options.'>'.e($value).'</textarea>';
-  }
+        return '<input' . $this->html->attributes($options) . '>';
+    }
 
-  /**
-   * Set the text area size on the attributes.
-   *
-   * @param  array $options
-   *
-   * @return array
-   */
-  protected function setTextAreaSize($options)
-  {
-      if (isset($options['size'])) {
-          return $this->setQuickTextAreaSize($options);
-      }
+    /**
+     * Create a text input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     *
+     * @return string
+     */
+    public function text($name, $value = null, $options = [], $errors = null)
+    {
+        return $this->input('text', $name, $value, $options, $errors);
+    }
 
-    // If the "size" attribute was not specified, we will just look for the regular
-    // columns and rows attributes, using sane defaults if these do not exist on
-    // the attributes array. We'll then return this entire options array back.
-    $cols = array_get($options, 'cols', 50);
+    /**
+     * Create a password input field.
+     *
+     * @param  string $name
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function password($name, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('password', $name, '', $options, $errors, $css);
+    }
 
-      $rows = array_get($options, 'rows', 10);
+    /**
+     * Create a hidden input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return string
+     */
+    public function hidden($name, $value = null, $options = [])
+    {
+        return $this->input('hidden', $name, $value, $options);
+    }
 
-      return array_merge($options, compact('cols', 'rows'));
-  }
+    /**
+     * Create an e-mail input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function email($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('email', $name, $value, $options, $errors, $css);
+    }
 
-  /**
-   * Set the text area size using the quick "size" attribute.
-   *
-   * @param  array $options
-   *
-   * @return array
-   */
-  protected function setQuickTextAreaSize($options)
-  {
-      $segments = explode('x', $options['size']);
+    /**
+     * Create a tel input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function tel($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('tel', $name, $value, $options, $errors, $css);
+    }
 
-      return array_merge($options, ['cols' => $segments[0], 'rows' => $segments[1]]);
-  }
+    /**
+     * Create a number input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function number($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('number', $name, $value, $options, $errors, $css);
+    }
 
-  /**
-   * Create a select box field.
-   *
-   * @param  string $name
-   * @param  array  $list
-   * @param  string $selected
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function select($name, $list = [], $selected = null, $options = [], $errors = null)
-  {
-      // When building a select box the "value" attribute is really the selected one
-    // so we will use that when checking the model or session for a value which
-    // should provide a convenient method of re-populating the forms on post.
-    $selected = $this->getValueAttribute($name, $selected);
+    /**
+     * Create a date input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function date($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-m-d');
+        }
 
-      $options['id'] = $this->getIdAttribute($name, $options);
+        return $this->input('date', $name, $value, $options, $errors, $css);
+    }
 
-      if (!isset($options['name'])) {
-          $options['name'] = $name;
-      }
+    /**
+     * Create a datetime input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function datetime($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format(DateTime::RFC3339);
+        }
 
-    // We will simply loop through the options and build an HTML value for each of
-    // them until we have an array of HTML declarations. Then we will join them
-    // all together into one single HTML element that can be put on the form.
-    $html = [];
+        return $this->input('datetime', $name, $value, $options, $errors, $css);
+    }
 
-      if (isset($options['placeholder'])) {
-          $html[] = $this->placeholderOption($options['placeholder'], $selected);
-          unset($options['placeholder']);
-      }
+    /**
+     * Create a datetime-local input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function datetimeLocal($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-m-d\TH:i');
+        }
 
-      foreach ($list as $value => $display) {
-          $html[] = $this->getSelectOption($display, $value, $selected);
-      }
+        return $this->input('datetime-local', $name, $value, $options, $errors, $css);
+    }
 
-    // Once we have all of this HTML, we can join this into a single element after
-    // formatting the attributes into an HTML "attributes" string, then we will
-    // build out a final select statement, which will contain all the values.
-    $options = $this->html->attributes($options);
+    /**
+     * Create a time input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function time($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('time', $name, $value, $options, $errors, $css);
+    }
 
-      $list = implode('', $html);
+    /**
+     * Create a url input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function url($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('url', $name, $value, $options, $errors, $css);
+    }
+
+    /**
+     * Create a file input field.
+     *
+     * @param  string $name
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function file($name, $options = [], $errors = null, $css = null)
+    {
+        return $this->input('file', $name, null, $options, $errors, $css);
+    }
+
+    /**
+     * Create a textarea input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function textarea($name, $value = null, $options = [], $errors = null, $css = null)
+    {
+        if (!isset($options['name'])) {
+            $options['name'] = $name;
+        }
+
+        // Next we will look for the rows and cols attributes, as each of these are put
+        // on the textarea element definition. If they are not present, we will just
+        // assume some sane default values for these attributes for the developer.
+        $options = $this->setTextAreaSize($options);
+
+        $options['id'] = $this->getIdAttribute($name, $options);
+
+        $value = (string) $this->getValueAttribute($name, $value);
+
+        unset($options['size']);
+
+        // Next we will convert the attributes into a string form. Also we have removed
+        // the size attribute, as it was merely a short-cut for the rows and cols on
+        // the element. Then we'll create the final textarea elements HTML for us.
+        $options = $this->html->attributes($options);
 
         /*
          * Validator messages
@@ -654,600 +590,705 @@ class FormBuilder
                 $error_messages = "";
 
                 foreach ($errors->get($name) as $error) {
-                    $error_messages.= '<p class = "help-block">' . $error . '</p>';
+                    $error_messages.= '<p>' . $error . '</p>';
                 }
 
-                return '<span class="has-error"><select' . $options . '>' . $list . '</select>' . $error_messages . '</span>';
+                return '<span class="' . is_null($css) ? 'has-error' : $css . '"><textarea' . $options . '>' . e($value) . '</textarea>' . $error_messages . '</span>';
             }
         }
 
-      return "<select{$options}>{$list}</select>";
-  }
+        return '<textarea' . $options . '>' . e($value) . '</textarea>';
+    }
 
-  /**
-   * Create a select range field.
-   *
-   * @param  string $name
-   * @param  string $begin
-   * @param  string $end
-   * @param  string $selected
-   * @param  array  $options
-   *
-   * @return string
-   */
-  public function selectRange($name, $begin, $end, $selected = null, $options = [])
-  {
-      $range = array_combine($range = range($begin, $end), $range);
+    /**
+     * Set the text area size on the attributes.
+     *
+     * @param  array $options
+     *
+     * @return array
+     */
+    protected function setTextAreaSize($options)
+    {
+        if (isset($options['size'])) {
+            return $this->setQuickTextAreaSize($options);
+        }
 
-      return $this->select($name, $range, $selected, $options);
-  }
+        // If the "size" attribute was not specified, we will just look for the regular
+        // columns and rows attributes, using sane defaults if these do not exist on
+        // the attributes array. We'll then return this entire options array back.
+        $cols = array_get($options, 'cols', 50);
 
-  /**
-   * Create a select year field.
-   *
-   * @param  string $name
-   * @param  string $begin
-   * @param  string $end
-   * @param  string $selected
-   * @param  array  $options
-   *
-   * @return string
-   */
-  public function selectYear()
-  {
-      return call_user_func_array([$this, 'selectRange'], func_get_args());
-  }
+        $rows = array_get($options, 'rows', 10);
 
-  /**
-   * Create a select month field.
-   *
-   * @param  string $name
-   * @param  string $selected
-   * @param  array  $options
-   * @param  string $format
-   *
-   * @return string
-   */
-  public function selectMonth($name, $selected = null, $options = [], $format = '%B')
-  {
-      $months = [];
+        return array_merge($options, compact('cols', 'rows'));
+    }
 
-      foreach (range(1, 12) as $month) {
-          $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
-      }
+    /**
+     * Set the text area size using the quick "size" attribute.
+     *
+     * @param  array $options
+     *
+     * @return array
+     */
+    protected function setQuickTextAreaSize($options)
+    {
+        $segments = explode('x', $options['size']);
 
-      return $this->select($name, $months, $selected, $options);
-  }
+        return array_merge($options, ['cols' => $segments[0], 'rows' => $segments[1]]);
+    }
 
-  /**
-   * Get the select option for the given value.
-   *
-   * @param  string $display
-   * @param  string $value
-   * @param  string $selected
-   *
-   * @return string
-   */
-  public function getSelectOption($display, $value, $selected)
-  {
-      if (is_array($display)) {
-          return $this->optionGroup($display, $value, $selected);
-      }
+    /**
+     * Create a select box field.
+     *
+     * @param  string $name
+     * @param  array  $list
+     * @param  string $selected
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function select($name, $list = [], $selected = null, $options = [], $errors = null, $css = null)
+    {
+        // When building a select box the "value" attribute is really the selected one
+        // so we will use that when checking the model or session for a value which
+        // should provide a convenient method of re-populating the forms on post.
+        $selected = $this->getValueAttribute($name, $selected);
 
-      return $this->option($display, $value, $selected);
-  }
+        $options['id'] = $this->getIdAttribute($name, $options);
 
-  /**
-   * Create an option group form element.
-   *
-   * @param  array  $list
-   * @param  string $label
-   * @param  string $selected
-   *
-   * @return string
-   */
-  protected function optionGroup($list, $label, $selected)
-  {
-      $html = [];
+        if (!isset($options['name'])) {
+            $options['name'] = $name;
+        }
 
-      foreach ($list as $value => $display) {
-          $html[] = $this->option($display, $value, $selected);
-      }
+        // We will simply loop through the options and build an HTML value for each of
+        // them until we have an array of HTML declarations. Then we will join them
+        // all together into one single HTML element that can be put on the form.
+        $html = [];
 
-      return '<optgroup label="'.e($label).'">'.implode('', $html).'</optgroup>';
-  }
+        if (isset($options['placeholder'])) {
+            $html[] = $this->placeholderOption($options['placeholder'], $selected);
+            unset($options['placeholder']);
+        }
 
-  /**
-   * Create a select element option.
-   *
-   * @param  string $display
-   * @param  string $value
-   * @param  string $selected
-   *
-   * @return string
-   */
-  protected function option($display, $value, $selected)
-  {
-      $selected = $this->getSelectedValue($value, $selected);
+        foreach ($list as $value => $display) {
+            $html[] = $this->getSelectOption($display, $value, $selected);
+        }
 
-      $options = ['value' => $value, 'selected' => $selected];
+        // Once we have all of this HTML, we can join this into a single element after
+        // formatting the attributes into an HTML "attributes" string, then we will
+        // build out a final select statement, which will contain all the values.
+        $options = $this->html->attributes($options);
 
-      return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
-  }
+        $list = implode('', $html);
 
-  /**
-   * Create a placeholder select element option.
-   *
-   * @param $display
-   * @param $selected
-   *
-   * @return string
-   */
-  protected function placeholderOption($display, $selected)
-  {
-      $selected = $this->getSelectedValue(null, $selected);
+        /*
+         * Validator messages
+         */
+        if (!is_null($errors)) {
+            if ($errors->has($name)) {
+                $error_messages = "";
 
-      $options = compact('selected');
-      $options['value'] = '';
+                foreach ($errors->get($name) as $error) {
+                    $error_messages.= '<p>' . $error . '</p>';
+                }
 
-      return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
-  }
+                return '<span class="' . is_null($css) ? 'has-error' : $css . '"><select' . $options . '>' . $list . '</select>' . $error_messages . '</span>';
+            }
+        }
 
-  /**
-   * Determine if the value is selected.
-   *
-   * @param  string $value
-   * @param  string $selected
-   *
-   * @return string|null
-   */
-  protected function getSelectedValue($value, $selected)
-  {
-      if (is_array($selected)) {
-          return in_array($value, $selected) ? 'selected' : null;
-      }
+        return "<select{$options}>{$list}</select>";
+    }
 
-      return ((string) $value == (string) $selected) ? 'selected' : null;
-  }
+    /**
+     * Create a select range field.
+     *
+     * @param  string $name
+     * @param  string $begin
+     * @param  string $end
+     * @param  string $selected
+     * @param  array  $options
+     *
+     * @return string
+     */
+    public function selectRange($name, $begin, $end, $selected = null, $options = [])
+    {
+        $range = array_combine($range = range($begin, $end), $range);
 
-  /**
-   * Create a checkbox input field.
-   *
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function checkbox($name, $value = 1, $checked = null, $options = [], $errors = null)
-  {
-      return $this->checkable('checkbox', $name, $value, $checked, $options, $errors);
-  }
+        return $this->select($name, $range, $selected, $options);
+    }
 
-  /**
-   * Create a radio button input field.
-   *
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function radio($name, $value = null, $checked = null, $options = [], $errors = null)
-  {
-      if (is_null($value)) {
-          $value = $name;
-      }
+    /**
+     * Create a select year field.
+     *
+     * @param  string $name
+     * @param  string $begin
+     * @param  string $end
+     * @param  string $selected
+     * @param  array  $options
+     *
+     * @return string
+     */
+    public function selectYear()
+    {
+        return call_user_func_array([$this, 'selectRange'], func_get_args());
+    }
 
-      return $this->checkable('radio', $name, $value, $checked, $options, $errors);
-  }
+    /**
+     * Create a select month field.
+     *
+     * @param  string $name
+     * @param  string $selected
+     * @param  array  $options
+     * @param  string $format
+     *
+     * @return string
+     */
+    public function selectMonth($name, $selected = null, $options = [], $format = '%B')
+    {
+        $months = [];
 
-  /**
-   * Create a checkable input field.
-   *
-   * @param  string $type
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   * @param  array  $options
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  protected function checkable($type, $name, $value, $checked, $options, $errors = null)
-  {
-      $checked = $this->getCheckedState($type, $name, $value, $checked);
+        foreach (range(1, 12) as $month) {
+            $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+        }
 
-      if ($checked) {
-          $options['checked'] = 'checked';
-      }
+        return $this->select($name, $months, $selected, $options);
+    }
 
-      return $this->input($type, $name, $value, $options, $errors);
-  }
+    /**
+     * Get the select option for the given value.
+     *
+     * @param  string $display
+     * @param  string $value
+     * @param  string $selected
+     *
+     * @return string
+     */
+    public function getSelectOption($display, $value, $selected)
+    {
+        if (is_array($display)) {
+            return $this->optionGroup($display, $value, $selected);
+        }
 
-  /**
-   * Get the check state for a checkable input.
-   *
-   * @param  string $type
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   *
-   * @return bool
-   */
-  protected function getCheckedState($type, $name, $value, $checked)
-  {
-      switch ($type) {
-      case 'checkbox':
-        return $this->getCheckboxCheckedState($name, $value, $checked);
+        return $this->option($display, $value, $selected);
+    }
 
-      case 'radio':
-        return $this->getRadioCheckedState($name, $value, $checked);
+    /**
+     * Create an option group form element.
+     *
+     * @param  array  $list
+     * @param  string $label
+     * @param  string $selected
+     *
+     * @return string
+     */
+    protected function optionGroup($list, $label, $selected)
+    {
+        $html = [];
 
-      default:
+        foreach ($list as $value => $display) {
+            $html[] = $this->option($display, $value, $selected);
+        }
+
+        return '<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>';
+    }
+
+    /**
+     * Create a select element option.
+     *
+     * @param  string $display
+     * @param  string $value
+     * @param  string $selected
+     *
+     * @return string
+     */
+    protected function option($display, $value, $selected)
+    {
+        $selected = $this->getSelectedValue($value, $selected);
+
+        $options = ['value' => $value, 'selected' => $selected];
+
+        return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
+    }
+
+    /**
+     * Create a placeholder select element option.
+     *
+     * @param $display
+     * @param $selected
+     *
+     * @return string
+     */
+    protected function placeholderOption($display, $selected)
+    {
+        $selected = $this->getSelectedValue(null, $selected);
+
+        $options          = compact('selected');
+        $options['value'] = '';
+
+        return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
+    }
+
+    /**
+     * Determine if the value is selected.
+     *
+     * @param  string $value
+     * @param  string $selected
+     *
+     * @return string|null
+     */
+    protected function getSelectedValue($value, $selected)
+    {
+        if (is_array($selected)) {
+            return in_array($value, $selected) ? 'selected' : null;
+        }
+
+        return ((string) $value == (string) $selected) ? 'selected' : null;
+    }
+
+    /**
+     * Create a checkbox input field.
+     *
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function checkbox($name, $value = 1, $checked = null, $options = [], $errors = null, $css = null)
+    {
+        return $this->checkable('checkbox', $name, $value, $checked, $options, $errors, $css);
+    }
+
+    /**
+     * Create a radio button input field.
+     *
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function radio($name, $value = null, $checked = null, $options = [], $errors = null, $css = null)
+    {
+        if (is_null($value)) {
+            $value = $name;
+        }
+
+        return $this->checkable('radio', $name, $value, $checked, $options, $errors, $css);
+    }
+
+    /**
+     * Create a checkable input field.
+     *
+     * @param  string $type
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     * @param  array  $options
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    protected function checkable($type, $name, $value, $checked, $options, $errors = null, $css = null)
+    {
+        $checked = $this->getCheckedState($type, $name, $value, $checked);
+
+        if ($checked) {
+            $options['checked'] = 'checked';
+        }
+
+        return $this->input($type, $name, $value, $options, $errors, $css);
+    }
+
+    /**
+     * Get the check state for a checkable input.
+     *
+     * @param  string $type
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     *
+     * @return bool
+     */
+    protected function getCheckedState($type, $name, $value, $checked)
+    {
+        switch ( $type ) {
+            case 'checkbox':
+                return $this->getCheckboxCheckedState($name, $value, $checked);
+
+            case 'radio':
+                return $this->getRadioCheckedState($name, $value, $checked);
+
+            default:
+                return $this->getValueAttribute($name) == $value;
+        }
+    }
+
+    /**
+     * Get the check state for a checkbox input.
+     *
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     *
+     * @return bool
+     */
+    protected function getCheckboxCheckedState($name, $value, $checked)
+    {
+        if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name))) {
+            return false;
+        }
+
+        if ($this->missingOldAndModel($name)) {
+            return $checked;
+        }
+
+        $posted = $this->getValueAttribute($name, $checked);
+
+        if (is_array($posted)) {
+            return in_array($value, $posted);
+        } elseif ($posted instanceof Collection) {
+            return $posted->contains('id', $value);
+        } else {
+            return (bool) $posted;
+        }
+    }
+
+    /**
+     * Get the check state for a radio input.
+     *
+     * @param  string $name
+     * @param  mixed  $value
+     * @param  bool   $checked
+     *
+     * @return bool
+     */
+    protected function getRadioCheckedState($name, $value, $checked)
+    {
+        if ($this->missingOldAndModel($name)) {
+            return $checked;
+        }
+
         return $this->getValueAttribute($name) == $value;
     }
-  }
 
-  /**
-   * Get the check state for a checkbox input.
-   *
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   *
-   * @return bool
-   */
-  protected function getCheckboxCheckedState($name, $value, $checked)
-  {
-      if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name))) {
-          return false;
-      }
-
-      if ($this->missingOldAndModel($name)) {
-          return $checked;
-      }
-
-      $posted = $this->getValueAttribute($name, $checked);
-
-      if (is_array($posted)) {
-          return in_array($value, $posted);
-      } elseif ($posted instanceof Collection) {
-          return $posted->contains('id', $value);
-      } else {
-          return (bool) $posted;
-      }
-  }
-
-  /**
-   * Get the check state for a radio input.
-   *
-   * @param  string $name
-   * @param  mixed  $value
-   * @param  bool   $checked
-   *
-   * @return bool
-   */
-  protected function getRadioCheckedState($name, $value, $checked)
-  {
-      if ($this->missingOldAndModel($name)) {
-          return $checked;
-      }
-
-      return $this->getValueAttribute($name) == $value;
-  }
-
-  /**
-   * Determine if old input or model input exists for a key.
-   *
-   * @param  string $name
-   *
-   * @return bool
-   */
-  protected function missingOldAndModel($name)
-  {
-      return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
-  }
-
-  /**
-   * Create a HTML reset input element.
-   *
-   * @param  string $value
-   * @param  array  $attributes
-   *
-   * @return string
-   */
-  public function reset($value, $attributes = [])
-  {
-      return $this->input('reset', null, $value, $attributes);
-  }
-
-  /**
-   * Create a HTML image input element.
-   *
-   * @param  string $url
-   * @param  string $name
-   * @param  array  $attributes
-   * @param  array  $errors
-   *
-   * @return string
-   */
-  public function image($url, $name = null, $attributes = [], $errors = null)
-  {
-      $attributes['src'] = $this->url->asset($url);
-
-      return $this->input('image', $name, null, $attributes, $errors);
-  }
-
-  /**
-   * Create a submit button element.
-   *
-   * @param  string $value
-   * @param  array  $options
-   *
-   * @return string
-   */
-  public function submit($value = null, $options = [])
-  {
-      return $this->input('submit', null, $value, $options);
-  }
-
-  /**
-   * Create a button element.
-   *
-   * @param  string $value
-   * @param  array  $options
-   *
-   * @return string
-   */
-  public function button($value = null, $options = [])
-  {
-      if (!array_key_exists('type', $options)) {
-          $options['type'] = 'button';
-      }
-
-      return '<button'.$this->html->attributes($options).'>'.$value.'</button>';
-  }
-
-  /**
-   * Parse the form action method.
-   *
-   * @param  string $method
-   *
-   * @return string
-   */
-  protected function getMethod($method)
-  {
-      $method = strtoupper($method);
-
-      return $method != 'GET' ? 'POST' : $method;
-  }
-
-  /**
-   * Get the form action from the options.
-   *
-   * @param  array $options
-   *
-   * @return string
-   */
-  protected function getAction(array $options)
-  {
-      // We will also check for a "route" or "action" parameter on the array so that
-    // developers can easily specify a route or controller action when creating
-    // a form providing a convenient interface for creating the form actions.
-    if (isset($options['url'])) {
-        return $this->getUrlAction($options['url']);
+    /**
+     * Determine if old input or model input exists for a key.
+     *
+     * @param  string $name
+     *
+     * @return bool
+     */
+    protected function missingOldAndModel($name)
+    {
+        return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
     }
 
-      if (isset($options['route'])) {
-          return $this->getRouteAction($options['route']);
-      }
-
-    // If an action is available, we are attempting to open a form to a controller
-    // action route. So, we will use the URL generator to get the path to these
-    // actions and return them from the method. Otherwise, we'll use current.
-    elseif (isset($options['action'])) {
-        return $this->getControllerAction($options['action']);
+    /**
+     * Create a HTML reset input element.
+     *
+     * @param  string $value
+     * @param  array  $attributes
+     *
+     * @return string
+     */
+    public function reset($value, $attributes = [])
+    {
+        return $this->input('reset', null, $value, $attributes);
     }
 
-      return $this->url->current();
-  }
+    /**
+     * Create a HTML image input element.
+     *
+     * @param  string $url
+     * @param  string $name
+     * @param  array  $attributes
+     * @param  array  $errors
+     * @param  string $css
+     *
+     * @return string
+     */
+    public function image($url, $name = null, $attributes = [], $errors = null, $css = null)
+    {
+        $attributes['src'] = $this->url->asset($url);
 
-  /**
-   * Get the action for a "url" option.
-   *
-   * @param  array|string $options
-   *
-   * @return string
-   */
-  protected function getUrlAction($options)
-  {
-      if (is_array($options)) {
-          return $this->url->to($options[0], array_slice($options, 1));
-      }
-
-      return $this->url->to($options);
-  }
-
-  /**
-   * Get the action for a "route" option.
-   *
-   * @param  array|string $options
-   *
-   * @return string
-   */
-  protected function getRouteAction($options)
-  {
-      if (is_array($options)) {
-          return $this->url->route($options[0], array_slice($options, 1));
-      }
-
-      return $this->url->route($options);
-  }
-
-  /**
-   * Get the action for an "action" option.
-   *
-   * @param  array|string $options
-   *
-   * @return string
-   */
-  protected function getControllerAction($options)
-  {
-      if (is_array($options)) {
-          return $this->url->action($options[0], array_slice($options, 1));
-      }
-
-      return $this->url->action($options);
-  }
-
-  /**
-   * Get the form appendage for the given method.
-   *
-   * @param  string $method
-   *
-   * @return string
-   */
-  protected function getAppendage($method)
-  {
-      list($method, $appendage) = [strtoupper($method), ''];
-
-    // If the HTTP method is in this list of spoofed methods, we will attach the
-    // method spoofer hidden input to the form. This allows us to use regular
-    // form to initiate PUT and DELETE requests in addition to the typical.
-    if (in_array($method, $this->spoofedMethods)) {
-        $appendage .= $this->hidden('_method', $method);
+        return $this->input('image', $name, null, $attributes, $errors, $css);
     }
 
-    // If the method is something other than GET we will go ahead and attach the
-    // CSRF token to the form, as this can't hurt and is convenient to simply
-    // always have available on every form the developers creates for them.
-    if ($method != 'GET') {
-        $appendage .= $this->token();
+    /**
+     * Create a submit button element.
+     *
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return string
+     */
+    public function submit($value = null, $options = [])
+    {
+        return $this->input('submit', null, $value, $options);
     }
 
-      return $appendage;
-  }
+    /**
+     * Create a button element.
+     *
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return string
+     */
+    public function button($value = null, $options = [])
+    {
+        if (!array_key_exists('type', $options)) {
+            $options['type'] = 'button';
+        }
 
-  /**
-   * Get the ID attribute for a field name.
-   *
-   * @param  string $name
-   * @param  array  $attributes
-   *
-   * @return string
-   */
-  public function getIdAttribute($name, $attributes)
-  {
-      if (array_key_exists('id', $attributes)) {
-          return $attributes['id'];
-      }
+        return '<button' . $this->html->attributes($options) . '>' . $value . '</button>';
+    }
 
-      if (in_array($name, $this->labels)) {
-          return $name;
-      }
-  }
+    /**
+     * Parse the form action method.
+     *
+     * @param  string $method
+     *
+     * @return string
+     */
+    protected function getMethod($method)
+    {
+        $method = strtoupper($method);
 
-  /**
-   * Get the value that should be assigned to the field.
-   *
-   * @param  string $name
-   * @param  string $value
-   *
-   * @return mixed
-   */
-  public function getValueAttribute($name, $value = null)
-  {
-      if (is_null($name)) {
-          return $value;
-      }
+        return $method != 'GET' ? 'POST' : $method;
+    }
 
-      if (!is_null($this->old($name))) {
-          return $this->old($name);
-      }
+    /**
+     * Get the form action from the options.
+     *
+     * @param  array $options
+     *
+     * @return string
+     */
+    protected function getAction(array $options)
+    {
+        // We will also check for a "route" or "action" parameter on the array so that
+        // developers can easily specify a route or controller action when creating
+        // a form providing a convenient interface for creating the form actions.
+        if (isset($options['url'])) {
+            return $this->getUrlAction($options['url']);
+        }
 
-      if (!is_null($value)) {
-          return $value;
-      }
+        if (isset($options['route'])) {
+            return $this->getRouteAction($options['route']);
+        }
 
-      if (isset($this->model)) {
-          return $this->getModelValueAttribute($name);
-      }
-  }
+        // If an action is available, we are attempting to open a form to a controller
+        // action route. So, we will use the URL generator to get the path to these
+        // actions and return them from the method. Otherwise, we'll use current.
+        elseif (isset($options['action'])) {
+            return $this->getControllerAction($options['action']);
+        }
 
-  /**
-   * Get the model value that should be assigned to the field.
-   *
-   * @param  string $name
-   *
-   * @return mixed
-   */
-  protected function getModelValueAttribute($name)
-  {
-      return data_get($this->model, $this->transformKey($name));
-  }
+        return $this->url->current();
+    }
 
-  /**
-   * Get a value from the session's old input.
-   *
-   * @param  string $name
-   *
-   * @return mixed
-   */
-  public function old($name)
-  {
-      if (isset($this->session)) {
-          return $this->session->getOldInput($this->transformKey($name));
-      }
-  }
+    /**
+     * Get the action for a "url" option.
+     *
+     * @param  array|string $options
+     *
+     * @return string
+     */
+    protected function getUrlAction($options)
+    {
+        if (is_array($options)) {
+            return $this->url->to($options[0], array_slice($options, 1));
+        }
 
-  /**
-   * Determine if the old input is empty.
-   *
-   * @return bool
-   */
-  public function oldInputIsEmpty()
-  {
-      return (isset($this->session) && count($this->session->getOldInput()) == 0);
-  }
+        return $this->url->to($options);
+    }
 
-  /**
-   * Transform key from array to dot syntax.
-   *
-   * @param  string $key
-   *
-   * @return string
-   */
-  protected function transformKey($key)
-  {
-      return str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
-  }
+    /**
+     * Get the action for a "route" option.
+     *
+     * @param  array|string $options
+     *
+     * @return string
+     */
+    protected function getRouteAction($options)
+    {
+        if (is_array($options)) {
+            return $this->url->route($options[0], array_slice($options, 1));
+        }
 
-  /**
-   * Get the session store implementation.
-   *
-   * @return  \Illuminate\Session\Store  $session
-   */
-  public function getSessionStore()
-  {
-      return $this->session;
-  }
+        return $this->url->route($options);
+    }
 
-  /**
-   * Set the session store implementation.
-   *
-   * @param  \Illuminate\Session\Store $session
-   *
-   * @return $this
-   */
-  public function setSessionStore(Session $session)
-  {
-      $this->session = $session;
+    /**
+     * Get the action for an "action" option.
+     *
+     * @param  array|string $options
+     *
+     * @return string
+     */
+    protected function getControllerAction($options)
+    {
+        if (is_array($options)) {
+            return $this->url->action($options[0], array_slice($options, 1));
+        }
 
-      return $this;
-  }
+        return $this->url->action($options);
+    }
+
+    /**
+     * Get the form appendage for the given method.
+     *
+     * @param  string $method
+     *
+     * @return string
+     */
+    protected function getAppendage($method)
+    {
+        list($method, $appendage) = [strtoupper($method), ''];
+
+        // If the HTTP method is in this list of spoofed methods, we will attach the
+        // method spoofer hidden input to the form. This allows us to use regular
+        // form to initiate PUT and DELETE requests in addition to the typical.
+        if (in_array($method, $this->spoofedMethods)) {
+            $appendage .= $this->hidden('_method', $method);
+        }
+
+        // If the method is something other than GET we will go ahead and attach the
+        // CSRF token to the form, as this can't hurt and is convenient to simply
+        // always have available on every form the developers creates for them.
+        if ($method != 'GET') {
+            $appendage .= $this->token();
+        }
+
+        return $appendage;
+    }
+
+    /**
+     * Get the ID attribute for a field name.
+     *
+     * @param  string $name
+     * @param  array  $attributes
+     *
+     * @return string
+     */
+    public function getIdAttribute($name, $attributes)
+    {
+        if (array_key_exists('id', $attributes)) {
+            return $attributes['id'];
+        }
+
+        if (in_array($name, $this->labels)) {
+            return $name;
+        }
+    }
+
+    /**
+     * Get the value that should be assigned to the field.
+     *
+     * @param  string $name
+     * @param  string $value
+     *
+     * @return mixed
+     */
+    public function getValueAttribute($name, $value = null)
+    {
+        if (is_null($name)) {
+            return $value;
+        }
+
+        if (!is_null($this->old($name))) {
+            return $this->old($name);
+        }
+
+        if (!is_null($value)) {
+            return $value;
+        }
+
+        if (isset($this->model)) {
+            return $this->getModelValueAttribute($name);
+        }
+    }
+
+    /**
+     * Get the model value that should be assigned to the field.
+     *
+     * @param  string $name
+     *
+     * @return mixed
+     */
+    protected function getModelValueAttribute($name)
+    {
+        return data_get($this->model, $this->transformKey($name));
+    }
+
+    /**
+     * Get a value from the session's old input.
+     *
+     * @param  string $name
+     *
+     * @return mixed
+     */
+    public function old($name)
+    {
+        if (isset($this->session)) {
+            return $this->session->getOldInput($this->transformKey($name));
+        }
+    }
+
+    /**
+     * Determine if the old input is empty.
+     *
+     * @return bool
+     */
+    public function oldInputIsEmpty()
+    {
+        return (isset($this->session) && count($this->session->getOldInput()) == 0);
+    }
+
+    /**
+     * Transform key from array to dot syntax.
+     *
+     * @param  string $key
+     *
+     * @return string
+     */
+    protected function transformKey($key)
+    {
+        return str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
+    }
+
+    /**
+     * Get the session store implementation.
+     *
+     * @return  \Illuminate\Session\Store  $session
+     */
+    public function getSessionStore()
+    {
+        return $this->session;
+    }
+
+    /**
+     * Set the session store implementation.
+     *
+     * @param  \Illuminate\Session\Store $session
+     *
+     * @return $this
+     */
+    public function setSessionStore(Session $session)
+    {
+        $this->session = $session;
+
+        return $this;
+    }
 }
