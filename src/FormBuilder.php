@@ -260,7 +260,7 @@ class FormBuilder
             }
         }
 
-        switch ( $type ) {
+        switch ($type) {
             case "password": $element = $this->password($name, $optionsType, $errors, !is_null($css) ? $css->element : null);
                 break;
             case "email": $element = $this->email($name, $value, $optionsType, $errors, !is_null($css) ? $css->element : null);
@@ -921,7 +921,7 @@ class FormBuilder
      */
     protected function getCheckedState($type, $name, $value, $checked)
     {
-        switch ( $type ) {
+        switch ($type) {
             case 'checkbox':
                 return $this->getCheckboxCheckedState($name, $value, $checked);
 
