@@ -91,8 +91,8 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><textarea name="foo" cols="50" rows="10" id="foo"></textarea></div></div>', $formTextarea);
         $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="file" id="foo"></div></div>', $formFile);
         $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input src="http://localhost/" name="foo" type="image" id="foo"></div></div>', $formImage);
-        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input type="tel" value="foo"></div></div>', $formTel);
-        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input type="time" value="foo"></div></div>', $formTime);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="tel" id="foo"></div></div>', $formTel);
+        $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="time" id="foo"></div></div>', $formTime);
 
         $this->assertEquals('<div class="form-group"><label for="foo">foo</label><div class="col-md-8"><input name="foo" type="text" id="foo"></div></div>', $formFoo);
     }
