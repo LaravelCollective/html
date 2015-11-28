@@ -870,6 +870,20 @@ class FormBuilder
   }
 
   /**
+   * Create a color input field.
+   *
+   * @param  string $name
+   * @param  string $value
+   * @param  array  $options
+   *
+   * @return string
+   */
+  public function color($name, $value = null, $options = [])
+  {
+      return $this->input('color', $name, $value, $options);
+  }
+
+  /**
    * Create a submit button element.
    *
    * @param  string $value
