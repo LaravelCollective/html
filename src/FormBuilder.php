@@ -3,8 +3,8 @@
 namespace Collective\Html;
 
 use DateTime;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Session\Store as Session;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Session\SessionInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
 
@@ -22,7 +22,7 @@ class FormBuilder
   /**
    * The URL generator instance.
    *
-   * @var \Illuminate\Routing\UrlGenerator
+   * @var \Illuminate\Contracts\Routing\UrlGenerator
    */
   protected $url;
 
@@ -36,7 +36,7 @@ class FormBuilder
   /**
    * The session store implementation.
    *
-   * @var \Illuminate\Session\Store
+   * @var \Illuminate\Session\SessionInterface
    */
   protected $session;
 
@@ -78,7 +78,7 @@ class FormBuilder
   /**
    * Create a new form builder instance.
    *
-   * @param  \Illuminate\Routing\UrlGenerator $url
+   * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
    * @param  \Collective\Html\HtmlBuilder     $html
    * @param  string                           $csrfToken
    *
@@ -1130,7 +1130,7 @@ class FormBuilder
   /**
    * Get the session store implementation.
    *
-   * @return  \Illuminate\Session\Store  $session
+   * @return  \Illuminate\Session\SessionInterface  $session
    */
   public function getSessionStore()
   {
@@ -1140,11 +1140,11 @@ class FormBuilder
   /**
    * Set the session store implementation.
    *
-   * @param  \Illuminate\Session\Store $session
+   * @param  \Illuminate\Session\SessionInterface $session
    *
    * @return $this
    */
-  public function setSessionStore(Session $session)
+  public function setSessionStore(SessionInterface $session)
   {
       $this->session = $session;
 
