@@ -477,7 +477,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="color">', $form1);
         $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
-     }
+    }
 
     protected function setModel(array $data, $object = true)
     {
