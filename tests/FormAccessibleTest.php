@@ -20,11 +20,13 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         Capsule::table('models')->truncate();
         Model::unguard();
 
+        $this->now = Carbon::now();
+
         $this->modelData = [
           'string'     => 'abcdefghijklmnop',
           'email'      => 'tj@tjshafer.com',
-          'created_at' => Carbon::now(),
-          'updated_at' => Carbon::now(),
+          'created_at' => $this->now,
+          'updated_at' => $this->now,
         ];
 
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
@@ -39,7 +41,7 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->formBuilder->setModel($model);
 
         $this->assertEquals($model->getFormValue('string'), 'ponmlkjihgfedcba');
-        $this->assertEquals($model->getFormValue('created_at'), time());
+        $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp);
     }
 
     public function testItCanStillMutateValuesForViews()
@@ -48,7 +50,7 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->formBuilder->setModel($model);
 
         $this->assertEquals($model->string, 'ABCDEFGHIJKLMNOP');
-        $this->assertEquals($model->created_at, Carbon::now()->diffForHumans());
+        $this->assertEquals($model->created_at, '1 second ago');
     }
 
     public function testItDoesntRequireTheUseOfThisFeature()
@@ -57,7 +59,7 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->formBuilder->setModel($model);
 
         $this->assertEquals($model->string, 'ABCDEFGHIJKLMNOP');
-        $this->assertEquals($model->created_at, Carbon::now()->diffForHumans());
+        $this->assertEquals($model->created_at, '1 second ago');
     }
 
 }
