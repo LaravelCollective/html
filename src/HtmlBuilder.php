@@ -516,23 +516,36 @@ class HtmlBuilder
     /**
      * Render a custom component.
      *
-     * @param       $name
-     * @param array $arguments
-     * @return string
+     * @param        $name
+     * @param  array $arguments
+     * @return \Illuminate\Contracts\View\View
      */
     protected function renderComponent($name, array $arguments)
     {
         $component = static::$components[$name];
+        $data = $this->getComponentData($component['signature'], $arguments);
 
-        return $this->view->make($component['view'], array_combine($component['signature'], $arguments))->render();
+        return $this->view->make($component['view'], $data);
+    }
+
+    /**
+     * Prepare the component data.
+     *
+     * @param  array $signature
+     * @param  array $arguments
+     * @return array
+     */
+    protected function getComponentData(array $signature, array $arguments)
+    {
+        return array_combine($signature, $arguments);
     }
 
     /**
      * Dynamically handle calls to the class.
      *
-     * @param $method
-     * @param $parameters
-     * @return mixed|string
+     * @param  string $method
+     * @param  array  $parameters
+     * @return \Illuminate\Contracts\View\View|mixed
      *
      * @throws \BadMethodCallException
      */
