@@ -495,6 +495,7 @@ class HtmlBuilder
      * @param       $name
      * @param       $view
      * @param array $signature
+     *
      * @return void
      */
     public static function component($name, $view, array $signature)
@@ -506,6 +507,7 @@ class HtmlBuilder
      * Check if a component is registered.
      *
      * @param $name
+     *
      * @return bool
      */
     public static function hasComponent($name)
@@ -518,6 +520,7 @@ class HtmlBuilder
      *
      * @param        $name
      * @param  array $arguments
+     *
      * @return \Illuminate\Contracts\View\View
      */
     protected function renderComponent($name, array $arguments)
@@ -533,6 +536,7 @@ class HtmlBuilder
      *
      * @param  array $signature
      * @param  array $arguments
+     *
      * @return array
      */
     protected function getComponentData(array $signature, array $arguments)
@@ -540,7 +544,7 @@ class HtmlBuilder
         $data = [];
 
         $i = 0;
-        foreach($signature as $variable => $default) {
+        foreach ($signature as $variable => $default) {
             // If the "variable" value is actually a numeric key, we can assume that
             // no default had been specified for the component argument and we'll
             // just use null instead, so that we can treat them all the same.
@@ -562,6 +566,7 @@ class HtmlBuilder
      *
      * @param  string $method
      * @param  array  $parameters
+     *
      * @return \Illuminate\Contracts\View\View|mixed
      *
      * @throws \BadMethodCallException
