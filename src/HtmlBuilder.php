@@ -2,6 +2,7 @@
 
 namespace Collective\Html;
 
+use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -77,13 +78,13 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function script($url, $attributes = [], $secure = null)
     {
         $attributes['src'] = $this->url->asset($url, $secure);
 
-        return '<script' . $this->attributes($attributes) . '></script>' . PHP_EOL;
+        return $this->toHtmlString('<script' . $this->attributes($attributes) . '></script>' . PHP_EOL);
     }
 
     /**
@@ -93,7 +94,7 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function style($url, $attributes = [], $secure = null)
     {
@@ -103,7 +104,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return '<link' . $this->attributes($attributes) . '>' . PHP_EOL;
+        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
     }
 
     /**
@@ -114,13 +115,14 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function image($url, $alt = null, $attributes = [], $secure = null)
     {
         $attributes['alt'] = $alt;
 
-        return '<img src="' . $this->url->asset($url, $secure) . '"' . $this->attributes($attributes) . '>';
+        return $this->toHtmlString('<img src="' . $this->url->asset($url,
+            $secure) . '"' . $this->attributes($attributes) . '>');
     }
 
     /**
@@ -130,7 +132,7 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function favicon($url, $attributes = [], $secure = null)
     {
@@ -140,7 +142,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return '<link' . $this->attributes($attributes) . '>' . PHP_EOL;
+        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
     }
 
     /**
@@ -151,7 +153,7 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function link($url, $title = null, $attributes = [], $secure = null)
     {
@@ -161,7 +163,7 @@ class HtmlBuilder
             $title = $url;
         }
 
-        return '<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>';
+        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
     }
 
     /**
@@ -171,7 +173,7 @@ class HtmlBuilder
      * @param string $title
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function secureLink($url, $title = null, $attributes = [])
     {
@@ -186,7 +188,7 @@ class HtmlBuilder
      * @param array  $attributes
      * @param bool   $secure
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function linkAsset($url, $title = null, $attributes = [], $secure = null)
     {
@@ -202,7 +204,7 @@ class HtmlBuilder
      * @param string $title
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function linkSecureAsset($url, $title = null, $attributes = [])
     {
@@ -217,7 +219,7 @@ class HtmlBuilder
      * @param array  $parameters
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function linkRoute($name, $title = null, $parameters = [], $attributes = [])
     {
@@ -232,7 +234,7 @@ class HtmlBuilder
      * @param array  $parameters
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function linkAction($action, $title = null, $parameters = [], $attributes = [])
     {
@@ -246,7 +248,7 @@ class HtmlBuilder
      * @param string $title
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function mailto($email, $title = null, $attributes = [])
     {
@@ -256,7 +258,7 @@ class HtmlBuilder
 
         $email = $this->obfuscate('mailto:') . $email;
 
-        return '<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>';
+        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
     }
 
     /**
@@ -277,7 +279,7 @@ class HtmlBuilder
      * @param array $list
      * @param array $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString|string
      */
     public function ol($list, $attributes = [])
     {
@@ -290,7 +292,7 @@ class HtmlBuilder
      * @param array $list
      * @param array $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString|string
      */
     public function ul($list, $attributes = [])
     {
@@ -303,7 +305,7 @@ class HtmlBuilder
      * @param array $list
      * @param array $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function dl(array $list, array $attributes = [])
     {
@@ -323,7 +325,7 @@ class HtmlBuilder
 
         $html .= '</dl>';
 
-        return $html;
+        return $this->toHtmlString($html);
     }
 
     /**
@@ -333,7 +335,7 @@ class HtmlBuilder
      * @param array  $list
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString|string
      */
     protected function listing($type, $list, $attributes = [])
     {
@@ -352,7 +354,7 @@ class HtmlBuilder
 
         $attributes = $this->attributes($attributes);
 
-        return "<{$type}{$attributes}>{$html}</{$type}>";
+        return $this->toHtmlString("<{$type}{$attributes}>{$html}</{$type}>");
     }
 
     /**
@@ -478,7 +480,7 @@ class HtmlBuilder
      * @param string $content
      * @param array  $attributes
      *
-     * @return string
+     * @return \Illuminate\Support\HtmlString
      */
     public function meta($name, $content, array $attributes = [])
     {
@@ -486,7 +488,7 @@ class HtmlBuilder
 
         $attributes = array_merge($defaults, $attributes);
 
-        return '<meta' . $this->attributes($attributes) . '>' . PHP_EOL;
+        return $this->toHtmlString('<meta' . $this->attributes($attributes) . '>' . PHP_EOL);
     }
 
     /**
@@ -559,6 +561,18 @@ class HtmlBuilder
         }
 
         return $data;
+    }
+
+    /**
+     * Transform the string to an Html serializable object
+     *
+     * @param $html
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    protected function toHtmlString($html)
+    {
+        return new HtmlString($html);
     }
 
     /**

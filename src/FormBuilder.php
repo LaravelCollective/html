@@ -3,11 +3,11 @@
 namespace Collective\Html;
 
 use DateTime;
-use Illuminate\Contracts\Routing\UrlGenerator;
-use Illuminate\Session\SessionInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
+use Illuminate\Session\SessionInterface;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Contracts\Routing\UrlGenerator;
 
 class FormBuilder
 {
