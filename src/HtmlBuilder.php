@@ -407,7 +407,7 @@ class HtmlBuilder
         foreach ((array) $attributes as $key => $value) {
             $element = $this->attributeElement($key, $value);
 
-            if ( ! is_null($element)) {
+            if (! is_null($element)) {
                 $html[] = $element;
             }
         }
@@ -432,7 +432,7 @@ class HtmlBuilder
             $key = $value;
         }
 
-        if ( ! is_null($value)) {
+        if (! is_null($value)) {
             return $key . '="' . e($value) . '"';
         }
     }

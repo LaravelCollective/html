@@ -235,7 +235,7 @@ class FormBuilder
      */
     public function input($type, $name, $value = null, $options = [])
     {
-        if ( ! isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
@@ -244,7 +244,7 @@ class FormBuilder
         // in the model instance if one is set. Otherwise we will just use empty.
         $id = $this->getIdAttribute($name, $options);
 
-        if ( ! in_array($type, $this->skipValueTypes)) {
+        if (! in_array($type, $this->skipValueTypes)) {
             $value = $this->getValueAttribute($name, $value);
         }
 
@@ -447,7 +447,7 @@ class FormBuilder
      */
     public function textarea($name, $value = null, $options = [])
     {
-        if ( ! isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
@@ -526,7 +526,7 @@ class FormBuilder
 
         $options['id'] = $this->getIdAttribute($name, $options);
 
-        if ( ! isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
@@ -906,7 +906,7 @@ class FormBuilder
      */
     public function button($value = null, $options = [])
     {
-        if ( ! array_key_exists('type', $options)) {
+        if (! array_key_exists('type', $options)) {
             $options['type'] = 'button';
         }
 
@@ -1066,11 +1066,11 @@ class FormBuilder
             return $value;
         }
 
-        if ( ! is_null($this->old($name))) {
+        if (! is_null($this->old($name))) {
             return $this->old($name);
         }
 
-        if ( ! is_null($value)) {
+        if (! is_null($value)) {
             return $value;
         }
 

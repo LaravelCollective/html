@@ -91,7 +91,8 @@ class ModelThatUsesForms extends Model
 
 }
 
-class ModelThatDoesntUseForms extends Model {
+class ModelThatDoesntUseForms extends Model
+{
 
     protected $table = 'models';
 

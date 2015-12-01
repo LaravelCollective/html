@@ -16,7 +16,7 @@ use Illuminate\Events\Dispatcher;
 |
 */
 
-require __DIR__.'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +36,7 @@ date_default_timezone_set('UTC');
  */
 $capsule = new Capsule;
 $capsule->addConnection([
-  'driver' => 'sqlite',
+  'driver'   => 'sqlite',
   'database' => ':memory:',
 ]);
 $capsule->setEventDispatcher(new Dispatcher);
@@ -45,7 +45,7 @@ $capsule->bootEloquent();
 
 $capsule->schema()->dropIfExists('models');
 
-$capsule->schema()->create('models', function(Blueprint $table) {
+$capsule->schema()->create('models', function (Blueprint $table) {
     $table->increments('id');
     $table->string('string');
     $table->string('email');
