@@ -311,9 +311,9 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormSelectYear()
     {
-        $select1 = $this->formBuilder->selectYear('year', 2000, 2020);
-        $select2 = $this->formBuilder->selectYear('year', 2000, 2020, null, ['id' => 'foo']);
-        $select3 = $this->formBuilder->selectYear('year', 2000, 2020, '2000');
+        $select1 = (string) $this->formBuilder->selectYear('year', 2000, 2020);
+        $select2 = (string) $this->formBuilder->selectYear('year', 2000, 2020, null, ['id' => 'foo']);
+        $select3 = (string) $this->formBuilder->selectYear('year', 2000, 2020, '2000');
 
         $this->assertContains('<select name="year"><option value="2000">2000</option><option value="2001">2001</option>', $select1);
         $this->assertContains('<select id="foo" name="year"><option value="2000">2000</option><option value="2001">2001</option>', $select2);
@@ -322,7 +322,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormSelectRange()
     {
-        $range = $this->formBuilder->selectRange('dob', 1900, 2013);
+        $range = (string) $this->formBuilder->selectRange('dob', 1900, 2013);
 
         $this->assertContains('<select name="dob"><option value="1900">1900</option>', $range);
         $this->assertContains('<option value="2013">2013</option>', $range);
@@ -330,9 +330,9 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormSelectMonth()
     {
-        $month1 = $this->formBuilder->selectMonth('month');
-        $month2 = $this->formBuilder->selectMonth('month', '1');
-        $month3 = $this->formBuilder->selectMonth('month', null, ['id' => 'foo']);
+        $month1 = (string) $this->formBuilder->selectMonth('month');
+        $month2 = (string) $this->formBuilder->selectMonth('month', '1');
+        $month3 = (string) $this->formBuilder->selectMonth('month', null, ['id' => 'foo']);
 
         $this->assertContains('<select name="month"><option value="1">January</option><option value="2">February</option>', $month1);
         $this->assertContains('<select name="month"><option value="1" selected="selected">January</option>', $month2);
