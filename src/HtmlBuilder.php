@@ -520,7 +520,7 @@ class HtmlBuilder
      * @param array $arguments
      * @return string
      */
-    public function renderComponent($name, array $arguments)
+    protected function renderComponent($name, array $arguments)
     {
         $component = static::$components[$name];
 
