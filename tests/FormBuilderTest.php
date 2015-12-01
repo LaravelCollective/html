@@ -2,6 +2,7 @@
 
 use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
@@ -16,7 +17,8 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
   public function setUp()
   {
       $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
-      $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
+      $this->viewFactory = m::mock(Factory::class);
+      $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
       $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
   }
 

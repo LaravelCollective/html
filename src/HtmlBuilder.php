@@ -2,12 +2,16 @@
 
 namespace Collective\Html;
 
-use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Contracts\Routing\UrlGenerator;
 
 class HtmlBuilder
 {
-    use Macroable;
+
+    use Macroable {
+        __call as callMacro;
+    }
 
     /**
      * The URL generator instance.
@@ -17,15 +21,29 @@ class HtmlBuilder
     protected $url;
 
     /**
+     * The View Factory instance.
+     *
+     * @var \Illuminate\Contracts\View\Factory
+     */
+    private $view;
+
+    /**
+     * The registered components.
+     *
+     * @var array
+     */
+    protected static $components = [];
+
+    /**
      * Create a new HTML builder instance.
      *
      * @param \Illuminate\Contracts\Routing\UrlGenerator $url
-     *
-     * @return void
+     * @param \Illuminate\Contracts\View\Factory         $view
      */
-    public function __construct(UrlGenerator $url = null)
+    public function __construct(UrlGenerator $url = null, Factory $view)
     {
         $this->url = $url;
+        $this->view = $view;
     }
 
     /**
@@ -65,7 +83,7 @@ class HtmlBuilder
     {
         $attributes['src'] = $this->url->asset($url, $secure);
 
-        return '<script'.$this->attributes($attributes).'></script>'.PHP_EOL;
+        return '<script' . $this->attributes($attributes) . '></script>' . PHP_EOL;
     }
 
     /**
@@ -85,7 +103,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return '<link'.$this->attributes($attributes).'>'.PHP_EOL;
+        return '<link' . $this->attributes($attributes) . '>' . PHP_EOL;
     }
 
     /**
@@ -102,7 +120,7 @@ class HtmlBuilder
     {
         $attributes['alt'] = $alt;
 
-        return '<img src="'.$this->url->asset($url, $secure).'"'.$this->attributes($attributes).'>';
+        return '<img src="' . $this->url->asset($url, $secure) . '"' . $this->attributes($attributes) . '>';
     }
 
     /**
@@ -122,7 +140,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return '<link'.$this->attributes($attributes).'>'.PHP_EOL;
+        return '<link' . $this->attributes($attributes) . '>' . PHP_EOL;
     }
 
     /**
@@ -143,7 +161,7 @@ class HtmlBuilder
             $title = $url;
         }
 
-        return '<a href="'.$url.'"'.$this->attributes($attributes).'>'.$this->entities($title).'</a>';
+        return '<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>';
     }
 
     /**
@@ -236,9 +254,9 @@ class HtmlBuilder
 
         $title = $title ?: $email;
 
-        $email = $this->obfuscate('mailto:').$email;
+        $email = $this->obfuscate('mailto:') . $email;
 
-        return '<a href="'.$email.'"'.$this->attributes($attributes).'>'.$this->entities($title).'</a>';
+        return '<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>';
     }
 
     /**
@@ -295,9 +313,9 @@ class HtmlBuilder
 
         foreach ($list as $key => $value) {
             $value = (array) $value;
-            
+
             $html .= "<dt>$key</dt>";
-            
+
             foreach ($value as $v_key => $v_value) {
                 $html .= "<dd>$v_value</dd>";
             }
@@ -351,7 +369,7 @@ class HtmlBuilder
         if (is_array($value)) {
             return $this->nestedListing($key, $type, $value);
         } else {
-            return '<li>'.e($value).'</li>';
+            return '<li>' . e($value) . '</li>';
         }
     }
 
@@ -369,7 +387,7 @@ class HtmlBuilder
         if (is_int($key)) {
             return $this->listing($type, $value);
         } else {
-            return '<li>'.$key.$this->listing($type, $value).'</li>';
+            return '<li>' . $key . $this->listing($type, $value) . '</li>';
         }
     }
 
@@ -387,12 +405,12 @@ class HtmlBuilder
         foreach ((array) $attributes as $key => $value) {
             $element = $this->attributeElement($key, $value);
 
-            if (!is_null($element)) {
+            if ( ! is_null($element)) {
                 $html[] = $element;
             }
         }
 
-        return count($html) > 0 ? ' '.implode(' ', $html) : '';
+        return count($html) > 0 ? ' ' . implode(' ', $html) : '';
     }
 
     /**
@@ -412,8 +430,8 @@ class HtmlBuilder
             $key = $value;
         }
 
-        if (!is_null($value)) {
-            return $key.'="'.e($value).'"';
+        if ( ! is_null($value)) {
+            return $key . '="' . e($value) . '"';
         }
     }
 
@@ -438,10 +456,12 @@ class HtmlBuilder
             // the randomly obfuscated letters out of the string on the responses.
             switch (rand(1, 3)) {
                 case 1:
-                    $safe .= '&#'.ord($letter).';'; break;
+                    $safe .= '&#' . ord($letter) . ';';
+                    break;
 
                 case 2:
-                    $safe .= '&#x'.dechex(ord($letter)).';'; break;
+                    $safe .= '&#x' . dechex(ord($letter)) . ';';
+                    break;
 
                 case 3:
                     $safe .= $letter;
@@ -466,6 +486,62 @@ class HtmlBuilder
 
         $attributes = array_merge($defaults, $attributes);
 
-        return '<meta'.$this->attributes($attributes).'>'.PHP_EOL;
+        return '<meta' . $this->attributes($attributes) . '>' . PHP_EOL;
+    }
+
+    /**
+     * Register a custom component.
+     *
+     * @param       $name
+     * @param       $view
+     * @param array $signature
+     * @return void
+     */
+    public static function component($name, $view, array $signature)
+    {
+        static::$components[$name] = compact('view', 'signature');
+    }
+
+    /**
+     * Check if a component is registered.
+     *
+     * @param $name
+     * @return bool
+     */
+    public static function hasComponent($name)
+    {
+        return isset(static::$components[$name]);
+    }
+
+    /**
+     * Render a custom component.
+     *
+     * @param       $name
+     * @param array $arguments
+     * @return string
+     */
+    public function renderComponent($name, array $arguments)
+    {
+        $component = static::$components[$name];
+
+        return $this->view->make($component['view'], array_combine($component['signature'], $arguments))->render();
+    }
+
+    /**
+     * Dynamically handle calls to the class.
+     *
+     * @param $method
+     * @param $parameters
+     * @return mixed|string
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $parameters)
+    {
+        if (static::hasComponent($method)) {
+            return $this->renderComponent($method, $parameters);
+        }
+
+        return $this->callMacro($method, $parameters);
     }
 }
