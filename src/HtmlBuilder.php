@@ -10,7 +10,7 @@ class HtmlBuilder
 {
 
     use Macroable {
-        __call as callMacro;
+        __call as macroCall;
     }
 
     /**
@@ -529,7 +529,7 @@ class HtmlBuilder
     }
 
     /**
-     * Prepare the component data.
+     * Prepare the component data, while respecting provided defaults.
      *
      * @param  array $signature
      * @param  array $arguments
@@ -537,7 +537,24 @@ class HtmlBuilder
      */
     protected function getComponentData(array $signature, array $arguments)
     {
-        return array_combine($signature, $arguments);
+        $data = [];
+
+        $i = 0;
+        foreach($signature as $variable => $default) {
+            // If the "variable" value is actually a numeric key, we can assume that
+            // no default had been specified for the component argument and we'll
+            // just use null instead, so that we can treat them all the same.
+            if (is_numeric($variable)) {
+                $variable = $default;
+                $default = null;
+            }
+
+            $data[$variable] = array_get($arguments, $i) ?: $default;
+
+            $i++;
+        }
+
+        return $data;
     }
 
     /**
@@ -555,6 +572,6 @@ class HtmlBuilder
             return $this->renderComponent($method, $parameters);
         }
 
-        return $this->callMacro($method, $parameters);
+        return $this->macroCall($method, $parameters);
     }
 }
