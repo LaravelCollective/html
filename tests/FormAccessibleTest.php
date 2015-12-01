@@ -59,7 +59,6 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($model->string, 'ABCDEFGHIJKLMNOP');
         $this->assertEquals($model->created_at, Carbon::now()->diffForHumans());
     }
-
 }
 
 class ModelThatUsesForms extends Model
@@ -88,7 +87,6 @@ class ModelThatUsesForms extends Model
     {
         return '1 second ago';
     }
-
 }
 
 class ModelThatDoesntUseForms extends Model
@@ -105,5 +103,4 @@ class ModelThatDoesntUseForms extends Model
     {
         return '1 second ago';
     }
-
 }
