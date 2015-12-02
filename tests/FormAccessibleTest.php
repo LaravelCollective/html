@@ -32,7 +32,7 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
         $this->viewFactory = m::mock(Factory::class);
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
-        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
+        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc');
     }
 
     public function testItCanMutateValuesForForms()

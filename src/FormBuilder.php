@@ -3,8 +3,11 @@
 namespace Collective\Html;
 
 use DateTime;
+use BadMethodCallException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Session\SessionInterface;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -12,7 +15,10 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 class FormBuilder
 {
 
-    use Macroable;
+    use Macroable, Componentable {
+        Macroable::__call as macroCall;
+        Componentable::__call as componentCall;
+    }
 
     /**
      * The HTML builder instance.
@@ -27,6 +33,13 @@ class FormBuilder
      * @var \Illuminate\Contracts\Routing\UrlGenerator
      */
     protected $url;
+
+    /**
+     * The View factory instance.
+     *
+     * @var \Illuminate\Contracts\View\Factory
+     */
+    protected $view;
 
     /**
      * The CSRF token used by the form builder.
@@ -80,14 +93,16 @@ class FormBuilder
     /**
      * Create a new form builder instance.
      *
-     * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param  \Collective\Html\HtmlBuilder               $html
+     * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
+     * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
      */
-    public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken)
     {
         $this->url = $url;
         $this->html = $html;
+        $this->view = $view;
         $this->csrfToken = $csrfToken;
     }
 
@@ -1165,5 +1180,32 @@ class FormBuilder
         $this->session = $session;
 
         return $this;
+    }
+
+    /**
+     * Dynamically handle calls to the class.
+     *
+     * @param  string $method
+     * @param  array  $parameters
+     *
+     * @return \Illuminate\Contracts\View\View|mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $parameters)
+    {
+        try {
+            return $this->componentCall($method, $parameters);
+        } catch (BadMethodCallException $e) {
+            //
+        }
+
+        try {
+            return $this->macroCall($method, $parameters);
+        } catch (BadMethodCallException $e) {
+            //
+        }
+
+        throw new BadMethodCallException("Method {$method} does not exist.");
     }
 }
