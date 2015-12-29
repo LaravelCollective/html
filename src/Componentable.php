@@ -107,5 +107,4 @@ trait Componentable
 
         throw new BadMethodCallException("Method {$method} does not exist.");
     }
-
 }
