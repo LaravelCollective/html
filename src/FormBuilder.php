@@ -1103,6 +1103,10 @@ class FormBuilder
      */
     protected function getModelValueAttribute($name)
     {
+        if (!isset($this->model)) {
+            return null;
+        }
+        
         if (method_exists($this->model, 'getFormValue')) {
             return $this->model->getFormValue($name);
         }
