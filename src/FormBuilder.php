@@ -7,7 +7,6 @@ use BadMethodCallException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Session\SessionInterface;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
