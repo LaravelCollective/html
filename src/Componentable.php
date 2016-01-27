@@ -81,7 +81,7 @@ trait Componentable
                 $default = null;
             }
 
-            $data[$variable] = array_get($arguments, $i) ?: $default;
+            $data[$variable] = array_get($arguments, $i, $default);
 
             $i++;
         }
