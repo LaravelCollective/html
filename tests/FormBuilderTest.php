@@ -260,6 +260,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
           '<select name="size"><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+        
+        $select = $this->formBuilder->select(
+            'size',
+            ['0' => 'All Sizes', 'L' => 'Large', 'M' => 'Medium', 'S' => 'Small'],
+            ['M'],
+            ['multiple']
+        );
+        $this->assertEquals(
+            $select,
+            '<select multiple="multiple" name="size"><option value="0">All Sizes</option><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
