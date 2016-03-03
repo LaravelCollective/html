@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Facade;
  */
 class HtmlFacade extends Facade
 {
+
     /**
      * Get the registered name of the component.
      *

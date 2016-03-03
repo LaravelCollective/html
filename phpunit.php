@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Events\Dispatcher;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Composer Auto Loader
@@ -12,7 +16,7 @@
 |
 */
 
-require __DIR__.'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +30,24 @@ require __DIR__.'/vendor/autoload.php';
 */
 
 date_default_timezone_set('UTC');
+
+/*
+ * Prepare the db connection (spoofing that shit)
+ */
+$capsule = new Capsule;
+$capsule->addConnection([
+  'driver'   => 'sqlite',
+  'database' => ':memory:',
+]);
+$capsule->setEventDispatcher(new Dispatcher);
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
+
+$capsule->schema()->dropIfExists('models');
+
+$capsule->schema()->create('models', function (Blueprint $table) {
+    $table->increments('id');
+    $table->string('string');
+    $table->string('email');
+    $table->timestamps();
+});
