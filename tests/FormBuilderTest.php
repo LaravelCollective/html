@@ -278,6 +278,27 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['name' => 'select-name']
         );
         $this->assertEquals($select, '<select name="select-name" id="select-name-id"></select>');
+
+        $select = $this->formBuilder->select(
+            'size',
+            [
+                'Large sizes' => [
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ],
+                'S' => 'Small',
+            ],
+            null,
+            [
+                'class' => 'class-name',
+                'id' => 'select-id',
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
+        );
     }
 
     public function testFormSelectRepopulation()
