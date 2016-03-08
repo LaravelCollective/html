@@ -403,7 +403,7 @@ class HtmlBuilder
         // if there is group attribute defined then fetch the group attributes
         // from the config file (html.php) and remove the group key from the
         // attribute or empty array will be returned
-        if ( array_has($attributes, 'group') ) {
+        if (array_has($attributes, 'group')) {
             $groupAttributes = config('html.group.'.array_pull($attributes, 'group')) ?: [];
         } else {
             $groupAttributes = [];
@@ -412,7 +412,7 @@ class HtmlBuilder
         // merge the fetched group attributes (from html.php) with the basic tag
         // attrbites of the config file (html.php); if there is no tag attribute 
         // is found then only the group attribute is returned
-        if ( config('html.' . $tag) != null) {
+        if (config('html.' . $tag) != null) {
             $configAttributes = $this->attributesMerge($groupAttributes, config('html.' . $tag));
         } else {
             $configAttributes = $groupAttributes;
@@ -434,11 +434,11 @@ class HtmlBuilder
 
     /**
      * Merge given attributes and default attributes.
-     * 
+     *
      * @param array $attrDefault
      * @param array $attrGiven
      * @param string $delimeter = ''
-     * 
+     *
      * @return array
      */
     public function attributesMerge($attrDefault, $attrGiven, $delimeter = ' ')
@@ -447,11 +447,11 @@ class HtmlBuilder
         
         $concated = [];
         foreach ($keys as $key) {
-            if ( isset($attrDefault[$key]) && isset($attrGiven[$key]) ) {
+            if (isset($attrDefault[$key]) && isset($attrGiven[$key])) {
                 $concated[$key] = $attrDefault[$key] . $delimeter . $attrGiven[$key];
-            } else if ( isset($attrDefault[$key]) ) {
+            } elseif (isset($attrDefault[$key])) {
                 $concated[$key] = $attrDefault[$key];
-            } else if ( isset($attrGiven[$key]) ) {
+            } elseif (isset($attrGiven[$key])) {
                 $concated[$key] = $attrGiven[$key];
             }
         }
