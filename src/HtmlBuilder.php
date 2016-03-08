@@ -410,7 +410,7 @@ class HtmlBuilder
         }
 
         // merge the fetched group attributes (from html.php) with the basic tag
-        // attrbites of the config file (html.php); if there is no tag attribute 
+        // attrbites of the config file (html.php); if there is no tag attribute
         // is found then only the group attribute is returned
         if (config('html.' . $tag) != null) {
             $configAttributes = $this->attributesMerge($groupAttributes, config('html.' . $tag));
@@ -444,7 +444,7 @@ class HtmlBuilder
     public function attributesMerge($attrDefault, $attrGiven, $delimeter = ' ')
     {
         $keys = array_unique(array_merge(array_keys($attrDefault), array_keys($attrGiven)));
-        
+
         $concated = [];
         foreach ($keys as $key) {
             if (isset($attrDefault[$key]) && isset($attrGiven[$key])) {
@@ -455,7 +455,7 @@ class HtmlBuilder
                 $concated[$key] = $attrGiven[$key];
             }
         }
-        
+
         return $concated;
     }
 
