@@ -87,7 +87,7 @@ class FormBuilder
      *
      * @var array
      */
-    protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio', 'date', 'datetime', 'datetime-local'];
+    protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
     /**
      * Create a new form builder instance.
@@ -247,7 +247,7 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function input($type, $name, $value = null, $options = [])
+    public function input($type, $name, $value = null, $options = [], $skipValue = false)
     {
         if (! isset($options['name'])) {
             $options['name'] = $name;
@@ -258,7 +258,7 @@ class FormBuilder
         // in the model instance if one is set. Otherwise we will just use empty.
         $id = $this->getIdAttribute($name, $options);
 
-        if (! in_array($type, $this->skipValueTypes)) {
+        if ($skipValue || in_array($type, $this->skipValueTypes) === false) {
             $value = $this->getValueAttribute($name, $value);
         }
 
@@ -371,7 +371,7 @@ class FormBuilder
             $value = $value->format('Y-m-d');
         }
 
-        return $this->input('date', $name, $value, $options);
+        return $this->input('date', $name, $value, $options, true);
     }
 
     /**
@@ -390,7 +390,7 @@ class FormBuilder
             $value = $value->format(DateTime::RFC3339);
         }
 
-        return $this->input('datetime', $name, $value, $options);
+        return $this->input('datetime', $name, $value, $options, true);
     }
 
     /**
@@ -409,7 +409,7 @@ class FormBuilder
             $value = $value->format('Y-m-d\TH:i');
         }
 
-        return $this->input('datetime-local', $name, $value, $options);
+        return $this->input('datetime-local', $name, $value, $options, true);
     }
 
     /**
