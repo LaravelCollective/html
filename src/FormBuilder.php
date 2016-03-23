@@ -210,16 +210,21 @@ class FormBuilder
      * @param  string $name
      * @param  string $value
      * @param  array  $options
+     * @param  bool   $escape_html
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function label($name, $value = null, $options = [])
+    public function label($name, $value = null, $options = [], $escape_html = true)
     {
         $this->labels[] = $name;
 
         $options = $this->html->attributes($options);
 
-        $value = e($this->formatLabel($name, $value));
+        $value = $this->formatLabel($name, $value);
+
+        if ($escape_html) {
+            $value = $this->html->entities($value);
+        }
 
         return $this->toHtmlString('<label for="' . $name . '"' . $options . '>' . $value . '</label>');
     }
