@@ -200,13 +200,13 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     {
         $form1 = $this->formBuilder->date('foo');
         $form2 = $this->formBuilder->date('foo', '2015-02-20');
-        $form3 = $this->formBuilder->date('foo', \Carbon\Carbon::now());
+        $date3 = \Carbon\Carbon::now();
+        $form3 = $this->formBuilder->date('foo', $date3);
         $form4 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
 
         $this->assertEquals('<input name="foo" type="date">', $form1);
-        $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form2);
-        $this->assertEquals('<input name="foo" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">',
-          $form3);
+        $this->assertEquals('<input name="foo" type="date" value="2015-02-20T00:00:00+00:00">', $form2);
+        $this->assertEquals('<input name="foo" type="date" value="' . $date3->toRfc3339String() . '">', $form3);
         $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
     }
 
