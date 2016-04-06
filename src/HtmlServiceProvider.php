@@ -83,7 +83,7 @@ class HtmlServiceProvider extends ServiceProvider
                 $snakeMethod = Str::snake($method);
                 $directive = strtolower($namespace).'_'.$snakeMethod;
 
-                Blade::directive($directive, function($expression) use ($namespace, $method) {
+                Blade::directive($directive, function ($expression) use ($namespace, $method) {
                     return "<?php echo $namespace::$method$expression; ?>";
                 });
             }
