@@ -82,8 +82,9 @@ class ModelThatUsesForms extends Model
 
     public function formCreatedAtAttribute($value)
     {
-        if( ! $value instanceof Carbon )
+        if (! $value instanceof Carbon) {
             $value = Carbon::parse($value);
+        }
 
         return $value->timestamp;
     }
