@@ -40,8 +40,8 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $model = new ModelThatUsesForms($this->modelData);
         $this->formBuilder->setModel($model);
 
-        $this->assertEquals($model->getFormValue('string'), 'ponmlkjihgfedcba');
-        $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp);
+        $this->assertEquals($model->getFormValue('string'), 'PONMLKJIHGFEDCBA');
+        $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp-1);
     }
 
     public function testItCanStillMutateValuesForViews()
@@ -80,8 +80,11 @@ class ModelThatUsesForms extends Model
         return strtoupper($value);
     }
 
-    public function formCreatedAtAttribute(Carbon $value)
+    public function formCreatedAtAttribute($value)
     {
+        if( ! $value instanceof Carbon )
+            $value = Carbon::parse($value);
+
         return $value->timestamp;
     }
 
