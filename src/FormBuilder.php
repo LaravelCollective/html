@@ -1080,7 +1080,7 @@ class FormBuilder
             return $value;
         }
 
-        if (! is_null($this->old($name))) {
+        if (! is_null($this->old($name)) && $name != '_method') {
             return $this->old($name);
         }
 
