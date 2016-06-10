@@ -15,6 +15,18 @@ class HtmlServiceProvider extends ServiceProvider
     protected $defer = true;
 
     /**
+     * Perform post-registration booting of services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../config/html.php' => config_path('html.php'),
+        ]);
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void

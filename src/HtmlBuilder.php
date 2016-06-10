@@ -79,7 +79,7 @@ class HtmlBuilder
     {
         $attributes['src'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<script' . $this->attributes($attributes) . '></script>' . PHP_EOL);
+        return $this->toHtmlString('<script' . $this->attributes($attributes, 'html.script') . '></script>' . PHP_EOL);
     }
 
     /**
@@ -99,7 +99,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<link' . $this->attributes($attributes, 'html.style') . '>' . PHP_EOL);
     }
 
     /**
@@ -117,7 +117,7 @@ class HtmlBuilder
         $attributes['alt'] = $alt;
 
         return $this->toHtmlString('<img src="' . $this->url->asset($url,
-            $secure) . '"' . $this->attributes($attributes) . '>');
+            $secure) . '"' . $this->attributes($attributes, 'html.image') . '>');
     }
 
     /**
@@ -137,7 +137,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<link' . $this->attributes($attributes, 'html.favicon') . '>' . PHP_EOL);
     }
 
     /**
@@ -158,7 +158,7 @@ class HtmlBuilder
             $title = $url;
         }
 
-        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
+        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes, 'html.link') . '>' . $this->entities($title) . '</a>');
     }
 
     /**
@@ -253,7 +253,7 @@ class HtmlBuilder
 
         $email = $this->obfuscate('mailto:') . $email;
 
-        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
+        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes, 'html.mailto') . '>' . $this->entities($title) . '</a>');
     }
 
     /**
@@ -304,7 +304,7 @@ class HtmlBuilder
      */
     public function dl(array $list, array $attributes = [])
     {
-        $attributes = $this->attributes($attributes);
+        $attributes = $this->attributes($attributes, 'html.dl');
 
         $html = "<dl{$attributes}>";
 
@@ -347,7 +347,7 @@ class HtmlBuilder
             $html .= $this->listingElement($key, $type, $value);
         }
 
-        $attributes = $this->attributes($attributes);
+        $attributes = $this->attributes($attributes, 'html.listing');
 
         return $this->toHtmlString("<{$type}{$attributes}>{$html}</{$type}>");
     }
@@ -392,12 +392,34 @@ class HtmlBuilder
      * Build an HTML attribute string from an array.
      *
      * @param array $attributes
+     * @param string $tag = ''
      *
      * @return string
      */
-    public function attributes($attributes)
+    public function attributes($attributes, $tag = '')
     {
         $html = [];
+
+        // if there is group attribute defined then fetch the group attributes
+        // from the config file (html.php) and remove the group key from the
+        // attribute or empty array will be returned
+        if (array_has($attributes, 'group')) {
+            $groupAttributes = config('html.group.'.array_pull($attributes, 'group')) ?: [];
+        } else {
+            $groupAttributes = [];
+        }
+
+        // merge the fetched group attributes (from html.php) with the basic tag
+        // attrbites of the config file (html.php); if there is no tag attribute
+        // is found then only the group attribute is returned
+        if (config('html.' . $tag) != null) {
+            $configAttributes = $this->attributesMerge($groupAttributes, config('html.' . $tag));
+        } else {
+            $configAttributes = $groupAttributes;
+        }
+
+        // merge the merged config attributes with the given attribute
+        $attributes = $this->attributesMerge($configAttributes, $attributes);
 
         foreach ((array) $attributes as $key => $value) {
             $element = $this->attributeElement($key, $value);
@@ -408,6 +430,33 @@ class HtmlBuilder
         }
 
         return count($html) > 0 ? ' ' . implode(' ', $html) : '';
+    }
+
+    /**
+     * Merge given attributes and default attributes.
+     *
+     * @param array $attrDefault
+     * @param array $attrGiven
+     * @param string $delimeter = ''
+     *
+     * @return array
+     */
+    public function attributesMerge($attrDefault, $attrGiven, $delimeter = ' ')
+    {
+        $keys = array_unique(array_merge(array_keys($attrDefault), array_keys($attrGiven)));
+
+        $concated = [];
+        foreach ($keys as $key) {
+            if (isset($attrDefault[$key]) && isset($attrGiven[$key])) {
+                $concated[$key] = $attrDefault[$key] . $delimeter . $attrGiven[$key];
+            } elseif (isset($attrDefault[$key])) {
+                $concated[$key] = $attrDefault[$key];
+            } elseif (isset($attrGiven[$key])) {
+                $concated[$key] = $attrGiven[$key];
+            }
+        }
+
+        return $concated;
     }
 
     /**
@@ -483,7 +532,7 @@ class HtmlBuilder
 
         $attributes = array_merge($defaults, $attributes);
 
-        return $this->toHtmlString('<meta' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<meta' . $this->attributes($attributes, 'html.meta') . '>' . PHP_EOL);
     }
 
     /**
@@ -498,7 +547,7 @@ class HtmlBuilder
     public function tag($tag, $content, array $attributes = [])
     {
         $content = is_array($content) ? implode(PHP_EOL, $content) : $content;
-        return $this->toHtmlString('<' . $tag . $this->attributes($attributes) . '>' . PHP_EOL . $this->toHtmlString($content) . PHP_EOL . '</' . $tag . '>' . PHP_EOL);
+        return $this->toHtmlString('<' . $tag . $this->attributes($attributes, 'html.tag') . '>' . PHP_EOL . $this->toHtmlString($content) . PHP_EOL . '</' . $tag . '>' . PHP_EOL);
     }
 
     /**

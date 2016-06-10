@@ -22,7 +22,7 @@ class FormBuilder
     /**
      * The HTML builder instance.
      *
-     * @var \Collective\Html\HtmlBuilder
+     * @var \Munza\Html\HtmlBuilder
      */
     protected $html;
 
@@ -92,7 +92,7 @@ class FormBuilder
     /**
      * Create a new form builder instance.
      *
-     * @param  \Collective\Html\HtmlBuilder               $html
+     * @param  \Munza\Html\HtmlBuilder               $html
      * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
@@ -146,7 +146,7 @@ class FormBuilder
         // Finally, we will concatenate all of the attributes into a single string so
         // we can build out the final form open statement. We'll also append on an
         // extra value for the hidden _method field if it's needed for the form.
-        $attributes = $this->html->attributes($attributes);
+        $attributes = $this->html->attributes($attributes, 'form.open');
 
         return $this->toHtmlString('<form' . $attributes . '>' . $append);
     }
@@ -218,7 +218,7 @@ class FormBuilder
     {
         $this->labels[] = $name;
 
-        $options = $this->html->attributes($options);
+        $options = $this->html->attributes($options, 'form.label');
 
         $value = $this->formatLabel($name, $value);
 
@@ -252,7 +252,7 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function input($type, $name, $value = null, $options = [])
+    public function input($type, $name, $value = null, $options = [], $tag = 'form.input')
     {
         if (! isset($options['name'])) {
             $options['name'] = $name;
@@ -274,7 +274,7 @@ class FormBuilder
 
         $options = array_merge($options, $merge);
 
-        return $this->toHtmlString('<input' . $this->html->attributes($options) . '>');
+        return $this->toHtmlString('<input' . $this->html->attributes($options, $tag) . '>');
     }
 
     /**
@@ -288,7 +288,7 @@ class FormBuilder
      */
     public function text($name, $value = null, $options = [])
     {
-        return $this->input('text', $name, $value, $options);
+        return $this->input('text', $name, $value, $options, 'form.text');
     }
 
     /**
@@ -301,7 +301,7 @@ class FormBuilder
      */
     public function password($name, $options = [])
     {
-        return $this->input('password', $name, '', $options);
+        return $this->input('password', $name, '', $options, 'form.password');
     }
 
     /**
@@ -315,7 +315,7 @@ class FormBuilder
      */
     public function hidden($name, $value = null, $options = [])
     {
-        return $this->input('hidden', $name, $value, $options);
+        return $this->input('hidden', $name, $value, $options, 'form.hidden');
     }
 
     /**
@@ -329,7 +329,7 @@ class FormBuilder
      */
     public function email($name, $value = null, $options = [])
     {
-        return $this->input('email', $name, $value, $options);
+        return $this->input('email', $name, $value, $options, 'form.email');
     }
 
     /**
@@ -343,7 +343,7 @@ class FormBuilder
      */
     public function tel($name, $value = null, $options = [])
     {
-        return $this->input('tel', $name, $value, $options);
+        return $this->input('tel', $name, $value, $options. 'form.tel');
     }
 
     /**
@@ -357,7 +357,7 @@ class FormBuilder
      */
     public function number($name, $value = null, $options = [])
     {
-        return $this->input('number', $name, $value, $options);
+        return $this->input('number', $name, $value, $options, 'form.number');
     }
 
     /**
@@ -375,7 +375,7 @@ class FormBuilder
             $value = $value->format('Y-m-d');
         }
 
-        return $this->input('date', $name, $value, $options);
+        return $this->input('date', $name, $value, $options, 'form.date');
     }
 
     /**
@@ -393,7 +393,7 @@ class FormBuilder
             $value = $value->format(DateTime::RFC3339);
         }
 
-        return $this->input('datetime', $name, $value, $options);
+        return $this->input('datetime', $name, $value, $options, 'form.datetime');
     }
 
     /**
@@ -411,7 +411,7 @@ class FormBuilder
             $value = $value->format('Y-m-d\TH:i');
         }
 
-        return $this->input('datetime-local', $name, $value, $options);
+        return $this->input('datetime-local', $name, $value, $options, 'form.datetimeLocal');
     }
 
     /**
@@ -425,7 +425,7 @@ class FormBuilder
      */
     public function time($name, $value = null, $options = [])
     {
-        return $this->input('time', $name, $value, $options);
+        return $this->input('time', $name, $value, $options, 'form.time');
     }
 
     /**
@@ -439,7 +439,7 @@ class FormBuilder
      */
     public function url($name, $value = null, $options = [])
     {
-        return $this->input('url', $name, $value, $options);
+        return $this->input('url', $name, $value, $options, 'form.url');
     }
 
     /**
@@ -452,7 +452,7 @@ class FormBuilder
      */
     public function file($name, $options = [])
     {
-        return $this->input('file', $name, null, $options);
+        return $this->input('file', $name, null, $options, 'form.file');
     }
 
     /**
@@ -484,7 +484,7 @@ class FormBuilder
         // Next we will convert the attributes into a string form. Also we have removed
         // the size attribute, as it was merely a short-cut for the rows and cols on
         // the element. Then we'll create the final textarea elements HTML for us.
-        $options = $this->html->attributes($options);
+        $options = $this->html->attributes($options, 'form.textarea');
 
         return $this->toHtmlString('<textarea' . $options . '>' . e($value) . '</textarea>');
     }
@@ -566,7 +566,7 @@ class FormBuilder
         // Once we have all of this HTML, we can join this into a single element after
         // formatting the attributes into an HTML "attributes" string, then we will
         // build out a final select statement, which will contain all the values.
-        $options = $this->html->attributes($options);
+        $options = $this->html->attributes($options, 'form.select');
 
         $list = implode('', $html);
 
@@ -681,7 +681,7 @@ class FormBuilder
 
         $options = ['value' => $value, 'selected' => $selected];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options, 'form.option') . '>' . e($display) . '</option>');
     }
 
     /**
@@ -699,7 +699,7 @@ class FormBuilder
         $options = compact('selected');
         $options['value'] = '';
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options, 'form.option') . '>' . e($display) . '</option>');
     }
 
     /**
@@ -731,7 +731,7 @@ class FormBuilder
      */
     public function checkbox($name, $value = 1, $checked = null, $options = [])
     {
-        return $this->checkable('checkbox', $name, $value, $checked, $options);
+        return $this->checkable('checkbox', $name, $value, $checked, $options, 'form.checkbox');
     }
 
     /**
@@ -750,7 +750,7 @@ class FormBuilder
             $value = $name;
         }
 
-        return $this->checkable('radio', $name, $value, $checked, $options);
+        return $this->checkable('radio', $name, $value, $checked, $options, 'form.radio');
     }
 
     /**
@@ -764,7 +764,7 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function checkable($type, $name, $value, $checked, $options)
+    protected function checkable($type, $name, $value, $checked, $options, $tag)
     {
         $checked = $this->getCheckedState($type, $name, $value, $checked);
 
@@ -772,7 +772,7 @@ class FormBuilder
             $options['checked'] = 'checked';
         }
 
-        return $this->input($type, $name, $value, $options);
+        return $this->input($type, $name, $value, $options, $tag);
     }
 
     /**
@@ -869,7 +869,7 @@ class FormBuilder
      */
     public function reset($value, $attributes = [])
     {
-        return $this->input('reset', null, $value, $attributes);
+        return $this->input('reset', null, $value, $attributes, 'form.reset');
     }
 
     /**
@@ -885,7 +885,7 @@ class FormBuilder
     {
         $attributes['src'] = $this->url->asset($url);
 
-        return $this->input('image', $name, null, $attributes);
+        return $this->input('image', $name, null, $attributes, 'form.image');
     }
 
     /**
@@ -899,7 +899,7 @@ class FormBuilder
      */
     public function color($name, $value = null, $options = [])
     {
-        return $this->input('color', $name, $value, $options);
+        return $this->input('color', $name, $value, $options, 'form.color');
     }
 
     /**
@@ -912,7 +912,7 @@ class FormBuilder
      */
     public function submit($value = null, $options = [])
     {
-        return $this->input('submit', null, $value, $options);
+        return $this->input('submit', null, $value, $options, 'form.submit');
     }
 
     /**
@@ -929,7 +929,7 @@ class FormBuilder
             $options['type'] = 'button';
         }
 
-        return $this->toHtmlString('<button' . $this->html->attributes($options) . '>' . $value . '</button>');
+        return $this->toHtmlString('<button' . $this->html->attributes($options, 'form.button') . '>' . $value . '</button>');
     }
 
     /**
