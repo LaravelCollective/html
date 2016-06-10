@@ -89,4 +89,30 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->htmlBuilder->hasComponent('tweet'));
     }
+
+    public function testLink()
+    {
+        $result1 = $this->htmlBuilder->link("http://www.example.com", "<span>Example.com</span>", ["class" => "example-link"], null, true);
+
+        $result2 = $this->htmlBuilder->link("http://www.example.com", "<span>Example.com</span>", ["class" => "example-link"], null, false);
+
+        $this->assertEquals('<a href="http://www.example.com" class="example-link">&lt;span&gt;Example.com&lt;/span&gt;</a>', $result1);
+        $this->assertEquals('<a href="http://www.example.com" class="example-link"><span>Example.com</span></a>', $result2);
+    }
+
+    public function testMailto()
+    {
+        $htmlBuilder = m::mock('Collective\Html\HtmlBuilder[obfuscate,email]', [$this->urlGenerator, $this->viewFactory]);
+        $htmlBuilder->shouldReceive('obfuscate', 'email')->andReturnUsing(function() {
+            $args = func_get_args();
+            return $args[0];
+        });
+
+        $result1 = $htmlBuilder->mailto("person@example.com", "<span>First Name Last</span>", ["class" => "example-link"], true);
+
+        $result2 = $htmlBuilder->mailto("person@example.com", "<span>First Name Last</span>", ["class" => "example-link"], false);
+
+        $this->assertEquals('<a href="mailto:person@example.com" class="example-link">&lt;span&gt;First Name Last&lt;/span&gt;</a>', $result1);
+        $this->assertEquals('<a href="mailto:person@example.com" class="example-link"><span>First Name Last</span></a>', $result2);
+    }
 }
