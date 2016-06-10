@@ -10,7 +10,6 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 
 class HtmlBuilder
 {
-
     use Macroable, Componentable {
         Macroable::__call as macroCall;
         Componentable::__call as componentCall;

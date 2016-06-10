@@ -13,7 +13,6 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 
 class FormBuilder
 {
-
     use Macroable, Componentable {
         Macroable::__call as macroCall;
         Componentable::__call as componentCall;
