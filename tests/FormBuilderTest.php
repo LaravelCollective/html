@@ -534,7 +534,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
 class FormBuilderModelStub
 {
-
     protected $data;
 
     public function __construct(array $data = [])

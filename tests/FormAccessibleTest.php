@@ -14,7 +14,6 @@ use Mockery as m;
 
 class FormAccessibleTest extends PHPUnit_Framework_TestCase
 {
-
     public function setUp()
     {
         Capsule::table('models')->truncate();
@@ -65,7 +64,6 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
 
 class ModelThatUsesForms extends Model
 {
-
     use FormAccessible;
 
     protected $table = 'models';
@@ -93,7 +91,6 @@ class ModelThatUsesForms extends Model
 
 class ModelThatDoesntUseForms extends Model
 {
-
     protected $table = 'models';
 
     public function getStringAttribute($value)
