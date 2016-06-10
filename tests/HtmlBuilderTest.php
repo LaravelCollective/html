@@ -103,7 +103,7 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
     public function testMailto()
     {
         $htmlBuilder = m::mock('Collective\Html\HtmlBuilder[obfuscate,email]', [$this->urlGenerator, $this->viewFactory]);
-        $htmlBuilder->shouldReceive('obfuscate', 'email')->andReturnUsing(function() {
+        $htmlBuilder->shouldReceive('obfuscate', 'email')->andReturnUsing(function () {
             $args = func_get_args();
             return $args[0];
         });
