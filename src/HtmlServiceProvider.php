@@ -70,7 +70,7 @@ class HtmlServiceProvider extends ServiceProvider
     /**
      * Set blade directives
      *
-     * @param string $type
+     * @param string $namespace
      * @param array $methods
      *
      * @return void
