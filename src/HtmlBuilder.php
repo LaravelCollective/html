@@ -10,7 +10,6 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 
 class HtmlBuilder
 {
-
     use Macroable, Componentable {
         Macroable::__call as macroCall;
         Componentable::__call as componentCall;
@@ -147,10 +146,11 @@ class HtmlBuilder
      * @param string $title
      * @param array  $attributes
      * @param bool   $secure
+     * @param bool   $escape
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function link($url, $title = null, $attributes = [], $secure = null)
+    public function link($url, $title = null, $attributes = [], $secure = null, $escape = true)
     {
         $url = $this->url->to($url, [], $secure);
 
@@ -158,7 +158,11 @@ class HtmlBuilder
             $title = $url;
         }
 
-        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
+        if ($escape) {
+            $title = $this->entities($title);
+        }
+
+        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
     }
 
     /**
@@ -242,18 +246,23 @@ class HtmlBuilder
      * @param string $email
      * @param string $title
      * @param array  $attributes
+     * @param bool   $escape
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function mailto($email, $title = null, $attributes = [])
+    public function mailto($email, $title = null, $attributes = [], $escape = true)
     {
         $email = $this->email($email);
 
         $title = $title ?: $email;
 
+        if ($escape) {
+            $title = $this->entities($title);
+        }
+
         $email = $this->obfuscate('mailto:') . $email;
 
-        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $this->entities($title) . '</a>');
+        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
     }
 
     /**

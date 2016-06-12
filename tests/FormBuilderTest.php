@@ -58,9 +58,11 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     {
         $form1 = $this->formBuilder->label('foo', 'Foobar');
         $form2 = $this->formBuilder->label('foo', 'Foobar', ['class' => 'control-label']);
+        $form3 = $this->formBuilder->label('foo', 'Foobar <i>bar</i>', null, false);
 
         $this->assertEquals('<label for="foo">Foobar</label>', $form1);
         $this->assertEquals('<label for="foo" class="control-label">Foobar</label>', $form2);
+        $this->assertEquals('<label for="foo">Foobar <i>bar</i></label>', $form3);
     }
 
     public function testFormInput()
@@ -532,7 +534,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
 class FormBuilderModelStub
 {
-
     protected $data;
 
     public function __construct(array $data = [])
