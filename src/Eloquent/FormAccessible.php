@@ -39,13 +39,10 @@ trait FormAccessible
         // retrieval from the model to a form that is more useful for usage.
         if ($this->hasFormMutator($key)) {
             return $this->mutateFormAttribute($key, $value);
-        } else {
-
-            // No form mutator, let the model resolve this
-            return data_get($this, $key);
         }
 
-        return $value;
+        // No form mutator, let the model resolve this
+        return data_get($this, $key);
     }
 
     /**
