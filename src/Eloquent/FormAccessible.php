@@ -21,7 +21,7 @@ trait FormAccessible
      *
      * @return mixed
      */
-    public function getFormValue($key)
+    public function getAttribute($key)
     {
         $value = $this->getAttributeFromArray($key);
 
