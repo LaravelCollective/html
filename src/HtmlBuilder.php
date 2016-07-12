@@ -278,6 +278,18 @@ class HtmlBuilder
     }
 
     /**
+     * Generates non-breaking space entities based on number supplied.
+     *
+     * @param int $num
+     *
+     * @return string
+     */
+    public function nbsp($num = 1)
+    {
+        return str_repeat('&nbsp;', $num);
+    }
+    
+    /**
      * Generate an ordered list of items.
      *
      * @param array $list
