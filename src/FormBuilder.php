@@ -1117,7 +1117,7 @@ class FormBuilder
      */
     protected function request($name)
     {
-        if(!isset($this->request)){
+        if (!isset($this->request)) {
             return null;
         }
 
