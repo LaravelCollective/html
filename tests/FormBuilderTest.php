@@ -27,9 +27,11 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
 
         $request = Request::create('/foo', 'GET', [
-            "text" => [
-                "value" => 1
+            "person" => [
+                "name" => "John",
+                "surname" => "Doe"
             ],
+            "aggree" => 1
         ]);
 
         $request = Request::createFromBase($request);
@@ -47,8 +49,13 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testRequestValue()
     {
-        $text = $this->formBuilder->text("text[value]");
-        $this->assertEquals('<input name="text[value]" type="text" value="1">', $text);
+        $name = $this->formBuilder->text("person[name]");
+        $surname = $this->formBuilder->text("person[surname]");
+        $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
+
+        $checkbox = $this->formBuilder->checkbox("aggree", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checkbox);
     }
 
     public function testOpeningForm()

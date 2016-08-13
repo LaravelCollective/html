@@ -813,11 +813,13 @@ class FormBuilder
      */
     protected function getCheckboxCheckedState($name, $value, $checked)
     {
-        if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) {
+        $request = $this->request($name);
+
+        if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name)) && !$request) {
             return false;
         }
 
-        if ($this->missingOldAndModel($name)) {
+        if ($this->missingOldAndModel($name) && !$request) {
             return $checked;
         }
 
@@ -1092,10 +1094,9 @@ class FormBuilder
             return $this->old($name);
         }
 
-
-        $request_value = $this->request($name);
-        if (!is_null($request_value)) {
-            return $request_value;
+        $request = $this->request($name);
+        if (!is_null($request)) {
+            return $request;
         }
 
         if (! is_null($value)) {
@@ -1109,6 +1110,10 @@ class FormBuilder
 
     protected function request($name)
     {
+        if(!isset($this->request)){
+            return null;
+        }
+
         return $this->request->input($this->transformKey($name));
     }
 
