@@ -68,7 +68,7 @@ class FormBuilder
      */
     protected $labels = [];
 
-    public $request;
+    protected $request;
 
     /**
      * The reserved form open attributes.
