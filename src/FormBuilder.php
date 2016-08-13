@@ -845,7 +845,9 @@ class FormBuilder
      */
     protected function getRadioCheckedState($name, $value, $checked)
     {
-        if ($this->missingOldAndModel($name)) {
+        $request = $this->request($name);
+
+        if ($this->missingOldAndModel($name) && !$request) {
             return $checked;
         }
 
@@ -1108,6 +1110,11 @@ class FormBuilder
         }
     }
 
+    /**
+     * Get value from current Request
+     * @param $name
+     * @return array|null|string
+     */
     protected function request($name)
     {
         if(!isset($this->request)){

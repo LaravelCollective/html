@@ -26,12 +26,14 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->viewFactory = m::mock(Factory::class);
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
 
+        // prepare request for test with some data
         $request = Request::create('/foo', 'GET', [
             "person" => [
                 "name" => "John",
                 "surname" => "Doe"
             ],
-            "aggree" => 1
+            "aggree" => 1,
+            "checkbox_array" => [1,2,3]
         ]);
 
         $request = Request::createFromBase($request);
@@ -54,8 +56,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
         $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
 
-        $checkbox = $this->formBuilder->checkbox("aggree", 1);
-        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checkbox);
+        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $unchecked = $this->formBuilder->checkbox("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="checkbox" value="1">', $unchecked);
+
+        $checked_array = $this->formBuilder->checkbox("checkbox_array[]", 1);
+        $unchecked_array = $this->formBuilder->checkbox("checkbox_array[]", 4);
+        $this->assertEquals('<input checked="checked" name="checkbox_array[]" type="checkbox" value="1">', $checked_array);
+        $this->assertEquals('<input name="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
+
+        $checked = $this->formBuilder->radio("aggree", 1);
+        $unchecked = $this->formBuilder->radio("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="radio" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="radio" value="1">', $unchecked);
     }
 
     public function testOpeningForm()
