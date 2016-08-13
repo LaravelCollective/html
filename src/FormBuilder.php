@@ -4,6 +4,7 @@ namespace Collective\Html;
 
 use DateTime;
 use BadMethodCallException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
@@ -67,6 +68,8 @@ class FormBuilder
      */
     protected $labels = [];
 
+    public $request;
+
     /**
      * The reserved form open attributes.
      *
@@ -96,12 +99,13 @@ class FormBuilder
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
      */
-    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken)
+    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken, Request $request = null)
     {
         $this->url = $url;
         $this->html = $html;
         $this->view = $view;
         $this->csrfToken = $csrfToken;
+        $this->request = $request;
     }
 
     /**
@@ -1088,6 +1092,12 @@ class FormBuilder
             return $this->old($name);
         }
 
+
+        $request_value = $this->request($name);
+        if (!is_null($request_value)) {
+            return $request_value;
+        }
+
         if (! is_null($value)) {
             return $value;
         }
@@ -1095,6 +1105,11 @@ class FormBuilder
         if (isset($this->model)) {
             return $this->getModelValueAttribute($name);
         }
+    }
+
+    protected function request($name)
+    {
+        return $this->request->input($this->transformKey($name));
     }
 
     /**

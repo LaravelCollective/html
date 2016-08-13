@@ -13,6 +13,11 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
 
     /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
+
+    /**
      * Setup the test environment.
      */
     public function setUp()
@@ -20,7 +25,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
         $this->viewFactory = m::mock(Factory::class);
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
-        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc');
+
+        $request = Request::create('/foo', 'GET', [
+            "text" => [
+                "value" => 1
+            ],
+        ]);
+
+        $request = Request::createFromBase($request);
+
+        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc', $request);
     }
 
     /**
@@ -29,6 +43,12 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         m::close();
+    }
+
+    public function testRequestValue()
+    {
+        $text = $this->formBuilder->text("text[value]");
+        $this->assertEquals('<input name="text[value]" type="text" value="1">', $text);
     }
 
     public function testOpeningForm()
