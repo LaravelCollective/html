@@ -654,7 +654,7 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function optionGroup($list, $label, $selected)
+    public function optionGroup($list, $label, $selected)
     {
         $html = [];
 
@@ -674,7 +674,7 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function option($display, $value, $selected)
+    public function option($display, $value, $selected)
     {
         $selected = $this->getSelectedValue($value, $selected);
 
