@@ -695,8 +695,12 @@ class FormBuilder
     {
         $selected = $this->getSelectedValue(null, $selected);
 
-        $options = compact('selected');
-        $options['value'] = '';
+        $options = [
+            'selected' => $selected,
+            'disabled' => 'disabled',
+            'hidden' => 'hidden',
+            'value' => ''
+        ];
 
         return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
     }
