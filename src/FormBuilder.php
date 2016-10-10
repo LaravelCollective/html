@@ -59,7 +59,7 @@ class FormBuilder
    *
    * @var array
    */
-  protected $reserved = ['method', 'url', 'route', 'action', 'files'];
+  protected $reserved = ['method', 'url', 'route', 'action', 'files', 'absolute'];
 
   /**
    * The form methods that should be spoofed, in uppercase.
@@ -76,19 +76,28 @@ class FormBuilder
   protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
   /**
+   * If form URL's should be absolute or not
+   *
+   * @var bool
+   */
+  protected $absolute = true;
+
+  /**
    * Create a new form builder instance.
    *
    * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
    * @param  \Collective\Html\HtmlBuilder     $html
    * @param  string                           $csrfToken
+   * @param  bool                             $absolute
    *
    * @return void
    */
-  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken, $absolute)
   {
       $this->url = $url;
       $this->html = $html;
       $this->csrfToken = $csrfToken;
+      $this->absolute = $absolute;
   }
 
   /**
@@ -101,7 +110,11 @@ class FormBuilder
   public function open(array $options = [])
   {
     $method = array_get($options, 'method', 'post');
-    $absolute = array_get($options, 'absolute', true);
+
+    // Determines if the request should use an absolute ot relative URL.  This
+    // is set to be true however it can be overriden in a .env file in which
+    // case it becomes the new default for the project.
+    $absolute = array_get($options, 'absolute', $this->absolute);
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
