@@ -101,7 +101,7 @@ class FormBuilder
   public function open(array $options = [])
   {
     $method = array_get($options, 'method', 'post');
-    $absolute = array_get($options, 'absolute', config('html_absolute'));
+    $absolute = array_get($options, 'absolute', config('html.absolute'));
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
