@@ -13,6 +13,11 @@ class HtmlServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
+    /**
+     * Boot the service provider
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->publishes([

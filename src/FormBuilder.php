@@ -101,6 +101,10 @@ class FormBuilder
   public function open(array $options = [])
   {
     $method = array_get($options, 'method', 'post');
+
+    // Determines if the request should use an absolute ot relative URL.  This
+    // is set to be true however it can be overriden in a .env file in which
+    // case it becomes the new default for the project.
     $absolute = array_get($options, 'absolute', config('html.absolute'));
 
     // We need to extract the proper method from the attributes. If the method is
