@@ -100,16 +100,17 @@ class FormBuilder
    */
   public function open(array $options = [])
   {
-      $method = array_get($options, 'method', 'post');
+    $method = array_get($options, 'method', 'post');
+    $absolute = array_get($options, 'absolute', true);
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
     // actual method since forms don't support the reserved methods in HTML.
     $attributes['method'] = $this->getMethod($method);
 
-      $attributes['action'] = $this->getAction($options);
+    $attributes['action'] = $this->getAction($options, $absolute);
 
-      $attributes['accept-charset'] = 'UTF-8';
+    $attributes['accept-charset'] = 'UTF-8';
 
     // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
     // field that will instruct the Symfony request to pretend the method is a
@@ -934,19 +935,18 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getAction(array $options)
+  protected function getAction(array $options, $absolute = true)
   {
-      // We will also check for a "route" or "action" parameter on the array so that
+    // We will also check for a "route" or "action" parameter on the array so that
     // developers can easily specify a route or controller action when creating
     // a form providing a convenient interface for creating the form actions.
     if (isset($options['url'])) {
-        return $this->getUrlAction($options['url']);
+        return $this->getUrlAction($options['url'], $absolute);
     }
 
-      if (isset($options['route'])) {
-          return $this->getRouteAction($options['route']);
-      }
-
+    if (isset($options['route'])) {
+      return $this->getRouteAction($options['route'], $absolute);
+    }
     // If an action is available, we are attempting to open a form to a controller
     // action route. So, we will use the URL generator to get the path to these
     // actions and return them from the method. Otherwise, we'll use current.
@@ -954,7 +954,7 @@ class FormBuilder
         return $this->getControllerAction($options['action']);
     }
 
-      return $this->url->current();
+    return $this->url->current();
   }
 
   /**
@@ -964,13 +964,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getUrlAction($options)
+  protected function getUrlAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->to($options[0], array_slice($options, 1), $options[3]);
+          return $this->url->to($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->to($options);
+      return $this->url->to($options, $absolute);
   }
 
   /**
@@ -980,13 +980,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getRouteAction($options)
+  protected function getRouteAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->route($options[0], array_slice($options, 1), $options[2]);
+          return $this->url->route($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->route($options);
+      return $this->url->route($options, $absolute);
   }
 
   /**
@@ -996,13 +996,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getControllerAction($options)
+  protected function getControllerAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->action($options[0], array_slice($options, 1));
+          return $this->url->action($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->action($options);
+      return $this->url->action($options, $absolute);
   }
 
   /**
