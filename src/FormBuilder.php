@@ -59,7 +59,7 @@ class FormBuilder
    *
    * @var array
    */
-  protected $reserved = ['method', 'url', 'route', 'action', 'files'];
+  protected $reserved = ['method', 'url', 'route', 'action', 'files', 'absolute'];
 
   /**
    * The form methods that should be spoofed, in uppercase.
