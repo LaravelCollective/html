@@ -13,6 +13,13 @@ class HtmlServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__ . '/resources/config/html.php' => config_path('html.php')
+        ], 'config');
+    }
+
     /**
      * Register the service provider.
      *
