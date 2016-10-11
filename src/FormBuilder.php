@@ -75,6 +75,8 @@ class FormBuilder
    */
   protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
+  protected $absolute;
+
   /**
    * Create a new form builder instance.
    *
@@ -84,11 +86,12 @@ class FormBuilder
    *
    * @return void
    */
-  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken, $absolute)
   {
       $this->url = $url;
       $this->html = $html;
       $this->csrfToken = $csrfToken;
+      $this->absolute = $absolute;
   }
 
   /**
@@ -105,7 +108,7 @@ class FormBuilder
     // Determines if the request should use an absolute ot relative URL.  This
     // is set to be true however it can be overriden in a .env file in which
     // case it becomes the new default for the project.
-    $absolute = array_get($options, 'absolute', config('html.absolute'));
+    $absolute = array_get($options, 'absolute', $this->absolute);
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
