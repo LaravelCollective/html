@@ -40,7 +40,7 @@ class HtmlServiceProvider extends ServiceProvider
         $this->app->alias('form', 'Collective\Html\FormBuilder');
 
         $this->mergeConfigFrom(
-            __DIR__ . '/resources/config/html.php', 'html'
+            __DIR__ . '/../resources/config/html.php', 'html'
         );
     }
 
