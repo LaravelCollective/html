@@ -75,7 +75,12 @@ class FormBuilder
    */
   protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
-  protected $absolute;
+  /**
+   * If form URL's should be absolute or not
+   *
+   * @var bool
+   */
+  protected $absolute = true;
 
   /**
    * Create a new form builder instance.
@@ -83,6 +88,7 @@ class FormBuilder
    * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
    * @param  \Collective\Html\HtmlBuilder     $html
    * @param  string                           $csrfToken
+   * @param  bool                             $absolute
    *
    * @return void
    */

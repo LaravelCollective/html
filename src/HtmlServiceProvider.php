@@ -64,6 +64,7 @@ class HtmlServiceProvider extends ServiceProvider
     protected function registerFormBuilder()
     {
         $this->app->singleton('form', function ($app) {
+            // Pass through the absolute url configuration to the builder
             $form = new FormBuilder($app['html'], $app['url'], $app['session.store']->getToken(), $app['config']['html.absolute']);
 
             return $form->setSessionStore($app['session.store']);
