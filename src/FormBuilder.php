@@ -1197,16 +1197,12 @@ class FormBuilder
      */
     public function __call($method, $parameters)
     {
-        try {
+        if (static::hasComponent($method)) {
             return $this->componentCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
-        try {
+        if (static::hasMacro($method)) {
             return $this->macroCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
         throw new BadMethodCallException("Method {$method} does not exist.");
