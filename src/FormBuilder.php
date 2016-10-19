@@ -89,6 +89,20 @@ class FormBuilder
     protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
     /**
+     * The rules that accept values as second arguments.
+     *
+     * @var array
+     */
+    protected $binaryRules = ['max', 'min', 'pattern'];
+
+    /**
+     * The rules that have no values as second arguments.
+     *
+     * @var array
+     */
+    protected $monoRules = ['required'];
+    
+    /**
      * Create a new form builder instance.
      *
      * @param  \Collective\Html\HtmlBuilder               $html
@@ -272,7 +286,12 @@ class FormBuilder
         $merge = compact('type', 'value', 'id');
 
         $options = array_merge($options, $merge);
-
+        
+        // We check here if we want to get rules from the FormRequest
+        // if not, it will be ignored
+        // otherwise it will return the valid rules in the $options array
+        $options = $this->getExternalRules($options);
+        
         return $this->toHtmlString('<input' . $this->html->attributes($options) . '>');
     }
 
@@ -1210,5 +1229,102 @@ class FormBuilder
         }
 
         throw new BadMethodCallException("Method {$method} does not exist.");
+    }
+
+    /**
+     * Get the list of rules corresponding to the formRequest.
+     * @param $request
+     * @param $name
+     * @return mixed
+     */
+    private function getArrayOfRules($request, $name)
+    {
+        $rules = (new $request) ->rules();
+        
+        if (array_key_exists($name, $rules)) {
+            return $rules[$name];
+        }
+        
+        return false;
+    }
+
+    /**
+     * return an array containing the element that can be
+     * placed in the text input
+     * @param $rules
+     * @return array
+     */
+    private function getArrayOfValidRules($rules)
+    {
+        $array = explode('|', $rules);
+        
+        $monoArray = $this->prepareMonoRules($array);
+        
+        $binaryArray = $this->prepareBinaryRules($array);
+        
+        $finalArray = array_merge($monoArray, $binaryArray);
+        
+        return $finalArray;
+    }
+
+    /**
+     * Format the array with the rules that have no values.
+     * @param array $rules
+     * @return array
+     */
+    private function prepareMonoRules(array $rules)
+    {
+        $array = [];
+        
+        foreach ($rules as $value) {
+            if (in_array($value, $this->monoRules)) {
+                $array [$value] = $value;
+            }
+        }
+        
+        return $array;
+    }
+
+     /**
+     * Format the array with the rules that have values as second arguments.
+     * @param array $rules
+     * @return array
+     */
+    private function prepareBinaryRules(array $rules)
+    {
+        $array = [];
+        
+        foreach ($rules as $value) {
+            $rule = explode(":", $value);
+            
+            if(in_array($rule[0], $this->binaryRules)){
+                $array[$rule[0]] = $rule[1];
+            }
+        }
+        
+        return $array;
+    }
+
+    /**
+     * Get the external rules from the FormRequest Object.
+     * @param array $options
+     * @return array
+     */
+    private function getExternalRules(array $options)
+    {
+        if (array_key_exists('request', $options)) {
+            $request = $options['request'];
+            
+            $rules = $this->getArrayOfRules($request, $options['name']);
+            if ($rules) {
+                $arrayOfValidRules = $this->getArrayOfValidRules($rules);
+                
+                unset($options['request']);
+                
+                $options = array_merge($options, $arrayOfValidRules);
+            }
+        }
+        
+        return $options;
     }
 }
