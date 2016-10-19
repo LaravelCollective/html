@@ -1297,7 +1297,7 @@ class FormBuilder
         foreach ($rules as $value) {
             $rule = explode(":", $value);
             
-            if(in_array($rule[0], $this->binaryRules)) {
+            if (in_array($rule[0], $this->binaryRules)) {
                 $array[$rule[0]] = $rule[1];
             }
         }
