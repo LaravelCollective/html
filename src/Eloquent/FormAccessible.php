@@ -41,7 +41,8 @@ trait FormAccessible
             return $this->mutateFormAttribute($key, $value);
         }
 
-        return $value;
+        // No form mutator, let the model resolve this
+        return data_get($this, $key);
     }
 
     /**
@@ -54,7 +55,7 @@ trait FormAccessible
         $methods = $this->getReflection()->getMethods(ReflectionMethod::IS_PUBLIC);
 
         $mutator = collect($methods)
-          ->first(function ($index, ReflectionMethod $method) use ($key) {
+          ->first(function (ReflectionMethod $method) use ($key) {
               return $method->getName() == 'form' . Str::studly($key) . 'Attribute';
           });
 
