@@ -1226,61 +1226,61 @@ class FormBuilder
             $list = key($complete);
             
             $complete = $complete[$list];
-            $options = array_merge($options, compact('list') );
+            $options = array_merge($options, compact('list'));
         }
         
         return $this->inputAutoComplete('text', $name, $value, $options, $complete, $list);
     }
-
+	
     /**
      * Prepare the datalist based on the array and the id.
-	 * @param array $list
-	 * @param $id
-	 * @return String
-	 */
-	protected function prepareDateList(array $list, $id)
-	{
-		foreach ($list as $value) {
-			$html[] = $this->toHtmlString('<option value="' . $value . '" />');
-		}
-        
-		$list = implode('', $html);
-        
-		return ("<datalist id='{$id}'>{$list}</datalist>");
+     * @param array $list
+     * @param $id
+     * @return String
+     */
+    protected function prepareDateList(array $list, $id)
+    {
+	foreach ($list as $value) {
+		$html[] = $this->toHtmlString('<option value="' . $value . '" />');
 	}
+
+	$list = implode('', $html);
+
+	return ("<datalist id='{$id}'>{$list}</datalist>");
+    }
 
     /**
-	 * Create a an autocomplete field.
-	 * @param  string $type
-	 * @param  string $name
-	 * @param  string $value
-	 * @param  array $options
-	 * @param array $complete
-	 * @param int $key
-	 * @return HtmlString
-	 */
-	public function inputAutoComplete($type, $name, $value = null, $options = [], $complete = [], $key)
-	{
-		if (! isset($options['name'])) {
-			$options['name'] = $name;
-		}
-
-		// We will get the appropriate value for the given field. We will look for the
-		// value in the session for the value in the old input data then we'll look
-		// in the model instance if one is set. Otherwise we will just use empty.
-		$id = $this->getIdAttribute($name, $options);
-
-		if (! in_array($type, $this->skipValueTypes)) {
-			$value = $this->getValueAttribute($name, $value);
-		}
-
-		// Once we have the type, value, and ID we can merge them into the rest of the
-		// attributes array so we can convert them into their HTML attribute format
-		// when creating the HTML element. Then, we will return the entire input.
-		$merge = compact('type', 'value', 'id');
-
-		$options = array_merge($options, $merge, ['autocomplete' => 'off']);
-
-		return $this->toHtmlString('<input' . $this->html->attributes($options) . '>'. $this->prepareDateList($complete, $key));
+     * Create a an autocomplete field.
+     * @param  string $type
+     * @param  string $name
+     * @param  string $value
+     * @param  array $options
+     * @param array $complete
+     * @param int $key
+     * @return HtmlString
+     */
+    public function inputAutoComplete($type, $name, $value = null, $options = [], $complete = [], $key)
+    {
+	if (! isset($options['name'])) {
+		$options['name'] = $name;
 	}
+
+	// We will get the appropriate value for the given field. We will look for the
+	// value in the session for the value in the old input data then we'll look
+	// in the model instance if one is set. Otherwise we will just use empty.
+	$id = $this->getIdAttribute($name, $options);
+
+	if (! in_array($type, $this->skipValueTypes)) {
+		$value = $this->getValueAttribute($name, $value);
+	}
+
+	// Once we have the type, value, and ID we can merge them into the rest of the
+	// attributes array so we can convert them into their HTML attribute format
+	// when creating the HTML element. Then, we will return the entire input.
+	$merge = compact('type', 'value', 'id');
+
+	$options = array_merge($options, $merge, ['autocomplete' => 'off']);
+
+	return $this->toHtmlString('<input' . $this->html->attributes($options) . '>'. $this->prepareDateList($complete, $key));
+    }
 }
