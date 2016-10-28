@@ -485,7 +485,7 @@ class FormBuilder
         // the element. Then we'll create the final textarea elements HTML for us.
         $options = $this->html->attributes($options);
 
-        return $this->toHtmlString('<textarea' . $options . '>' . e($value) . '</textarea>');
+        return $this->toHtmlString('<textarea' . $options . '>' . htmlentities($value, ENT_QUOTES, 'UTF-8') . '</textarea>');
     }
 
     /**
@@ -662,7 +662,7 @@ class FormBuilder
             $html[] = $this->option($display, $value, $selected);
         }
 
-        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
+        return $this->toHtmlString('<optgroup label="' . htmlentities($label, ENT_QUOTES, 'UTF-8') . '">' . implode('', $html) . '</optgroup>');
     }
 
     /**
@@ -680,7 +680,7 @@ class FormBuilder
 
         $options = ['value' => $value, 'selected' => $selected];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . htmlentities($display, ENT_QUOTES, 'UTF-8') . '</option>');
     }
 
     /**
@@ -698,7 +698,7 @@ class FormBuilder
         $options = compact('selected');
         $options['value'] = '';
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . htmlentities($display, ENT_QUOTES, 'UTF-8') . '</option>');
     }
 
     /**

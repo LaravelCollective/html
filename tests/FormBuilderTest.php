@@ -237,13 +237,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     {
         $form1 = $this->formBuilder->textarea('foo');
         $form2 = $this->formBuilder->textarea('foo', 'foobar');
-        $form3 = $this->formBuilder->textarea('foo', null, ['class' => 'span2']);
-        $form4 = $this->formBuilder->textarea('foo', null, ['size' => '60x15']);
+        $form3 = $this->formBuilder->textarea('foo', '&amp;');
+        $form4 = $this->formBuilder->textarea('foo', null, ['class' => 'span2']);
+        $form5 = $this->formBuilder->textarea('foo', null, ['size' => '60x15']);
 
         $this->assertEquals('<textarea name="foo" cols="50" rows="10"></textarea>', $form1);
         $this->assertEquals('<textarea name="foo" cols="50" rows="10">foobar</textarea>', $form2);
-        $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
-        $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
+        $this->assertEquals('<textarea name="foo" cols="50" rows="10">&amp;amp;</textarea>', $form3);
+        $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form4);
+        $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form5);
     }
 
     public function testSelect()
@@ -287,6 +289,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
                 'Large sizes' => [
                     'L' => 'Large',
                     'XL' => 'Extra Large',
+                    'XXL' => 'Extra&nbsp;Large',
                 ],
                 'S' => 'Small',
             ],
@@ -299,7 +302,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $select,
-            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
+            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option><option value="XXL">Extra&amp;nbsp;Large</option></optgroup><option value="S">Small</option></select>'
         );
     }
 
@@ -331,10 +334,10 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           'size',
           ['L' => 'Large', 'S' => 'Small'],
           null,
-          ['placeholder' => 'Select One...']
+          ['placeholder' => 'Select &nbsp;One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" value="">Select &amp;nbsp;One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
