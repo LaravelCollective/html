@@ -55,6 +55,10 @@ class HtmlBuilder
 
     /**
      * Convert all applicable characters to HTML entities.
+     *
+     * @param string $value
+     *
+     * @return string
      */
     public function escapeAll($value)
     {
@@ -395,7 +399,7 @@ class HtmlBuilder
         if (is_array($value)) {
             return $this->nestedListing($key, $type, $value);
         } else {
-            return '<li>' . $this->html->escapeAll($value) . '</li>';
+            return '<li>' . $this->escapeAll($value) . '</li>';
         }
     }
 
@@ -457,7 +461,7 @@ class HtmlBuilder
         }
 
         if (! is_null($value)) {
-            return $key . '="' . $this->html->escapeAll($value) . '"';
+            return $key . '="' . $this->escapeAll($value) . '"';
         }
     }
 
