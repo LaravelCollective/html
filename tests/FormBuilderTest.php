@@ -492,9 +492,13 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     {
         $form1 = $this->formBuilder->button('foo');
         $form2 = $this->formBuilder->button('foo', ['class' => 'span2']);
+        $form3 = $this->formBuilder->button('foo <i>bar</i>');
+        $form4 = $this->formBuilder->button('foo <i>bar</i>', [], false);
 
         $this->assertEquals('<button type="button">foo</button>', $form1);
         $this->assertEquals('<button class="span2" type="button">foo</button>', $form2);
+        $this->assertEquals('<button type="button">foo &lt;i&gt;bar&lt;/i&gt;</button>', $form3);
+        $this->assertEquals('<button type="button">foo <i>bar</i></button>', $form4);
     }
 
     public function testResetInput()
