@@ -839,7 +839,7 @@ class FormBuilder
      */
     protected function getRadioCheckedState($name, $value, $checked)
     {
-        if ($this->missingOldAndModel($name)) {
+        if (!is_null($checked) && $this->missingOldAndModel($name)) {
             return $checked;
         }
 
