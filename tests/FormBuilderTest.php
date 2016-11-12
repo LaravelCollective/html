@@ -198,6 +198,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
     }
 
+
+    public function testFormRange()
+    {
+        $form1 = $this->formBuilder->range('foo');
+        $form2 = $this->formBuilder->range('foo', 1);
+        $form3 = $this->formBuilder->range('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="range">', $form1);
+        $this->assertEquals('<input name="foo" type="range" value="1">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="range" min ="100" max="500" step ="50" value ="100">', $form3);
+    }
+
+
+
     public function testFormDate()
     {
         $form1 = $this->formBuilder->date('foo');
