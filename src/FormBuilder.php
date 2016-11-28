@@ -234,7 +234,7 @@ class FormBuilder {
 		// in the model instance if one is set. Otherwise we will just use empty.
 		$id = $this->getIdAttribute($name, $options);
 
-		if ( ! in_array($type, $this->skipValueTypes))
+		if ( ! in_array($type, $this->skipValueTypes) && $name !== '_method')
 		{
 			$value = $this->getValueAttribute($name, $value);
 		}
