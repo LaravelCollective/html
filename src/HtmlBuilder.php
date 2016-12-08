@@ -447,6 +447,12 @@ class HtmlBuilder
         if (is_numeric($key)) {
             $key = $value;
         }
+        
+        // Browsers disable the field independent of value disabled attribute,
+        // therefore removed the disabled attribute if it is false
+        if ($key == 'disabled' and $value == false) {
+            return null;
+        }
 
         if (! is_null($value)) {
             return $key . '="' . e($value) . '"';
