@@ -447,6 +447,11 @@ class HtmlBuilder
         if (is_numeric($key)) {
             $key = $value;
         }
+        
+        // Treat boolean attributes as HTML properties
+        if (is_bool($value)) {
+            return $value ? $key : '';
+        }
 
         if (! is_null($value)) {
             return $key . '="' . e($value) . '"';
