@@ -371,7 +371,7 @@ class FormBuilder
     public function date($name, $value = null, $options = [])
     {
         if ($value instanceof DateTime) {
-            $value = $value->format('Y-m-d');
+            $value = $value->format(DateTime::RFC3339);
         }
 
         return $this->input('date', $name, $value, $options);
