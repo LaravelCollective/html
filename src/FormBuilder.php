@@ -1085,7 +1085,7 @@ class FormBuilder
         }
 
         if (! is_null($this->old($name)) && $name != '_method') {
-            return $this->old($name);
+			return $this->getOldNameIfNotArray($name);
         }
 
         if (! is_null($value)) {
@@ -1096,6 +1096,22 @@ class FormBuilder
             return $this->getModelValueAttribute($name);
         }
     }
+
+    /**
+	 * Gets the old name value, or "" if the name was an array.
+	 *
+	 * @param $name string|array The name value (or an array of
+	 *                           the name ends with []) of the input field.
+	 *
+	 * @return mixed|string
+	 */
+    protected function getOldNameIfNotArray($name) {
+		if(is_array($this->old($name))) {
+			return "";
+		}
+		
+		return $this->old($name);
+	}
 
     /**
      * Get the model value that should be assigned to the field.
