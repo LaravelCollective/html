@@ -446,13 +446,19 @@ class HtmlBuilder
     /**
      * Build a single attribute element.
      *
-     * @param string $key
-     * @param string $value
+     * @param string|int $key
+     * @param string|bool $value
      *
      * @return string
      */
     protected function attributeElement($key, $value)
     {
+        // For boolean values we will assume that the attribute should be built conditionally.
+        // This works for HTML attributes such as "required".
+        if (is_bool($value)) {
+            $value = (false !== $value) ? $key : null;
+        }
+
         // For numeric keys we will assume that the key and the value are the same
         // as this will convert HTML attributes such as "required" to a correct
         // form like required="required" instead of using incorrect numerics.
