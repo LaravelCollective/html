@@ -517,7 +517,7 @@ class FormBuilder
    *
    * @return string
    */
-  public function select($name, $list = [], $selected = null, $options = [])
+  public function select($name, $first = null, $list = [], $selected = null, $options = [])
   {
       // When building a select box the "value" attribute is really the selected one
     // so we will use that when checking the model or session for a value which
@@ -543,6 +543,11 @@ class FormBuilder
       foreach ($list as $value => $display) {
           $html[] = $this->getSelectOption($display, $value, $selected);
       }
+
+    if( !is_null($first) )
+    {
+        array_unshift($html, $this->getSelectOption($first, 0, $selected));
+    }
 
     // Once we have all of this HTML, we can join this into a single element after
     // formatting the attributes into an HTML "attributes" string, then we will
