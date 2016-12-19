@@ -13,10 +13,10 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "illuminate/http": "~5.0",
-    "illuminate/routing": "~5.0",
-    "illuminate/session": "~5.0",
-    "illuminate/support": "~5.0"
+    "illuminate/http": "~5.0|~5.1",
+    "illuminate/routing": "~5.0|~5.1",
+    "illuminate/session": "~5.0|~5.1",
+    "illuminate/support": "~5.0|~5.1"
   },
   "require-dev": {
     "mockery/mockery": "~0.9",
