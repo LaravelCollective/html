@@ -61,6 +61,13 @@ class FormBuilder
     protected $model;
 
     /**
+     * The current model instance ID for the form.
+     *
+     * @var mixed
+     */
+    protected $model_id;
+    
+    /**
      * An array of label names we've created.
      *
      * @var array
@@ -113,6 +120,10 @@ class FormBuilder
      */
     public function open(array $options = [])
     {
+        if (!empty($options['id'])) {
+            $this->model_id = $options['id'];
+        }
+        
         $method = array_get($options, 'method', 'post');
 
         // We need to extract the proper method from the attributes. If the method is
@@ -187,6 +198,8 @@ class FormBuilder
         $this->labels = [];
 
         $this->model = null;
+        
+        $this->model_id = null;
 
         return $this->toHtmlString('</form>');
     }
@@ -215,7 +228,9 @@ class FormBuilder
      */
     public function label($name, $value = null, $options = [], $escape_html = true)
     {
-        $this->labels[] = $name;
+        $nameid = empty($this->model_id) ? $name : $this->model_id.'-'.$name;
+        
+        $this->labels[] = $nameid;
 
         $options = $this->html->attributes($options);
 
@@ -225,7 +240,7 @@ class FormBuilder
             $value = $this->html->entities($value);
         }
 
-        return $this->toHtmlString('<label for="' . $name . '"' . $options . '>' . $value . '</label>');
+        return $this->toHtmlString('<label for="' . $nameid . '"' . $options . '>' . $value . '</label>');
     }
 
     /**
@@ -1064,9 +1079,11 @@ class FormBuilder
         if (array_key_exists('id', $attributes)) {
             return $attributes['id'];
         }
+        
+        $nameid = empty($this->model_id) ? $name : $this->model_id.'-'.$name;
 
-        if (in_array($name, $this->labels)) {
-            return $name;
+        if (in_array($nameid, $this->labels)) {
+            return $nameid;
         }
     }
 
