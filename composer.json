@@ -19,14 +19,14 @@
   ],
   "require": {
     "php": ">=5.6.4",
-    "illuminate/http": "5.3.*",
-    "illuminate/routing": "5.3.*",
-    "illuminate/session": "5.3.*",
-    "illuminate/support": "5.3.*",
-    "illuminate/view": "5.3.*"
+    "illuminate/http": "5.4.*",
+    "illuminate/routing": "5.4.*",
+    "illuminate/session": "5.4.*",
+    "illuminate/support": "5.4.*",
+    "illuminate/view": "5.4.*"
   },
   "require-dev": {
-    "illuminate/database": "5.3.*",
+    "illuminate/database": "5.4.*",
     "mockery/mockery": "~0.9.4",
     "phpunit/phpunit": "~5.4"
   },
