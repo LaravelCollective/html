@@ -78,7 +78,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testPasswordsNotFilled()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->never();
 
@@ -89,7 +89,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFilesNotFilled()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->never();
 
@@ -113,7 +113,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormTextRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('some value');
@@ -319,7 +319,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function testFormSelectRepopulation()
     {
         $list = ['L' => 'Large', 'M' => 'Medium', 'S' => 'Small'];
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['size' => ['key' => 'S'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('size')->andReturn('M');
@@ -405,7 +405,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckbox()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([]);
         $session->shouldReceive('getOldInput')->with('foo')->andReturn(null);
@@ -423,7 +423,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckboxRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([1]);
 
         $session->shouldReceive('getOldInput')->once()->with('check')->andReturn(null);
@@ -446,7 +446,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckboxWithModelRelation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([]);
         $session->shouldReceive('getOldInput')->with('items')->andReturn(null);
 
@@ -491,7 +491,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormRadioRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->with('radio')->andReturn(1);
 
