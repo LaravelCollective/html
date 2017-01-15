@@ -433,10 +433,20 @@ class HtmlBuilder
         $html = [];
 
         foreach ((array) $attributes as $key => $value) {
-            $element = $this->attributeElement($key, $value);
+            if (is_array($value)) {
+                foreach ((array) $value as $v_key => $v_value) {
+                    $element = $this->attributeElement($key . '-' . $v_key, $v_value);
 
-            if (! is_null($element)) {
-                $html[] = $element;
+                    if (! is_null($element)) {
+                        $html[] = $element;
+                    }
+                }
+            } else {
+                $element = $this->attributeElement($key, $value);
+
+                if (! is_null($element)) {
+                    $html[] = $element;
+                }
             }
         }
 
