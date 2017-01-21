@@ -396,11 +396,48 @@ class HtmlBuilder
      */
     protected function listingElement($key, $type, $value)
     {
+        $elementValue;
+        $elementAttributes = '';
+
         if (is_array($value)) {
-            return $this->nestedListing($key, $type, $value);
-        } else {
-            return '<li>' . $this->escapeAll($value) . '</li>';
+            // If its a simple nested array without any other parameter
+            // such as attributes or Html escaping
+            if (count($value) === 1) {
+                return $this->nestedListing($key, $type, $value);
+            }
+
+            $elementValue = $value[0];
+            $escapeHtml = true;
+
+            // Resolve attributes if specified and handle Html-escaping for the value
+            if (count($value) > 1) {
+                // If attributes are specified, get them
+                if (is_array($value[1])) {
+                    $elementAttributes = $this->attributes($value[1]);
+                }
+                // If attributes are ommitted and escapeHtml value
+                // is provided, operate with that value instead
+                else if ($value[1] === false) {
+                    $escapeHtml = false;
+                }
+
+                // If the attributes were provided along with escapeHtml value
+                if (count($value) > 2 && $value[2] === false) {
+                    $escapeHtml = false;
+                }
+
+                if ($escapeHtml) {
+                    $elementValue = $this->escapeAll($elementValue);
+                }
+            }
         }
+
+        // Assume Html escaping is required by default
+        else {
+           $elementValue = e($value);
+        }
+
+        return "<li{$elementAttributes}>{$elementValue}</li>";
     }
 
     /**
@@ -453,15 +490,59 @@ class HtmlBuilder
      */
     protected function attributeElement($key, $value)
     {
-        // For numeric keys we will assume that the key and the value are the same
-        // as this will convert HTML attributes such as "required" to a correct
-        // form like required="required" instead of using incorrect numerics.
-        if (is_numeric($key)) {
-            $key = $value;
+        $attributeValue;
+        $escapeHtml = false;
+
+        // The attribute value has two possibilities:
+        /* 1: The array: First element is attribute key and the value.
+           Second element is if html escaping should be enabled or not.
+           Example: ["attribute"=>"value", true]
+        */
+        // 2: Just the attribute and value pair. Example: ["attribute"=>"value]
+
+        if (is_array($value)) {
+            // Get the keys to use indices
+            // The last element (boolean) controls Html escaping
+            // Previous element (first) are actual attributes
+            $keys = array_keys($value);
+            $key = $keys[0];
+            $attributeValue = $value[$key];
+            // If array doesn't have spec for Html escaping, assume true
+            // or Html escaping is enabled explicitely
+            if (count($value) === 1 || $value[$keys[1]]) {
+                $escapeHtml = true;
+            }
         }
 
-        if (! is_null($value)) {
-            return $key . '="' . $this->escapeAll($value) . '"';
+        else if (is_numeric($key)) {
+            if ($value === false) {
+                // In this case, it is ok for attributeValue to be null
+                // since we only need this parameter to check if
+                // html escaping is required and value will not be used
+                $escapeHtml = false;
+            }
+            else {
+                // For numeric keys we will assume that the key and the value are the same
+                // as this will convert HTML attributes such as "required" to a correct
+                // form like required="required" instead of using incorrect numerics.
+                $key = $attributeValue = $value;
+                $escapeHtml = true;
+            }
+        }
+
+        // If nothing is specified for html escaping
+        // assume it needs to be done
+        else {
+            $attributeValue = $value;
+            $escapeHtml = true;
+        }
+
+        if ($escapeHtml) {
+            $attributeValue = $this->escapeAll($attributeValue);
+        }
+
+        if (isset($attributeValue) && ! is_null($attributeValue)) {
+            return $key . '="' . $attributeValue . '"';
         }
     }
 
