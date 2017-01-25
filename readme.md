@@ -1,4 +1,7 @@
 # Forms & HTML
+forked from LaravelCollective/html
+
+Add support Laravel 5.4!
 
 [![Build Status](https://travis-ci.org/LaravelCollective/html.svg)](https://travis-ci.org/LaravelCollective/html)
 [![Total Downloads](https://poser.pugx.org/LaravelCollective/html/downloads)](https://packagist.org/packages/laravelcollective/html)
