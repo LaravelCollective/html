@@ -1,5 +1,6 @@
 <?php
 namespace Collective\Html;
+
 use DateTime;
 use BadMethodCallException;
 use Illuminate\Support\Collection;
@@ -8,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
+
 class FormBuilder
 {
     use Macroable, Componentable {
