@@ -593,12 +593,6 @@ class FormBuilder
     /**
      * Create a select year field.
      *
-     * @param  string $name
-     * @param  string $begin
-     * @param  string $end
-     * @param  string $selected
-     * @param  array  $options
-     *
      * @return mixed
      */
     public function selectYear()
