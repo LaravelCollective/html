@@ -78,7 +78,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testPasswordsNotFilled()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->never();
 
@@ -89,7 +89,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFilesNotFilled()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->never();
 
@@ -113,7 +113,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormTextRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('some value');
@@ -239,11 +239,13 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form2 = $this->formBuilder->textarea('foo', 'foobar');
         $form3 = $this->formBuilder->textarea('foo', null, ['class' => 'span2']);
         $form4 = $this->formBuilder->textarea('foo', null, ['size' => '60x15']);
+        $form5 = $this->formBuilder->textarea('encoded_html', '&amp;');
 
         $this->assertEquals('<textarea name="foo" cols="50" rows="10"></textarea>', $form1);
         $this->assertEquals('<textarea name="foo" cols="50" rows="10">foobar</textarea>', $form2);
         $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
+        $this->assertEquals('<textarea name="encoded_html" cols="50" rows="10">&amp;amp;</textarea>', $form5);
     }
 
     public function testSelect()
@@ -301,12 +303,23 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             $select,
             '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
         );
+
+        $select = $this->formBuilder->select(
+            'encoded_html',
+            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;'],
+            null
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select name="encoded_html"><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+        );
     }
 
     public function testFormSelectRepopulation()
     {
         $list = ['L' => 'Large', 'M' => 'Medium', 'S' => 'Small'];
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['size' => ['key' => 'S'], 'other' => 'val']);
 
         $session->shouldReceive('getOldInput')->twice()->with('size')->andReturn('M');
@@ -344,6 +357,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
           '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+
+        $select = $this->formBuilder->select(
+            'encoded_html',
+            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;'],
+            null,
+            ['placeholder' => 'Select the &nbsp;']
+        );
+        $this->assertEquals($select,
+            '<select name="encoded_html"><option selected="selected" value="">Select the &amp;nbsp;</option><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+        );
     }
 
     public function testFormSelectYear()
@@ -382,7 +405,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckbox()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([]);
         $session->shouldReceive('getOldInput')->with('foo')->andReturn(null);
@@ -400,7 +423,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckboxRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([1]);
 
         $session->shouldReceive('getOldInput')->once()->with('check')->andReturn(null);
@@ -423,7 +446,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormCheckboxWithModelRelation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $session->shouldReceive('getOldInput')->withNoArgs()->andReturn([]);
         $session->shouldReceive('getOldInput')->with('items')->andReturn(null);
 
@@ -468,7 +491,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testFormRadioRepopulation()
     {
-        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
 
         $session->shouldReceive('getOldInput')->with('radio')->andReturn(1);
 
