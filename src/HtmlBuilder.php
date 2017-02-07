@@ -399,7 +399,7 @@ class HtmlBuilder
         if (is_array($value)) {
             return $this->nestedListing($key, $type, $value);
         } else {
-            return '<li>' . $this->escapeAll($value) . '</li>';
+            return '<li>' . e($value) . '</li>';
         }
     }
 
