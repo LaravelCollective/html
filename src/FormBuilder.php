@@ -7,7 +7,7 @@ use BadMethodCallException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Session\SessionInterface;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
 
@@ -49,7 +49,7 @@ class FormBuilder
     /**
      * The session store implementation.
      *
-     * @var \Illuminate\Session\SessionInterface
+     * @var \Illuminate\Contracts\Session\Session
      */
     protected $session;
 
@@ -198,7 +198,7 @@ class FormBuilder
      */
     public function token()
     {
-        $token = ! empty($this->csrfToken) ? $this->csrfToken : $this->session->getToken();
+        $token = ! empty($this->csrfToken) ? $this->csrfToken : $this->session->token();
 
         return $this->hidden('_token', $token);
     }
@@ -1164,7 +1164,7 @@ class FormBuilder
     /**
      * Get the session store implementation.
      *
-     * @return  \Illuminate\Session\SessionInterface  $session
+     * @return  \Illuminate\Contracts\Session\Session  $session
      */
     public function getSessionStore()
     {
@@ -1174,11 +1174,11 @@ class FormBuilder
     /**
      * Set the session store implementation.
      *
-     * @param  \Illuminate\Session\SessionInterface $session
+     * @param  \Illuminate\Contracts\Session\Session $session
      *
      * @return $this
      */
-    public function setSessionStore(SessionInterface $session)
+    public function setSessionStore(Session $session)
     {
         $this->session = $session;
 

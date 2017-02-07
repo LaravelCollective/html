@@ -18,17 +18,17 @@
     }
   ],
   "require": {
-    "php": ">=5.5.9",
-    "illuminate/http": "5.2.*",
-    "illuminate/routing": "5.2.*",
-    "illuminate/session": "5.2.*",
-    "illuminate/support": "5.2.*",
-    "illuminate/view": "5.2.*"
+    "php": ">=5.6.4",
+    "illuminate/http": "5.4.*",
+    "illuminate/routing": "5.4.*",
+    "illuminate/session": "5.4.*",
+    "illuminate/support": "5.4.*",
+    "illuminate/view": "5.4.*"
   },
   "require-dev": {
-    "illuminate/database": "5.2.*",
-    "mockery/mockery": "~0.9",
-    "phpunit/phpunit": "~4.0"
+    "illuminate/database": "5.4.*",
+    "mockery/mockery": "~0.9.4",
+    "phpunit/phpunit": "~5.4"
   },
   "autoload": {
     "psr-4": {
