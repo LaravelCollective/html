@@ -865,7 +865,8 @@ class FormBuilder
      *
      * @return bool
      */
-    protected function missingOld($name) {
+    protected function missingOld($name)
+    {
         return is_null($this->old($name));
     }
                        
@@ -876,7 +877,8 @@ class FormBuilder
      *
      * @return bool
      */
-    protected function missingModel($name) {
+    protected function missingModel($name)
+    {
         return is_null($this->getModelValueAttribute($name));
     }                       
 
