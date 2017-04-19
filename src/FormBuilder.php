@@ -1101,16 +1101,34 @@ class FormBuilder
      * Get the model value that should be assigned to the field.
      *
      * @param  string $name
+     * @param  mixed  $model
      *
      * @return mixed
      */
-    protected function getModelValueAttribute($name)
+    protected function getModelValueAttribute($name, $model = null)
     {
-        if (method_exists($this->model, 'getFormValue')) {
-            return $this->model->getFormValue($this->transformKey($name));
+        if (!isset($model)) {
+            $model = $this->model;
         }
 
-        return data_get($this->model, $this->transformKey($name));
+        $key = $this->transformKey($name);
+
+        // Check for nested attribute
+        if (strpos($key, '.') !== false) {
+            $keys = explode('.', $key, 2);
+
+            // get the first level
+            $_model = $this->getModelValueAttribute($keys[0], $model);
+
+            // recursively get the next levels
+            return $this->getModelValueAttribute($keys[1], $_model);
+        }
+
+        if (method_exists($model, 'getFormValue')) {
+            return $model->getFormValue($key);
+        }
+
+        return data_get($model, $key);
     }
 
     /**
