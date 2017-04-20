@@ -54,18 +54,6 @@ class HtmlBuilder
     }
 
     /**
-     * Convert all applicable characters to HTML entities.
-     *
-     * @param string $value
-     *
-     * @return string
-     */
-    public function escapeAll($value)
-    {
-        return htmlentities($value, ENT_QUOTES, 'UTF-8');
-    }
-
-    /**
      * Convert entities to HTML characters.
      *
      * @param string $value
@@ -399,7 +387,7 @@ class HtmlBuilder
         if (is_array($value)) {
             return $this->nestedListing($key, $type, $value);
         } else {
-            return '<li>' . $this->escapeAll($value) . '</li>';
+            return '<li>' . e($value) . '</li>';
         }
     }
 
@@ -461,7 +449,7 @@ class HtmlBuilder
         }
 
         if (! is_null($value)) {
-            return $key . '="' . $this->escapeAll($value) . '"';
+            return $key . '="' . e($value) . '"';
         }
     }
 
