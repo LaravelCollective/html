@@ -41,6 +41,17 @@ trait FormAccessible
             return $this->mutateFormAttribute($key, $value);
         }
 
+        // If the attribute has a trait FormAccessible or method getFormValue implementation,
+        // we will call the method and pass the rest of the string
+        if (is_string($key)) {
+            $startString = explode('.', $key)[0];
+            $value = $this->getAttributeFromArray($startString);
+            if (is_object($value) && method_exists($value, 'getFormValue')) {
+                $restString = substr(stristr($key, '.'), 1);
+                return $value->getFormValue($restString);
+            }
+        }
+
         // No form mutator, let the model resolve this
         return data_get($this, $key);
     }
