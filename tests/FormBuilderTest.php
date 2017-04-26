@@ -240,14 +240,14 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form3 = $this->formBuilder->textarea('foo', null, ['class' => 'span2']);
         $form4 = $this->formBuilder->textarea('foo', null, ['size' => '60x15']);
         $form5 = $this->formBuilder->textarea('encoded_html', 'Eggs & Sausage', ['size' => '60x50']);
-        $form6 = $this->formBuilder->textarea('encoded_html', 'Eggs &amp;&amp;&amp; Sausage', ['size' => '60x50']);
+        $form6 = $this->formBuilder->textarea('encoded_html', 'Eggs &amp;&amp; Sausage', ['size' => '60x50']);
 
         $this->assertEquals('<textarea name="foo" cols="50" rows="10"></textarea>', $form1);
         $this->assertEquals('<textarea name="foo" cols="50" rows="10">foobar</textarea>', $form2);
         $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
-        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs & Sausage</textarea>', $form5);
-        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp;&amp;&amp; Sausage</textarea>', $form6);
+        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp; Sausage</textarea>', $form5);
+        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp;&amp; Sausage</textarea>', $form6);
     }
 
     public function testSelect()

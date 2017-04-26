@@ -449,7 +449,7 @@ class HtmlBuilder
         }
 
         if (! is_null($value)) {
-            return $key . '="' . $value . '"';
+            return $key . '="' . e($value) . '"';
         }
     }
 
