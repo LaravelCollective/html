@@ -2,9 +2,9 @@
 
 namespace Collective\Html;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class HtmlServiceProvider extends ServiceProvider
 {
@@ -34,8 +34,8 @@ class HtmlServiceProvider extends ServiceProvider
 
         $this->registerFormBuilder();
 
-        $this->app->alias('html', 'Collective\Html\HtmlBuilder');
-        $this->app->alias('form', 'Collective\Html\FormBuilder');
+        $this->app->alias('html', HtmlBuilder::class);
+        $this->app->alias('form', FormBuilder::class);
 
         $this->setBladeDirectives('Html', get_class_methods(HtmlBuilder::class));
         $this->setBladeDirectives('Form', get_class_methods(FormBuilder::class));
@@ -61,7 +61,7 @@ class HtmlServiceProvider extends ServiceProvider
     protected function registerFormBuilder()
     {
         $this->app->singleton('form', function ($app) {
-            $form = new FormBuilder($app['html'], $app['url'], $app['view'], $app['session.store']->getToken());
+            $form = new FormBuilder($app['html'], $app['url'], $app['view'], $app['session.store']->token());
 
             return $form->setSessionStore($app['session.store']);
         });
@@ -96,6 +96,6 @@ class HtmlServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['html', 'form', 'Collective\Html\HtmlBuilder', 'Collective\Html\FormBuilder'];
+        return ['html', 'form', HtmlBuilder::class, FormBuilder::class];
     }
 }
