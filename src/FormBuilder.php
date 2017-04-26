@@ -919,13 +919,18 @@ class FormBuilder
      *
      * @param  string $value
      * @param  array  $options
+     * @param  bool   $escape_html
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function button($value = null, $options = [])
+    public function button($value = null, $options = [], $escape_html = true)
     {
         if (! array_key_exists('type', $options)) {
             $options['type'] = 'button';
+        }
+
+        if ($escape_html) {
+            $value = $this->html->entities($value);
         }
 
         return $this->toHtmlString('<button' . $this->html->attributes($options) . '>' . $value . '</button>');
