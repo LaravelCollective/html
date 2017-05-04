@@ -46,9 +46,9 @@ if (! function_exists('link_to_route')) {
      *
      * @return string
      */
-    function link_to_route($name, $title = null, $parameters = [], $attributes = [])
+    function link_to_route($name, $title = null, $parameters = [], $attributes = [] , $escape = true)
     {
-        return app('html')->linkRoute($name, $title, $parameters, $attributes);
+        return app('html')->linkRoute($name, $title, $parameters, $attributes , $escape);
     }
 }
 

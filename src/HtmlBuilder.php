@@ -220,9 +220,9 @@ class HtmlBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function linkRoute($name, $title = null, $parameters = [], $attributes = [])
+    public function linkRoute($name, $title = null, $parameters = [], $attributes = [] , $escape = true)
     {
-        return $this->link($this->url->route($name, $parameters), $title, $attributes);
+        return $this->link($this->url->route($name, $parameters), $title, $attributes , null , $escape);
     }
 
     /**
