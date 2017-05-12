@@ -29,8 +29,12 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
               'created_at' => $this->now
           ],
           'city'       => new ModelThatUsesForms([
-              'name' => 'Msc',
-              'created_at' => $this->now
+              'name' => 'Winterfell',
+              'created_at' => $this->now,
+              'continent' => new ModelThatUsesForms([
+                  'name' => 'Westeros',
+                  'created_at' => $this->now
+              ])
           ]),
           'created_at' => $this->now,
           'updated_at' => $this->now,
@@ -61,8 +65,10 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
     public function testItCanGetRelatedValueUseFormAccessibleForms()
     {
         $model = new ModelThatUsesForms($this->modelData);
-        $this->assertEquals($model->getFormValue('city.name'), 'Msc');
-        $this->assertEquals($model->getFormValue('city.created_at'), $this->now->timestamp);
+        $this->assertEquals('Winterfell', $model->getFormValue('city.name'));
+        $this->assertEquals($this->now->timestamp, $model->getFormValue('city.created_at'));
+        $this->assertEquals('Westeros', $model->getFormValue('city.continent.name'));
+        $this->assertEquals($this->now->timestamp, $model->getFormValue('city.continent.created_at'));
     }
 
     public function testItCanStillMutateValuesForViews()
