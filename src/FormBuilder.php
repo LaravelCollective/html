@@ -7,6 +7,7 @@ use DateTime;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\HtmlString;
@@ -1102,7 +1103,7 @@ class FormBuilder
 
         if (function_exists('app')) {
             $hasNullMiddleware = app("Illuminate\Contracts\Http\Kernel")
-                ->hasMiddleware('Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull');
+                ->hasMiddleware(ConvertEmptyStringsToNull::class);
 
             if ($hasNullMiddleware && is_null($value)) {
                 return null;
