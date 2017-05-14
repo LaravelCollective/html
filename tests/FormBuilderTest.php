@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
@@ -305,6 +306,27 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             $select,
             '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
         );
+
+        $select = $this->formBuilder->select(
+            'encoded_html',
+            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;'],
+            null
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select name="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
+        );
+
+        $select = $this->formBuilder->select(
+            'size',
+            ['L' => 'Large', 'S' => 'Small'],
+            null,
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($select,
+            '<select name="size"><option value="L" data-foo="bar" disabled="disabled">Large</option><option value="S">Small</option></select>');
     }
 
     public function testFormSelectRepopulation()
