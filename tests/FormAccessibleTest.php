@@ -46,6 +46,17 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp);
     }
 
+    public function testItCanMutateRelatedValuesForForms()
+    {
+        $model = new ModelThatUsesForms($this->modelData);
+        $relatedModel = new ModelThatUsesForms($this->modelData);
+        $model->setRelation('related', $relatedModel);
+        $this->formBuilder->setModel($model);
+
+        $this->assertEquals($this->formBuilder->getValueAttribute('related[string]'), 'ponmlkjihgfedcba');
+        $this->assertEquals($this->formBuilder->getValueAttribute('related[created_at]'), $this->now->timestamp);
+    }
+
     public function testItCanGetRelatedValueForForms()
     {
         $model = new ModelThatUsesForms($this->modelData);
