@@ -544,8 +544,7 @@ class FormBuilder
         $selected = null,
         array $selectAttributes = [],
         array $optionsAttributes = []
-    )
-    {
+    ) {
         // When building a select box the "value" attribute is really the selected one
         // so we will use that when checking the model or session for a value which
         // should provide a convenient method of re-populating the forms on post.
