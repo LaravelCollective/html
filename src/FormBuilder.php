@@ -1088,6 +1088,13 @@ class FormBuilder
             return $this->old($name);
         }
 
+        $hasNullMiddleware = app("Illuminate\Contracts\Http\Kernel")
+            ->hasMiddleware('Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull');
+
+        if ($hasNullMiddleware && is_null($value)) {
+            return null;
+        }
+
         if (! is_null($value)) {
             return $value;
         }
