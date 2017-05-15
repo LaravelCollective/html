@@ -329,6 +329,19 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             '<select name="size"><option value="L" data-foo="bar" disabled="disabled">Large</option><option value="S">Small</option></select>');
     }
 
+    public function testSelectCollection()
+    {
+        $select = $this->formBuilder->select(
+            'size',
+            collect(['L' => 'Large', 'S' => 'Small']),
+            null,
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($select,
+            '<select name="size"><option value="L" data-foo="bar" disabled="disabled">Large</option><option value="S">Small</option></select>');
+    }
+
     public function testFormSelectRepopulation()
     {
         $list = ['L' => 'Large', 'M' => 'Medium', 'S' => 'Small'];

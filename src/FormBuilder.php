@@ -540,7 +540,7 @@ class FormBuilder
      */
     public function select(
         $name,
-        array $list = [],
+        $list = [],
         $selected = null,
         array $selectAttributes = [],
         array $optionsAttributes = []
