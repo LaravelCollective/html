@@ -1104,7 +1104,7 @@ class FormBuilder
             $hasNullMiddleware = app("Illuminate\Contracts\Http\Kernel")
                 ->hasMiddleware(ConvertEmptyStringsToNull::class);
 
-            if ($hasNullMiddleware && is_null($this->old($name)) && $this->view->shared('errors')->count() > 0) {
+            if ($hasNullMiddleware && is_null($this->old($name)) && count($this->view->shared('errors')) > 0) {
                 return null;
             }
         }
