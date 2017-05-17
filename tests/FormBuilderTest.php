@@ -166,6 +166,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="hidden">', $form3);
     }
 
+    public function testFormSearch()
+    {
+        $form1 = $this->formBuilder->search('foo');
+        $form2 = $this->formBuilder->search('foo', 'foobar');
+        $form3 = $this->formBuilder->search('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="search">', $form1);
+        $this->assertEquals('<input name="foo" type="search" value="foobar">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="search">', $form3);
+    }
+
     public function testFormEmail()
     {
         $form1 = $this->formBuilder->email('foo');
