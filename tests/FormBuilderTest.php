@@ -112,12 +112,21 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="text">', $form4);
     }
 
+    public function testFormTextArray()
+    {
+        $form1 = $this->formBuilder->input('text', 'foo[]', 'testing');
+        $form2 = $this->formBuilder->text('foo[]');
+
+        $this->assertEquals('<input name="foo[]" type="text" value="testing">', $form1);
+        $this->assertEquals('<input name="foo[]" type="text">', $form2);
+    }
+
     public function testFormTextRepopulation()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
 
-        $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('some value');
+        $session->shouldReceive('getOldInput')->once()->with('name_with_dots')->andReturn('some value');
         $input = $this->formBuilder->text('name.with.dots', 'default value');
         $this->assertEquals('<input name="name.with.dots" type="text" value="some value">', $input);
 
@@ -348,12 +357,12 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['size' => ['key' => 'S'], 'other' => 'val']);
 
-        $session->shouldReceive('getOldInput')->twice()->with('size')->andReturn('M');
+        $session->shouldReceive('getOldInput')->once()->with('size')->andReturn('M');
         $select = $this->formBuilder->select('size', $list, 'S');
         $this->assertEquals($select,
           '<select name="size"><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
-
-        $session->shouldReceive('getOldInput')->twice()->with('size.multi')->andReturn(['L', 'S']);
+// its likely that the mock has been changed so its not replicating correctly anymore
+        $session->shouldReceive('getOldInput')->once()->with('size.multi')->andReturn(['L', 'S']);
         $select = $this->formBuilder->select('size[multi][]', $list, 'M', ['multiple' => 'multiple']);
         $this->assertEquals($select,
           '<select multiple="multiple" name="size[multi][]"><option value="L" selected="selected">Large</option><option value="M">Medium</option><option value="S" selected="selected">Small</option></select>');

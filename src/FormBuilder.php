@@ -90,6 +90,14 @@ class FormBuilder
      */
     protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
+
+    /**
+     * Input Type.
+     *
+     * @var null
+     */
+    protected $type = null;
+
     /**
      * Create a new form builder instance.
      *
@@ -255,6 +263,8 @@ class FormBuilder
      */
     public function input($type, $name, $value = null, $options = [])
     {
+        $this->type = $type;
+
         if (! isset($options['name'])) {
             $options['name'] = $name;
         }
@@ -467,6 +477,8 @@ class FormBuilder
      */
     public function textarea($name, $value = null, $options = [])
     {
+        $this->type = 'textarea';
+
         if (! isset($options['name'])) {
             $options['name'] = $name;
         }
@@ -545,6 +557,8 @@ class FormBuilder
         array $selectAttributes = [],
         array $optionsAttributes = []
     ) {
+        $this->type = 'select';
+
         // When building a select box the "value" attribute is really the selected one
         // so we will use that when checking the model or session for a value which
         // should provide a convenient method of re-populating the forms on post.
@@ -777,6 +791,8 @@ class FormBuilder
      */
     protected function checkable($type, $name, $value, $checked, $options)
     {
+        $this->type = $type;
+
         $checked = $this->getCheckedState($type, $name, $value, $checked);
 
         if ($checked) {
@@ -1096,15 +1112,21 @@ class FormBuilder
             return $value;
         }
 
-        if (! is_null($this->old($name)) && $name != '_method') {
-            return $this->old($name);
+        $old = $this->old($name);
+
+        if (! is_null($old) && $name != '_method') {
+            return $old;
         }
 
         if (function_exists('app')) {
             $hasNullMiddleware = app("Illuminate\Contracts\Http\Kernel")
                 ->hasMiddleware(ConvertEmptyStringsToNull::class);
 
-            if ($hasNullMiddleware && is_null($this->old($name)) && $this->view->shared('errors')->count() > 0) {
+            if ($hasNullMiddleware
+                && is_null($old)
+                && !is_null($this->view->shared('errors'))
+                && count($this->view->shared('errors')) > 0
+            ) {
                 return null;
             }
         }
@@ -1128,28 +1150,13 @@ class FormBuilder
      */
     protected function getModelValueAttribute($name, $model = null)
     {
-        if (!isset($model)) {
-            $model = $this->model;
-        }
-
         $key = $this->transformKey($name);
 
-        // Check for nested attribute
-        if (strpos($key, '.') !== false) {
-            $keys = explode('.', $key, 2);
-
-            // get the first level
-            $_model = $this->getModelValueAttribute($keys[0], $model);
-
-            // recursively get the next levels
-            return $this->getModelValueAttribute($keys[1], $_model);
+        if (method_exists($this->model, 'getFormValue')) {
+            return $this->model->getFormValue($key);
         }
 
-        if (method_exists($model, 'getFormValue')) {
-            return $model->getFormValue($key);
-        }
-
-        return data_get($model, $key);
+        return data_get($this->model, $this->transformKey($name));
     }
 
     /**
@@ -1162,7 +1169,25 @@ class FormBuilder
     public function old($name)
     {
         if (isset($this->session)) {
-            return $this->session->getOldInput($this->transformKey($name));
+            $key = $this->transformKey($name);
+            $payload = $this->session->getOldInput($key);
+
+            if (!is_array($payload)) {
+                return $payload;
+            }
+
+            if (!in_array($this->type, ['select', 'checkbox'])) {
+                if (!isset($this->payload[$key])) {
+                    $this->payload[$key] = collect($payload);
+                }
+
+                if (!empty($this->payload[$key])) {
+                    $value = $this->payload[$key]->shift();
+                    return $value;
+                }
+            }
+
+            return $payload;
         }
     }
 

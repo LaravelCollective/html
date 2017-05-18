@@ -38,7 +38,7 @@ class HtmlServiceProvider extends ServiceProvider
         $this->app->alias('html', HtmlBuilder::class);
         $this->app->alias('form', FormBuilder::class);
 
-        $this->registerBladeExtensions();
+        $this->registerBladeDirectives();
     }
 
     /**
@@ -72,7 +72,7 @@ class HtmlServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerBladeExtensions()
+    protected function registerBladeDirectives()
     {
         $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $namespaces = [

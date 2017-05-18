@@ -50,11 +50,15 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
     {
         $model = new ModelThatUsesForms($this->modelData);
         $relatedModel = new ModelThatUsesForms($this->modelData);
+        $relatedModel->address = [
+            'street' => '123 Evergreen Terrace'
+        ];
         $model->setRelation('related', $relatedModel);
+
         $this->formBuilder->setModel($model);
 
         $this->assertEquals($this->formBuilder->getValueAttribute('related[string]'), 'ponmlkjihgfedcba');
-        $this->assertEquals($this->formBuilder->getValueAttribute('related[created_at]'), $this->now->timestamp);
+        $this->assertEquals($this->formBuilder->getValueAttribute('related[address][street]'), '123 Evergreen Terrace');
     }
 
     public function testItCanGetRelatedValueForForms()
