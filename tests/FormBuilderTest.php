@@ -361,7 +361,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $select = $this->formBuilder->select('size', $list, 'S');
         $this->assertEquals($select,
           '<select name="size"><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
-// its likely that the mock has been changed so its not replicating correctly anymore
+
         $session->shouldReceive('getOldInput')->once()->with('size.multi')->andReturn(['L', 'S']);
         $select = $this->formBuilder->select('size[multi][]', $list, 'M', ['multiple' => 'multiple']);
         $this->assertEquals($select,

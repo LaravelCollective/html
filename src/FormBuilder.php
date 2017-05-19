@@ -1108,6 +1108,10 @@ class FormBuilder
      */
     public function getValueAttribute($name, $value = null)
     {
+        if ($name == '_token') {
+            return $this->csrfToken;
+        }
+
         if (is_null($name)) {
             return $value;
         }
