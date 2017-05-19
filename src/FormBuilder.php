@@ -1111,7 +1111,7 @@ class FormBuilder
     public function getValueAttribute($name, $value = null)
     {
         if ($name == '_token') {
-            return $this->csrfToken;
+            return $this->csrfToken ?: $value;
         }
 
         if (is_null($name)) {
