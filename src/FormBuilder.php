@@ -59,7 +59,7 @@ class FormBuilder
    *
    * @var array
    */
-  protected $reserved = ['method', 'url', 'route', 'action', 'files'];
+  protected $reserved = ['method', 'url', 'route', 'action', 'files', 'absolute'];
 
   /**
    * The form methods that should be spoofed, in uppercase.
@@ -76,19 +76,28 @@ class FormBuilder
   protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
   /**
+   * If form URL's should be absolute or not
+   *
+   * @var bool
+   */
+  protected $absolute = true;
+
+  /**
    * Create a new form builder instance.
    *
    * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
    * @param  \Collective\Html\HtmlBuilder     $html
    * @param  string                           $csrfToken
+   * @param  bool                             $absolute
    *
    * @return void
    */
-  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
+  public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken, $absolute)
   {
       $this->url = $url;
       $this->html = $html;
       $this->csrfToken = $csrfToken;
+      $this->absolute = $absolute;
   }
 
   /**
@@ -100,16 +109,21 @@ class FormBuilder
    */
   public function open(array $options = [])
   {
-      $method = array_get($options, 'method', 'post');
+    $method = array_get($options, 'method', 'post');
+
+    // Determines if the request should use an absolute ot relative URL.  This
+    // is set to be true however it can be overriden in a .env file in which
+    // case it becomes the new default for the project.
+    $absolute = array_get($options, 'absolute', $this->absolute);
 
     // We need to extract the proper method from the attributes. If the method is
     // something other than GET or POST we'll use POST since we will spoof the
     // actual method since forms don't support the reserved methods in HTML.
     $attributes['method'] = $this->getMethod($method);
 
-      $attributes['action'] = $this->getAction($options);
+    $attributes['action'] = $this->getAction($options, $absolute);
 
-      $attributes['accept-charset'] = 'UTF-8';
+    $attributes['accept-charset'] = 'UTF-8';
 
     // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
     // field that will instruct the Symfony request to pretend the method is a
@@ -934,19 +948,18 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getAction(array $options)
+  protected function getAction(array $options, $absolute = true)
   {
-      // We will also check for a "route" or "action" parameter on the array so that
+    // We will also check for a "route" or "action" parameter on the array so that
     // developers can easily specify a route or controller action when creating
     // a form providing a convenient interface for creating the form actions.
     if (isset($options['url'])) {
-        return $this->getUrlAction($options['url']);
+        return $this->getUrlAction($options['url'], $absolute);
     }
 
-      if (isset($options['route'])) {
-          return $this->getRouteAction($options['route']);
-      }
-
+    if (isset($options['route'])) {
+      return $this->getRouteAction($options['route'], $absolute);
+    }
     // If an action is available, we are attempting to open a form to a controller
     // action route. So, we will use the URL generator to get the path to these
     // actions and return them from the method. Otherwise, we'll use current.
@@ -954,7 +967,7 @@ class FormBuilder
         return $this->getControllerAction($options['action']);
     }
 
-      return $this->url->current();
+    return $this->url->current();
   }
 
   /**
@@ -964,13 +977,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getUrlAction($options)
+  protected function getUrlAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->to($options[0], array_slice($options, 1));
+          return $this->url->to($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->to($options);
+      return $this->url->to($options, $absolute);
   }
 
   /**
@@ -980,13 +993,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getRouteAction($options)
+  protected function getRouteAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->route($options[0], array_slice($options, 1));
+          return $this->url->route($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->route($options);
+      return $this->url->route($options, $absolute);
   }
 
   /**
@@ -996,13 +1009,13 @@ class FormBuilder
    *
    * @return string
    */
-  protected function getControllerAction($options)
+  protected function getControllerAction($options, $absolute = true)
   {
       if (is_array($options)) {
-          return $this->url->action($options[0], array_slice($options, 1));
+          return $this->url->action($options[0], array_slice($options, 1), $absolute);
       }
 
-      return $this->url->action($options);
+      return $this->url->action($options, $absolute);
   }
 
   /**

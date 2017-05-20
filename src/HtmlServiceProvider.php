@@ -14,6 +14,18 @@ class HtmlServiceProvider extends ServiceProvider
     protected $defer = true;
 
     /**
+     * Boot the service provider
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__ . '/resources/config/html.php' => config_path('html.php')
+        ], 'config');
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
@@ -26,6 +38,10 @@ class HtmlServiceProvider extends ServiceProvider
 
         $this->app->alias('html', 'Collective\Html\HtmlBuilder');
         $this->app->alias('form', 'Collective\Html\FormBuilder');
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/../resources/config/html.php', 'html'
+        );
     }
 
     /**
@@ -48,7 +64,8 @@ class HtmlServiceProvider extends ServiceProvider
     protected function registerFormBuilder()
     {
         $this->app->singleton('form', function ($app) {
-            $form = new FormBuilder($app['html'], $app['url'], $app['session.store']->getToken());
+            // Pass through the absolute url configuration to the builder
+            $form = new FormBuilder($app['html'], $app['url'], $app['session.store']->getToken(), $app['config']['html.absolute']);
 
             return $form->setSessionStore($app['session.store']);
         });
