@@ -27,6 +27,8 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
           'address'    => [
               'street' => 'abcde st'
           ],
+          'array'      => [1, 2, 3,],
+          'transform_key' => 'testing testing',
           'created_at' => $this->now,
           'updated_at' => $this->now,
         ];
@@ -65,6 +67,31 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
     {
         $model = new ModelThatUsesForms($this->modelData);
         $this->assertEquals($model->getFormValue('address.street'), 'abcde st');
+    }
+    
+    public function testItCanUseGetAccessorValuesWhenThereAreNoFormAccessors()
+    {
+        $model = new ModelThatUsesForms($this->modelData);
+        $this->formBuilder->setModel($model);
+        
+        $this->assertEquals($this->formBuilder->getValueAttribute('email'), 'mutated@tjshafer.com');
+    }
+
+    public function testItReturnsSameResultWithAndWithoutThisFeature()
+    {
+        $modelWithAccessor = new ModelThatUsesForms($this->modelData);
+        $modelWithoutAccessor = new ModelThatDoesntUseForms($this->modelData);
+
+        $this->formBuilder->setModel($modelWithAccessor);
+        $valuesWithAccessor[] = $this->formBuilder->getValueAttribute('array');
+        $valuesWithAccessor[] = $this->formBuilder->getValueAttribute('array[0]');
+        $valuesWithAccessor[] = $this->formBuilder->getValueAttribute('transform.key');
+        $this->formBuilder->setModel($modelWithoutAccessor);
+        $valuesWithoutAccessor[] = $this->formBuilder->getValueAttribute('array');
+        $valuesWithoutAccessor[] = $this->formBuilder->getValueAttribute('array[0]');
+        $valuesWithoutAccessor[] = $this->formBuilder->getValueAttribute('transform.key');
+
+        $this->assertEquals($valuesWithAccessor, $valuesWithoutAccessor);
     }
 
     public function testItCanStillMutateValuesForViews()
@@ -110,6 +137,11 @@ class ModelThatUsesForms extends Model
     public function getCreatedAtAttribute($value)
     {
         return '1 second ago';
+    }
+
+    public function getEmailAttribute($value)
+    {
+        return 'mutated@tjshafer.com';
     }
 }
 
