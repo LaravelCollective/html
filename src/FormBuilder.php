@@ -694,9 +694,13 @@ class FormBuilder
     protected function placeholderOption($display, $selected)
     {
         $selected = $this->getSelectedValue(null, $selected);
-
-        $options = compact('selected');
-        $options['value'] = '';
+        
+        $options = [
+            'selected' => $selected,
+            'disabled' => 'disabled',
+            'hidden' => 'hidden',
+            'value' => ''
+        ];
 
         return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . $this->html->escapeAll($display) . '</option>');
     }

@@ -347,7 +347,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -356,7 +356,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option disabled="disabled" hidden="hidden" value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
             'encoded_html',
@@ -365,7 +365,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             ['placeholder' => 'Select the &nbsp;']
         );
         $this->assertEquals($select,
-            '<select name="encoded_html"><option selected="selected" value="">Select the &amp;nbsp;</option><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+            '<select name="encoded_html"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select the &amp;nbsp;</option><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
         );
     }
 
