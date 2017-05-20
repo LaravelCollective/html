@@ -1084,16 +1084,16 @@ class FormBuilder
      */
     public function getValueAttribute($name, $value = null)
     {
+        if (! is_null($value)) {
+            return $value;
+        }
+        
         if (is_null($name)) {
             return $value;
         }
 
         if (! is_null($this->old($name)) && $name != '_method') {
             return $this->old($name);
-        }
-
-        if (! is_null($value)) {
-            return $value;
         }
 
         if (isset($this->model)) {
