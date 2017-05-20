@@ -11,6 +11,10 @@ use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
 
     /**
      * Setup the test environment.
@@ -20,7 +24,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
         $this->viewFactory = m::mock(Factory::class);
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
-        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc');
+
+        // prepare request for test with some data
+        $request = Request::create('/foo', 'GET', [
+            "person" => [
+                "name" => "John",
+                "surname" => "Doe"
+            ],
+            "aggree" => 1,
+            "checkbox_array" => [1,2,3]
+        ]);
+
+        $request = Request::createFromBase($request);
+
+        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc', $request);
     }
 
     /**
@@ -29,6 +46,29 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         m::close();
+    }
+
+    public function testRequestValue()
+    {
+        $name = $this->formBuilder->text("person[name]");
+        $surname = $this->formBuilder->text("person[surname]");
+        $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
+
+        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $unchecked = $this->formBuilder->checkbox("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="checkbox" value="1">', $unchecked);
+
+        $checked_array = $this->formBuilder->checkbox("checkbox_array[]", 1);
+        $unchecked_array = $this->formBuilder->checkbox("checkbox_array[]", 4);
+        $this->assertEquals('<input checked="checked" name="checkbox_array[]" type="checkbox" value="1">', $checked_array);
+        $this->assertEquals('<input name="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
+
+        $checked = $this->formBuilder->radio("aggree", 1);
+        $unchecked = $this->formBuilder->radio("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="radio" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="radio" value="1">', $unchecked);
     }
 
     public function testOpeningForm()
@@ -264,6 +304,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
           '<select name="size"><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+
+        $select = $this->formBuilder->select(
+            'size',
+            ['0' => 'All Sizes', 'L' => 'Large', 'M' => 'Medium', 'S' => 'Small'],
+            ['M'],
+            ['multiple']
+        );
+        $this->assertEquals(
+            $select,
+            '<select multiple name="size"><option value="0">All Sizes</option><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -543,6 +593,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="color">', $form1);
         $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
+    }
+
+    public function testBooleanAttributes()
+    {
+        $input = $this->formBuilder->text('test', null, ['disabled']);
+        $this->assertEquals('<input disabled name="test" type="text">', $input);
+
+        $input = $this->formBuilder->textarea('test', null, ['readonly']);
+        $this->assertEquals('<textarea readonly name="test" cols="50" rows="10"></textarea>', $input);
     }
 
     protected function setModel(array $data, $object = true)

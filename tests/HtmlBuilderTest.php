@@ -137,4 +137,15 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<a href="mailto:person@example.com" class="example-link">&lt;span&gt;First Name Last&lt;/span&gt;</a>', $result1);
         $this->assertEquals('<a href="mailto:person@example.com" class="example-link"><span>First Name Last</span></a>', $result2);
     }
+
+    public function testBooleanAttributes()
+    {
+        $result1 = $this->htmlBuilder->attributes(['my-property' => true]);
+
+        $result2 = $this->htmlBuilder->attributes(['my-property' => false]);
+
+        $this->assertEquals('my-property', trim($result1));
+
+        $this->assertEquals('', trim($result2));
+    }
 }
