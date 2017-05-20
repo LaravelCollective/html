@@ -4,6 +4,7 @@ namespace Collective\Html;
 
 use DateTime;
 use BadMethodCallException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
@@ -67,6 +68,8 @@ class FormBuilder
      */
     protected $labels = [];
 
+    protected $request;
+
     /**
      * The reserved form open attributes.
      *
@@ -96,12 +99,13 @@ class FormBuilder
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
      */
-    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken)
+    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken, Request $request = null)
     {
         $this->url = $url;
         $this->html = $html;
         $this->view = $view;
         $this->csrfToken = $csrfToken;
+        $this->request = $request;
     }
 
     /**
@@ -809,11 +813,13 @@ class FormBuilder
      */
     protected function getCheckboxCheckedState($name, $value, $checked)
     {
-        if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) {
+        $request = $this->request($name);
+
+        if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name)) && !$request) {
             return false;
         }
 
-        if ($this->missingOldAndModel($name)) {
+        if ($this->missingOldAndModel($name) && !$request) {
             return $checked;
         }
 
@@ -839,7 +845,9 @@ class FormBuilder
      */
     protected function getRadioCheckedState($name, $value, $checked)
     {
-        if ($this->missingOldAndModel($name)) {
+        $request = $this->request($name);
+
+        if ($this->missingOldAndModel($name) && !$request) {
             return $checked;
         }
 
@@ -1088,6 +1096,11 @@ class FormBuilder
             return $this->old($name);
         }
 
+        $request = $this->request($name);
+        if (!is_null($request)) {
+            return $request;
+        }
+
         if (! is_null($value)) {
             return $value;
         }
@@ -1095,6 +1108,20 @@ class FormBuilder
         if (isset($this->model)) {
             return $this->getModelValueAttribute($name);
         }
+    }
+
+    /**
+     * Get value from current Request
+     * @param $name
+     * @return array|null|string
+     */
+    protected function request($name)
+    {
+        if (!isset($this->request)) {
+            return null;
+        }
+
+        return $this->request->input($this->transformKey($name));
     }
 
     /**
