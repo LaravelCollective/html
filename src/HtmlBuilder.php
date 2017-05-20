@@ -441,11 +441,13 @@ class HtmlBuilder
      */
     protected function attributeElement($key, $value)
     {
-        // For numeric keys we will assume that the key and the value are the same
-        // as this will convert HTML attributes such as "required" to a correct
-        // form like required="required" instead of using incorrect numerics.
+        // For numeric keys we will assume that the value is a boolean attribute
+        // where the presence of the attribute represents a true value and the
+        // absence represents a false value.
+        // This will convert HTML attributes such as "required" to a correct
+        // form instead of using incorrect numerics.
         if (is_numeric($key)) {
-            $key = $value;
+            return $value;
         }
         
         // Treat boolean attributes as HTML properties
@@ -551,16 +553,12 @@ class HtmlBuilder
      */
     public function __call($method, $parameters)
     {
-        try {
+        if (static::hasComponent($method)) {
             return $this->componentCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
-        try {
+        if (static::hasMacro($method)) {
             return $this->macroCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
         throw new BadMethodCallException("Method {$method} does not exist.");
