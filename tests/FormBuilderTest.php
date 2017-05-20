@@ -245,7 +245,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<textarea name="foo" cols="50" rows="10">foobar</textarea>', $form2);
         $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
-        $this->assertEquals('<textarea name="encoded_html" cols="50" rows="10">&amp;amp;</textarea>', $form5);
+        $this->assertEquals('<textarea name="encoded_html" cols="50" rows="10">&amp;</textarea>', $form5);
     }
 
     public function testSelect()
@@ -312,7 +312,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $select,
-            '<select name="encoded_html"><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+            '<select name="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
     }
 
@@ -365,7 +365,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             ['placeholder' => 'Select the &nbsp;']
         );
         $this->assertEquals($select,
-            '<select name="encoded_html"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select the &amp;nbsp;</option><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+            '<select name="encoded_html"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
     }
 
