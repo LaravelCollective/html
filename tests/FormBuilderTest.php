@@ -11,6 +11,10 @@ use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FormBuilder
+     */
+    private $formBuilder;
 
     /**
      * @var FormBuilder
@@ -571,6 +575,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="color">', $form1);
         $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
+    }
+
+    public function testBooleanAttributes()
+    {
+        $input = $this->formBuilder->text('test', null, ['disabled']);
+        $this->assertEquals('<input disabled name="test" type="text">', $input);
+
+        $input = $this->formBuilder->textarea('test', null, ['readonly']);
+        $this->assertEquals('<textarea readonly name="test" cols="50" rows="10"></textarea>', $input);
     }
 
     protected function setModel(array $data, $object = true)
