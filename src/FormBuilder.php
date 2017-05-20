@@ -839,7 +839,7 @@ class FormBuilder
      */
     protected function getRadioCheckedState($name, $value, $checked)
     {
-        if ($this->missingOldAndModel($name)) {
+        if ($this->missingOld($name) && (!is_null($checked) || $this->missingModel($name))) {
             return $checked;
         }
 
@@ -855,7 +855,31 @@ class FormBuilder
      */
     protected function missingOldAndModel($name)
     {
-        return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
+        return $this->missingOld($name) && $this->missingModel($name);
+    }
+       
+    /**
+     * Determine if old input exists for a key.
+     *
+     * @param  string $name
+     *
+     * @return bool
+     */
+    protected function missingOld($name)
+    {
+        return is_null($this->old($name));
+    }
+                       
+    /**
+     * Determine if model exists for a key.
+     *
+     * @param  string $name
+     *
+     * @return bool
+     */
+    protected function missingModel($name)
+    {
+        return is_null($this->getModelValueAttribute($name));
     }
 
     /**
