@@ -61,6 +61,25 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<ul class="example"><li>foo</li><li>bar</li><li>&amp;amp;</li></ul>', $ul);
     }
 
+    public function testListing()
+    {
+        $parentAttributes = ['class'=>'parClass', 'id'=>'parent'];
+        $list = [['foo', ['class'=>'someClass']], 'bar', ['&amp;', ['class'=>'class22', 'onclick'=>"alert('test')", false]], ['example']];
+
+        $listElement = $this->htmlBuilder->listing('ul', $list, $parentAttributes);
+
+        $this->assertEquals('<ul class="parClass" id="parent"><li class="someClass">foo</li><li>bar</li><li class="class22" onclick="alert(\'test\')>&amp;</li><ul><li>example</li></ul></ul>', $listElement);
+    }
+
+    public function testAttributes()
+    {
+        $attributesInput = ['attr1'=>'val1', ['attr2'=>'val2'], ['onclick'=>'alert(\'disable html escaping\')', false], 'onclick'=>'alert(\'enable html escaping\')'];
+
+        $attributesOutput = $this->attributes($attributesInput);
+
+        $this->assertEquals('attr1="val1" attr2="val2" onclick="alert(\'disable html escaping\')" onclick="alert(&#039;enable html escaping&#039;)"', $attributesOutput);
+    }
+
     public function testMeta()
     {
         $result = $this->htmlBuilder->meta('description', 'Lorem ipsum dolor sit amet.');
