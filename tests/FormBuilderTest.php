@@ -111,10 +111,14 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form1 = $this->formBuilder->input('text', 'foo');
         $form2 = $this->formBuilder->input('text', 'foo', 'foobar');
         $form3 = $this->formBuilder->input('date', 'foobar', null, ['class' => 'span2']);
+        $form4 = $this->formBuilder->input('hidden', 'foo', true);
+        $form6 = $this->formBuilder->input('checkbox', 'foo-check', true);
 
         $this->assertEquals('<input name="foo" type="text">', $form1);
         $this->assertEquals('<input name="foo" type="text" value="foobar">', $form2);
         $this->assertEquals('<input class="span2" name="foobar" type="date">', $form3);
+        $this->assertEquals('<input name="foo" type="hidden" value="1">', $form4);
+        $this->assertEquals('<input name="foo-check" type="checkbox" value="1">', $form6);
     }
 
     public function testPasswordsNotFilled()

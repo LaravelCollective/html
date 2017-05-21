@@ -449,9 +449,9 @@ class HtmlBuilder
         if (is_numeric($key)) {
             return $value;
         }
-        
+
         // Treat boolean attributes as HTML properties
-        if (is_bool($value)) {
+        if (is_bool($value) && $key != 'value') {
             return $value ? $key : '';
         }
 
