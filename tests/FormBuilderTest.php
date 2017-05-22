@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FormBuilder
+     */
+    protected $formBuilder;
 
     /**
      * Setup the test environment.
@@ -20,7 +25,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
         $this->viewFactory = m::mock(Factory::class);
         $this->htmlBuilder = new HtmlBuilder($this->urlGenerator, $this->viewFactory);
-        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc');
+
+        // prepare request for test with some data
+        $request = Request::create('/foo', 'GET', [
+            "person" => [
+                "name" => "John",
+                "surname" => "Doe"
+            ],
+            "aggree" => 1,
+            "checkbox_array" => [1,2,3]
+        ]);
+
+        $request = Request::createFromBase($request);
+
+        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, $this->viewFactory, 'abc', $request);
     }
 
     /**
@@ -29,6 +47,29 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         m::close();
+    }
+
+    public function testRequestValue()
+    {
+        $name = $this->formBuilder->text("person[name]");
+        $surname = $this->formBuilder->text("person[surname]");
+        $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
+
+        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $unchecked = $this->formBuilder->checkbox("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="checkbox" value="1">', $unchecked);
+
+        $checked_array = $this->formBuilder->checkbox("checkbox_array[]", 1);
+        $unchecked_array = $this->formBuilder->checkbox("checkbox_array[]", 4);
+        $this->assertEquals('<input checked="checked" name="checkbox_array[]" type="checkbox" value="1">', $checked_array);
+        $this->assertEquals('<input name="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
+
+        $checked = $this->formBuilder->radio("aggree", 1);
+        $unchecked = $this->formBuilder->radio("no_value", 1);
+        $this->assertEquals('<input checked="checked" name="aggree" type="radio" value="1">', $checked);
+        $this->assertEquals('<input name="no_value" type="radio" value="1">', $unchecked);
     }
 
     public function testOpeningForm()
@@ -70,10 +111,34 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form1 = $this->formBuilder->input('text', 'foo');
         $form2 = $this->formBuilder->input('text', 'foo', 'foobar');
         $form3 = $this->formBuilder->input('date', 'foobar', null, ['class' => 'span2']);
+        $form4 = $this->formBuilder->input('hidden', 'foo', true);
+        $form6 = $this->formBuilder->input('checkbox', 'foo-check', true);
 
         $this->assertEquals('<input name="foo" type="text">', $form1);
         $this->assertEquals('<input name="foo" type="text" value="foobar">', $form2);
         $this->assertEquals('<input class="span2" name="foobar" type="date">', $form3);
+        $this->assertEquals('<input name="foo" type="hidden" value="1">', $form4);
+        $this->assertEquals('<input name="foo-check" type="checkbox" value="1">', $form6);
+    }
+
+    public function testMacroField()
+    {
+        $this->formBuilder->macro('data_field', function ($name, $value, $data) {
+            $dataAttributes = [];
+            foreach ($data as $key => $attribute) {
+                $dataAttributes[] = $key.'="'.$attribute.'"';
+            }
+            return '<input name="'.$name.'" type="text" value="'.$value.'" '.implode(' ', $dataAttributes).'>';
+        });
+
+        $form = $this->formBuilder->data_field('foo', null, [
+            'role' => 'set_name',
+            'data-titlecase' => 'ucfirst',
+            'data-inputmask-type' => 'Regex',
+            'data-inputmask-regex' => '[A-Za-z0-9\\s-\\(\\)&]{2,70}',
+        ]);
+
+        $this->assertEquals('<input name="foo" type="text" value="" role="set_name" data-titlecase="ucfirst" data-inputmask-type="Regex" data-inputmask-regex="[A-Za-z0-9\s-\(\)&]{2,70}">', $form);
     }
 
     public function testPasswordsNotFilled()
@@ -111,12 +176,21 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="text">', $form4);
     }
 
+    public function testFormTextArray()
+    {
+        $form1 = $this->formBuilder->input('text', 'foo[]', 'testing');
+        $form2 = $this->formBuilder->text('foo[]');
+
+        $this->assertEquals('<input name="foo[]" type="text" value="testing">', $form1);
+        $this->assertEquals('<input name="foo[]" type="text">', $form2);
+    }
+
     public function testFormTextRepopulation()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['relation' => ['key' => 'attribute'], 'other' => 'val']);
 
-        $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('some value');
+        $session->shouldReceive('getOldInput')->once()->with('name_with_dots')->andReturn('some value');
         $input = $this->formBuilder->text('name.with.dots', 'default value');
         $this->assertEquals('<input name="name.with.dots" type="text" value="some value">', $input);
 
@@ -163,6 +237,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="hidden">', $form1);
         $this->assertEquals('<input name="foo" type="hidden" value="foobar">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="hidden">', $form3);
+    }
+
+    public function testFormSearch()
+    {
+        $form1 = $this->formBuilder->search('foo');
+        $form2 = $this->formBuilder->search('foo', 'foobar');
+        $form3 = $this->formBuilder->search('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="search">', $form1);
+        $this->assertEquals('<input name="foo" type="search" value="foobar">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="search">', $form3);
     }
 
     public function testFormEmail()
@@ -239,13 +324,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form2 = $this->formBuilder->textarea('foo', 'foobar');
         $form3 = $this->formBuilder->textarea('foo', null, ['class' => 'span2']);
         $form4 = $this->formBuilder->textarea('foo', null, ['size' => '60x15']);
-        $form5 = $this->formBuilder->textarea('encoded_html', '&amp;');
+        $form5 = $this->formBuilder->textarea('encoded_html', 'Eggs & Sausage', ['size' => '60x50']);
+        $form6 = $this->formBuilder->textarea('encoded_html', 'Eggs &amp;&amp; Sausage', ['size' => '60x50']);
 
         $this->assertEquals('<textarea name="foo" cols="50" rows="10"></textarea>', $form1);
         $this->assertEquals('<textarea name="foo" cols="50" rows="10">foobar</textarea>', $form2);
         $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
-        $this->assertEquals('<textarea name="encoded_html" cols="50" rows="10">&amp;amp;</textarea>', $form5);
+        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp; Sausage</textarea>', $form5);
+        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp;&amp; Sausage</textarea>', $form6);
     }
 
     public function testSelect()
@@ -264,6 +351,16 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
           '<select name="size"><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+
+        $select = $this->formBuilder->select(
+            'size',
+            ['0' => 'All Sizes', 'L' => 'Large', 'M' => 'Medium', 'S' => 'Small'],
+            ['M'],
+            ['multiple']
+        );
+        $this->assertEquals(
+            $select,
+            '<select multiple name="size"><option value="0">All Sizes</option><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -312,8 +409,31 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $select,
-            '<select name="encoded_html"><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+            '<select name="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
+
+        $select = $this->formBuilder->select(
+            'size',
+            ['L' => 'Large', 'S' => 'Small'],
+            null,
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($select,
+            '<select name="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></select>');
+    }
+
+    public function testSelectCollection()
+    {
+        $select = $this->formBuilder->select(
+            'size',
+            collect(['L' => 'Large', 'S' => 'Small']),
+            null,
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($select,
+            '<select name="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></select>');
     }
 
     public function testFormSelectRepopulation()
@@ -322,12 +442,12 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
         $this->setModel($model = ['size' => ['key' => 'S'], 'other' => 'val']);
 
-        $session->shouldReceive('getOldInput')->twice()->with('size')->andReturn('M');
+        $session->shouldReceive('getOldInput')->once()->with('size')->andReturn('M');
         $select = $this->formBuilder->select('size', $list, 'S');
         $this->assertEquals($select,
           '<select name="size"><option value="L">Large</option><option value="M" selected="selected">Medium</option><option value="S">Small</option></select>');
 
-        $session->shouldReceive('getOldInput')->twice()->with('size.multi')->andReturn(['L', 'S']);
+        $session->shouldReceive('getOldInput')->once()->with('size.multi')->andReturn(['L', 'S']);
         $select = $this->formBuilder->select('size[multi][]', $list, 'M', ['multiple' => 'multiple']);
         $this->assertEquals($select,
           '<select multiple="multiple" name="size[multi][]"><option value="L" selected="selected">Large</option><option value="M">Medium</option><option value="S" selected="selected">Small</option></select>');
@@ -347,7 +467,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -356,7 +476,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option disabled="disabled" hidden="hidden" value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
             'encoded_html',
@@ -365,7 +485,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             ['placeholder' => 'Select the &nbsp;']
         );
         $this->assertEquals($select,
-            '<select name="encoded_html"><option selected="selected" value="">Select the &amp;nbsp;</option><option value="no_break_space">&amp;nbsp;</option><option value="ampersand">&amp;amp;</option><option value="lower_than">&amp;lt;</option></select>'
+            '<select name="encoded_html"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
     }
 
@@ -543,6 +663,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="color">', $form1);
         $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
         $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
+    }
+
+    public function testBooleanAttributes()
+    {
+        $input = $this->formBuilder->text('test', null, ['disabled']);
+        $this->assertEquals('<input disabled name="test" type="text">', $input);
+
+        $input = $this->formBuilder->textarea('test', null, ['readonly']);
+        $this->assertEquals('<textarea readonly name="test" cols="50" rows="10"></textarea>', $input);
     }
 
     protected function setModel(array $data, $object = true)

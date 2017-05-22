@@ -54,18 +54,6 @@ class HtmlBuilder
     }
 
     /**
-     * Convert all applicable characters to HTML entities.
-     *
-     * @param string $value
-     *
-     * @return string
-     */
-    public function escapeAll($value)
-    {
-        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-    }
-
-    /**
      * Convert entities to HTML characters.
      *
      * @param string $value
@@ -399,7 +387,7 @@ class HtmlBuilder
         if (is_array($value)) {
             return $this->nestedListing($key, $type, $value);
         } else {
-            return '<li>' . $this->escapeAll($value) . '</li>';
+            return '<li>' . e($value) . '</li>';
         }
     }
 
@@ -453,15 +441,22 @@ class HtmlBuilder
      */
     protected function attributeElement($key, $value)
     {
-        // For numeric keys we will assume that the key and the value are the same
-        // as this will convert HTML attributes such as "required" to a correct
-        // form like required="required" instead of using incorrect numerics.
+        // For numeric keys we will assume that the value is a boolean attribute
+        // where the presence of the attribute represents a true value and the
+        // absence represents a false value.
+        // This will convert HTML attributes such as "required" to a correct
+        // form instead of using incorrect numerics.
         if (is_numeric($key)) {
-            $key = $value;
+            return $value;
+        }
+
+        // Treat boolean attributes as HTML properties
+        if (is_bool($value) && $key != 'value') {
+            return $value ? $key : '';
         }
 
         if (! is_null($value)) {
-            return $key . '="' . $this->escapeAll($value) . '"';
+            return $key . '="' . e($value) . '"';
         }
     }
 
@@ -558,16 +553,12 @@ class HtmlBuilder
      */
     public function __call($method, $parameters)
     {
-        try {
+        if (static::hasComponent($method)) {
             return $this->componentCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
-        try {
+        if (static::hasMacro($method)) {
             return $this->macroCall($method, $parameters);
-        } catch (BadMethodCallException $e) {
-            //
         }
 
         throw new BadMethodCallException("Method {$method} does not exist.");
