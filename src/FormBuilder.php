@@ -92,6 +92,13 @@ class FormBuilder
     protected $skipValueTypes = ['file', 'password', 'checkbox', 'radio'];
 
     /**
+     * The types of inputs to reformat values on.
+     *
+     * @var array
+     */
+    protected $reformatValueTypes = ['date', 'datetime', 'datetime-local'];
+
+    /**
      * Create a new form builder instance.
      *
      * @param  \Collective\Html\HtmlBuilder               $html
@@ -268,6 +275,10 @@ class FormBuilder
 
         if (! in_array($type, $this->skipValueTypes)) {
             $value = $this->getValueAttribute($name, $value);
+
+            if (in_array($type, $this->reformatValueTypes)) {
+                $value = $this->{'format' . camel_case($type)}($value);
+            }
         }
 
         // Once we have the type, value, and ID we can merge them into the rest of the
@@ -364,6 +375,51 @@ class FormBuilder
     }
 
     /**
+     * Format a date input field value.
+     *
+     * @param  string $value
+     * @param  string $format
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    protected function formatDate($value, $format = 'Y-m-d')
+    {
+        if (! is_null($value) && ! ($value instanceof DateTime)) {
+            $value = new DateTime($value);
+        }
+
+        if ($value instanceof DateTime) {
+            $value = $value->format($format);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Format a datetime input field value.
+     *
+     * @param  string $value
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    protected function formatDatetime($value)
+    {
+        return $this->formatDate($value, DateTime::RFC3339);
+    }
+
+    /**
+     * Format a datetime-local input field value.
+     *
+     * @param  string $value
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    protected function formatDatetimeLocal($value)
+    {
+        return $this->formatDate($value, 'Y-m-d\TH:i');
+    }
+
+    /**
      * Create a date input field.
      *
      * @param  string $name
@@ -374,9 +430,7 @@ class FormBuilder
      */
     public function date($name, $value = null, $options = [])
     {
-        if ($value instanceof DateTime) {
-            $value = $value->format('Y-m-d');
-        }
+        $value = $this->formatDate($value);
 
         return $this->input('date', $name, $value, $options);
     }
@@ -392,9 +446,7 @@ class FormBuilder
      */
     public function datetime($name, $value = null, $options = [])
     {
-        if ($value instanceof DateTime) {
-            $value = $value->format(DateTime::RFC3339);
-        }
+        $value = $this->formatDatetime($value);
 
         return $this->input('datetime', $name, $value, $options);
     }
@@ -410,9 +462,7 @@ class FormBuilder
      */
     public function datetimeLocal($name, $value = null, $options = [])
     {
-        if ($value instanceof DateTime) {
-            $value = $value->format('Y-m-d\TH:i');
-        }
+        $value = $this->formatDatetimeLocal($value);
 
         return $this->input('datetime-local', $name, $value, $options);
     }

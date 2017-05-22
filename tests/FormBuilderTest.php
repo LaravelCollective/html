@@ -248,12 +248,115 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $form2 = $this->formBuilder->date('foo', '2015-02-20');
         $form3 = $this->formBuilder->date('foo', \Carbon\Carbon::now());
         $form4 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
+        $form5 = $this->formBuilder->date('foo', '2015-02-20 23:16:58');
 
         $this->assertEquals('<input name="foo" type="date">', $form1);
         $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form2);
         $this->assertEquals('<input name="foo" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">',
           $form3);
         $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
+        $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form5);
+    }
+
+    public function testFormDateRepopulation()
+    {
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->setModel($model = ['date_of_birth' => ['key' => \Carbon\Carbon::now()], 'other' => 'val']);
+
+        $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('2015-02-20');
+        $input = $this->formBuilder->date('name.with.dots', '2015-02-20');
+        $this->assertEquals('<input name="name.with.dots" type="date" value="2015-02-20">', $input);
+
+        $session->shouldReceive('getOldInput')->once()->with('date.key.sub')->andReturn(null);
+        $input = $this->formBuilder->date('date[key][sub]', '2015-02-20');
+        $this->assertEquals('<input name="date[key][sub]" type="date" value="2015-02-20">', $input);
+
+        $session->shouldReceive('getOldInput')->with('date_of_birth.key')->andReturn(null);
+        $input1 = $this->formBuilder->date('date_of_birth[key]');
+        $this->assertEquals('<input name="date_of_birth[key]" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">', $input1);
+
+        $this->setModel($model, false);
+        $input2 = $this->formBuilder->date('date_of_birth[key]');
+
+        $this->assertEquals($input1, $input2);
+    }
+
+    public function testFormDatetime()
+    {
+        $form1 = $this->formBuilder->datetime('foo');
+        $form2 = $this->formBuilder->datetime('foo', '2015-02-20');
+        $form3 = $this->formBuilder->datetime('foo', \Carbon\Carbon::now());
+        $form4 = $this->formBuilder->datetime('foo', null, ['class' => 'span2']);
+        $form5 = $this->formBuilder->datetime('foo', '2015-02-20 23:16:58');
+
+        $this->assertEquals('<input name="foo" type="datetime">', $form1);
+        $this->assertEquals('<input name="foo" type="datetime" value="2015-02-20T00:00:00+00:00">', $form2);
+        $this->assertEquals('<input name="foo" type="datetime" value="' . \Carbon\Carbon::now()->format(DateTime::RFC3339) . '">',
+            $form3);
+        $this->assertEquals('<input class="span2" name="foo" type="datetime">', $form4);
+        $this->assertEquals('<input name="foo" type="datetime" value="2015-02-20T23:16:58+00:00">', $form5);
+    }
+
+    public function testFormDatetimeRepopulation()
+    {
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->setModel($model = ['date_of_birth' => ['key' => \Carbon\Carbon::now()], 'other' => 'val']);
+
+        $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('2015-02-20');
+        $input = $this->formBuilder->datetime('name.with.dots', '2015-02-20');
+        $this->assertEquals('<input name="name.with.dots" type="datetime" value="2015-02-20T00:00:00+00:00">', $input);
+
+        $session->shouldReceive('getOldInput')->once()->with('date.key.sub')->andReturn(null);
+        $input = $this->formBuilder->datetime('date[key][sub]', '2015-02-20');
+        $this->assertEquals('<input name="date[key][sub]" type="datetime" value="2015-02-20T00:00:00+00:00">', $input);
+
+        $session->shouldReceive('getOldInput')->with('date_of_birth.key')->andReturn(null);
+        $input1 = $this->formBuilder->datetime('date_of_birth[key]');
+        $this->assertEquals('<input name="date_of_birth[key]" type="datetime" value="' . \Carbon\Carbon::now()->format(DateTime::RFC3339) . '">', $input1);
+
+        $this->setModel($model, false);
+        $input2 = $this->formBuilder->datetime('date_of_birth[key]');
+
+        $this->assertEquals($input1, $input2);
+    }
+
+    public function testFormDatetimeLocal()
+    {
+        $form1 = $this->formBuilder->datetimeLocal('foo');
+        $form2 = $this->formBuilder->datetimeLocal('foo', '2015-02-20');
+        $form3 = $this->formBuilder->datetimeLocal('foo', \Carbon\Carbon::now());
+        $form4 = $this->formBuilder->datetimeLocal('foo', null, ['class' => 'span2']);
+        $form5 = $this->formBuilder->datetimeLocal('foo', '2015-02-20 23:16:58');
+
+        $this->assertEquals('<input name="foo" type="datetime-local">', $form1);
+        $this->assertEquals('<input name="foo" type="datetime-local" value="2015-02-20T00:00">', $form2);
+        $this->assertEquals('<input name="foo" type="datetime-local" value="' . \Carbon\Carbon::now()->format('Y-m-d\TH:i') . '">',
+            $form3);
+        $this->assertEquals('<input class="span2" name="foo" type="datetime-local">', $form4);
+        $this->assertEquals('<input name="foo" type="datetime-local" value="2015-02-20T23:16">', $form5);
+    }
+
+    public function testFormDatetimeLocalRepopulation()
+    {
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Session\Store'));
+        $this->setModel($model = ['date_of_birth' => ['key' => \Carbon\Carbon::now()], 'other' => 'val']);
+
+        $session->shouldReceive('getOldInput')->twice()->with('name_with_dots')->andReturn('2015-02-20');
+        $input = $this->formBuilder->datetimeLocal('name.with.dots', '2015-02-20');
+        $this->assertEquals('<input name="name.with.dots" type="datetime-local" value="2015-02-20T00:00">', $input);
+
+        $session->shouldReceive('getOldInput')->once()->with('date.key.sub')->andReturn(null);
+        $input = $this->formBuilder->datetimeLocal('date[key][sub]', '2015-02-20');
+        $this->assertEquals('<input name="date[key][sub]" type="datetime-local" value="2015-02-20T00:00">', $input);
+
+        $session->shouldReceive('getOldInput')->with('date_of_birth.key')->andReturn(null);
+        $input1 = $this->formBuilder->datetimeLocal('date_of_birth[key]');
+        $this->assertEquals('<input name="date_of_birth[key]" type="datetime-local" value="' . \Carbon\Carbon::now()->format('Y-m-d\TH:i') . '">', $input1);
+
+        $this->setModel($model, false);
+        $input2 = $this->formBuilder->datetimeLocal('date_of_birth[key]');
+
+        $this->assertEquals($input1, $input2);
     }
 
     public function testFormTime()
