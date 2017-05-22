@@ -121,6 +121,26 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo-check" type="checkbox" value="1">', $form6);
     }
 
+    public function testMacroField()
+    {
+        $this->formBuilder->macro('data_field', function ($name, $value, $data) {
+            $dataAttributes = [];
+            foreach ($data as $key => $attribute) {
+                $dataAttributes[] = $key.'="'.$attribute.'"';
+            }
+            return '<input name="'.$name.'" type="text" value="'.$value.'" '.implode(' ', $dataAttributes).'>';
+        });
+
+        $form = $this->formBuilder->data_field('foo', null, [
+            'role' => 'set_name',
+            'data-titlecase' => 'ucfirst',
+            'data-inputmask-type' => 'Regex',
+            'data-inputmask-regex' => '[A-Za-z0-9\\s-\\(\\)&]{2,70}',
+        ]);
+
+        $this->assertEquals('<input name="foo" type="text" value="" role="set_name" data-titlecase="ucfirst" data-inputmask-type="Regex" data-inputmask-regex="[A-Za-z0-9\s-\(\)&]{2,70}">', $form);
+    }
+
     public function testPasswordsNotFilled()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
