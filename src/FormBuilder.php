@@ -241,6 +241,18 @@ class FormBuilder
 
         return $this->toHtmlString('<label for="' . $name . '"' . $options . '>' . $value . '</label>');
     }
+    
+    /**
+     * Prevent considering false the values "0", 0, 0.0 and ""
+     *
+     * @param string $value
+     *
+     * @return false or string
+     */
+    protected function validateLabel($value)
+    {
+        return (empty($value) && $value !== "" && $value !== "0" && $value !== 0 && $value !== 0.0) ? false : $value;
+    }
 
     /**
      * Format the label value.
@@ -252,7 +264,7 @@ class FormBuilder
      */
     protected function formatLabel($name, $value)
     {
-        return $value ?: ucwords(str_replace('_', ' ', $name));
+        return $this->validateLabel($value) ?: ucwords(str_replace('_', ' ', $name));
     }
 
     /**
