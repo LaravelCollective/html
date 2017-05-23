@@ -321,6 +321,25 @@ class FormBuilder
         return $this->input('hidden', $name, $value, $options);
     }
 
+
+
+
+    /**
+     * Create a range (slider) input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function range($name, $value = null, $options = [])
+    {
+        return $this->input('range', $name, $value, $options);
+    }
+
+
+
     /**
      * Create an e-mail input field.
      *
