@@ -967,7 +967,7 @@ class FormBuilder
   protected function getUrlAction($options)
   {
       if (is_array($options)) {
-          return $this->url->to($options[0], array_slice($options, 1));
+          return $this->url->to($options[0], array_slice($options, 1), $options[3]);
       }
 
       return $this->url->to($options);
@@ -983,7 +983,7 @@ class FormBuilder
   protected function getRouteAction($options)
   {
       if (is_array($options)) {
-          return $this->url->route($options[0], array_slice($options, 1));
+          return $this->url->route($options[0], array_slice($options, 1), $options[2]);
       }
 
       return $this->url->route($options);
