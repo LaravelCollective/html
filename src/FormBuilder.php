@@ -6,9 +6,11 @@ use DateTime;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\HtmlString;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Session\SessionInterface;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Routing\UrlGenerator;
 
@@ -234,6 +236,7 @@ class FormBuilder
 
     /**
      * Format the label value.
+     * Search for translation to automatically format the label.
      *
      * @param  string      $name
      * @param  string|null $value
@@ -242,6 +245,19 @@ class FormBuilder
      */
     protected function formatLabel($name, $value)
     {
+        if (isset($this->model) && is_object($this->model)){
+
+            $class =  get_class($this->model);
+            $baseName = basename(str_replace('\\', '/', $class));
+            $modelKey = Str::snake($baseName, '_');
+            // config the tranlation attribute key
+            $attrKey = "models.attributes.{$modelKey}.{$name}";
+            $label = Lang::get($attrKey);
+            // if succeed the $attrKey and $label will be different
+            if ($attrKey != $label) {
+                return $label;
+            }
+        }
         return $value ?: ucwords(str_replace('_', ' ', $name));
     }
 
