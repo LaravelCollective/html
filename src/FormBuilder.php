@@ -741,8 +741,8 @@ class FormBuilder
 
         $options = [
             'selected' => $selected,
-            'disabled' => 'disabled',
-            'hidden' => 'hidden',
+//             'disabled' => 'disabled',
+//             'hidden' => 'hidden',
             'value' => ''
         ];
 
