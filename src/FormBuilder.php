@@ -1192,11 +1192,10 @@ class FormBuilder
      * Get the model value that should be assigned to the field.
      *
      * @param  string $name
-     * @param  mixed  $model
      *
      * @return mixed
      */
-    protected function getModelValueAttribute($name, $model = null)
+    protected function getModelValueAttribute($name)
     {
         $key = $this->transformKey($name);
 
