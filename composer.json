@@ -38,6 +38,20 @@
             "src/helpers.php"
         ]
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "5.5-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Collective\\Html\\HtmlServiceProvider"
+            ],
+            "aliases": {
+                "Form": "Collective\\Html\\FormFacade",
+                "Html": "Collective\\Html\\HtmlFacade"
+            }
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
