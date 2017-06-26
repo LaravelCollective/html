@@ -8,6 +8,7 @@ use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Session\Store;
 use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
@@ -681,6 +682,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         }
 
         $this->formBuilder->model($data, ['method' => 'GET']);
+    }
+
+    public function testSelectFromOldInput()
+    {
+        $store = new Store('name', new \SessionHandler());
+        $store->put('_old_input', ['countries' => ['1']]);
+        $this->formBuilder->setSessionStore($store);
+
+        $result = $this->formBuilder->select('countries', [1 => 'Russia', 2 => 'United States of America']);
+
+        $this->assertEquals(
+            '<select name="countries"><option value="1" selected="selected">Russia</option><option value="2">United States of America</option></select>',
+            $result
+        );
     }
 }
 
