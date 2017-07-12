@@ -49,6 +49,12 @@ class FormBuilder
      */
     protected $csrfToken;
 
+	/**
+	 * Consider Request variables while auto fill.
+	 * @var bool
+	 */
+    protected $considerRequest = false;
+
     /**
      * The session store implementation.
      *
@@ -108,6 +114,7 @@ class FormBuilder
      * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
+     * @param  Request                                    $request
      */
     public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken, Request $request = null)
     {
@@ -1174,6 +1181,15 @@ class FormBuilder
         }
     }
 
+	/**
+	 * Take Request in fill process
+	 * @param bool $consider
+	 */
+	public function considerRequest($consider = true)
+	{
+		$this->considerRequest = $consider;
+	}
+
     /**
      * Get value from current Request
      * @param $name
@@ -1181,9 +1197,13 @@ class FormBuilder
      */
     protected function request($name)
     {
-        if (!isset($this->request)) {
-            return null;
-        }
+		if (!$this->considerRequest) {
+			return null;
+		}
+
+		if (!isset($this->request)) {
+			return null;
+		}
 
         return $this->request->input($this->transformKey($name));
     }
