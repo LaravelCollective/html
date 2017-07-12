@@ -49,10 +49,10 @@ class FormBuilder
      */
     protected $csrfToken;
 
-	/**
-	 * Consider Request variables while auto fill.
-	 * @var bool
-	 */
+    /**
+     * Consider Request variables while auto fill.
+     * @var bool
+     */
     protected $considerRequest = false;
 
     /**
@@ -1181,14 +1181,14 @@ class FormBuilder
         }
     }
 
-	/**
-	 * Take Request in fill process
-	 * @param bool $consider
-	 */
-	public function considerRequest($consider = true)
-	{
-		$this->considerRequest = $consider;
-	}
+    /**
+     * Take Request in fill process
+     * @param bool $consider
+     */
+    public function considerRequest($consider = true)
+    {
+        $this->considerRequest = $consider;
+    }
 
     /**
      * Get value from current Request
@@ -1197,13 +1197,13 @@ class FormBuilder
      */
     protected function request($name)
     {
-		if (!$this->considerRequest) {
-			return null;
-		}
+        if (!$this->considerRequest) {
+            return null;
+        }
 
-		if (!isset($this->request)) {
-			return null;
-		}
+        if (!isset($this->request)) {
+            return null;
+        }
 
         return $this->request->input($this->transformKey($name));
     }
