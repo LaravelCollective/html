@@ -26,7 +26,7 @@
     "illuminate/view": "5.5.*"
   },
   "require-dev": {
-    "illuminate/database": "5.4.*",
+    "illuminate/database": "5.5.*",
     "mockery/mockery": "~0.9.4",
     "phpunit/phpunit": "~5.4"
   },
