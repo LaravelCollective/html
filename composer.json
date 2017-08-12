@@ -39,6 +39,9 @@
         ]
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "5.5-dev"
+        },
         "laravel": {
             "providers": [
                 "Collective\\Html\\HtmlServiceProvider"
