@@ -741,9 +741,7 @@ class FormBuilder
 
         $options = [
             'selected' => $selected,
-            'disabled' => 'disabled',
-            'hidden' => 'hidden',
-            'value' => ''
+            'value' => '',
         ];
 
         return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
@@ -760,7 +758,7 @@ class FormBuilder
     protected function getSelectedValue($value, $selected)
     {
         if (is_array($selected)) {
-            return in_array($value, $selected, true) ? 'selected' : null;
+            return in_array($value, $selected, true) || in_array((string) $value, $selected, true) ? 'selected' : null;
         } elseif ($selected instanceof Collection) {
             return $selected->contains($value) ? 'selected' : null;
         }
@@ -1192,11 +1190,10 @@ class FormBuilder
      * Get the model value that should be assigned to the field.
      *
      * @param  string $name
-     * @param  mixed  $model
      *
      * @return mixed
      */
-    protected function getModelValueAttribute($name, $model = null)
+    protected function getModelValueAttribute($name)
     {
         $key = $this->transformKey($name);
 
