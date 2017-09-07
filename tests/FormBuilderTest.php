@@ -13,20 +13,20 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
     /**
    * Setup the test environment.
    */
-  public function setUp()
-  {
-      $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
-      $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
-      $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
-  }
+    public function setUp()
+    {
+        $this->urlGenerator = new UrlGenerator(new RouteCollection(), Request::create('/foo', 'GET'));
+        $this->htmlBuilder = new HtmlBuilder($this->urlGenerator);
+        $this->formBuilder = new FormBuilder($this->htmlBuilder, $this->urlGenerator, 'abc');
+    }
 
-  /**
-   * Destroy the test environment.
-   */
-  public function tearDown()
-  {
-      m::close();
-  }
+    /**
+     * Destroy the test environment.
+     */
+    public function tearDown()
+    {
+        m::close();
+    }
 
     public function testOpeningForm()
     {
