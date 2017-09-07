@@ -288,6 +288,60 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             $select,
             '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
         );
+
+        $select = $this->formBuilder->select(
+            'size',
+            [
+                'Large sizes' => [
+                    'L' => [
+                        'Large',
+                        [
+                            'disabled',
+                        ],
+                    ],
+                    'XL' => 'Extra Large',
+                ],
+                'S' => 'Small',
+            ],
+            null,
+            [
+                'class' => 'class-name',
+                'id' => 'select-id',
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option disabled="disabled" value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
+        );
+
+        $select = $this->formBuilder->select(
+            'size',
+            [
+                'L' => [
+                    'Large',
+                    [
+                        'disabled' => 'disabled',
+                    ],
+                ],
+                'S' => [
+                    'Small',
+                    [
+                        'disabled',
+                    ],
+                ],
+            ],
+            null,
+            [
+                'class' => 'class-name',
+                'id' => 'select-id',
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select class="class-name" id="select-id" name="size"><option disabled="disabled" value="L">Large</option><option disabled="disabled" value="S">Small</option></select>'
+        );
     }
 
     public function testFormSelectRepopulation()

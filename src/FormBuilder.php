@@ -620,7 +620,7 @@ class FormBuilder
    */
   public function getSelectOption($display, $value, $selected)
   {
-      if (is_array($display)) {
+      if (is_array($display) && !$this->hasOptionAttributes($display)) {
           return $this->optionGroup($display, $value, $selected);
       }
 
@@ -659,8 +659,13 @@ class FormBuilder
   protected function option($display, $value, $selected)
   {
       $selected = $this->getSelectedValue($value, $selected);
+      $options = [];
 
-      $options = ['value' => $value, 'selected' => $selected];
+      if (is_array($display)) {
+          list($display, $options) = $display;
+      }
+
+      $options = $options + ['value' => $value, 'selected' => $selected];
 
       return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
   }
@@ -1152,4 +1157,17 @@ class FormBuilder
 
       return $this;
   }
+
+    /**
+     * @param array $display
+     *
+     * @return bool
+     */
+    private function hasOptionAttributes(array $display)
+    {
+        return (
+            array_key_exists(1, $display) &&
+            is_array($display[1])
+        );
+    }
 }
