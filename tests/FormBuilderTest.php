@@ -31,10 +31,10 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('/foo', 'GET', [
             "person" => [
                 "name" => "John",
-                "surname" => "Doe"
+                "surname" => "Doe",
             ],
-            "aggree" => 1,
-            "checkbox_array" => [1,2,3]
+            "agree" => 1,
+            "checkbox_array" => [1, 2, 3],
         ]);
 
         $request = Request::createFromBase($request);
@@ -52,14 +52,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testRequestValue()
     {
-        $name = $this->formBuilder->text("person[name]");
-        $surname = $this->formBuilder->text("person[surname]");
+        $this->formBuilder->considerRequest();
+        $name = $this->formBuilder->text("person[name]", "Not John");
+        $surname = $this->formBuilder->text("person[surname]", "Not Doe");
         $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
         $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
 
-        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $checked = $this->formBuilder->checkbox("agree", 1);
         $unchecked = $this->formBuilder->checkbox("no_value", 1);
-        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checked);
+        $this->assertEquals('<input checked="checked" name="agree" type="checkbox" value="1">', $checked);
         $this->assertEquals('<input name="no_value" type="checkbox" value="1">', $unchecked);
 
         $checked_array = $this->formBuilder->checkbox("checkbox_array[]", 1);
@@ -67,10 +68,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input checked="checked" name="checkbox_array[]" type="checkbox" value="1">', $checked_array);
         $this->assertEquals('<input name="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
 
-        $checked = $this->formBuilder->radio("aggree", 1);
+        $checked = $this->formBuilder->radio("agree", 1);
         $unchecked = $this->formBuilder->radio("no_value", 1);
-        $this->assertEquals('<input checked="checked" name="aggree" type="radio" value="1">', $checked);
+        $this->assertEquals('<input checked="checked" name="agree" type="radio" value="1">', $checked);
         $this->assertEquals('<input name="no_value" type="radio" value="1">', $unchecked);
+
+        // now we check that Request is ignored and value take precedence
+        $this->formBuilder->considerRequest(false);
+        $name = $this->formBuilder->text("person[name]", "Not John");
+        $surname = $this->formBuilder->text("person[surname]", "Not Doe");
+        $this->assertEquals('<input name="person[name]" type="text" value="Not John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Not Doe">', $surname);
     }
 
     public function testOpeningForm()
