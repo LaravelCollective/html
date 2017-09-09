@@ -565,6 +565,7 @@ class FormBuilder
      * @param  string $selected
      * @param  array  $selectAttributes
      * @param  array  $optionsAttributes
+     * @param  array  $optgroupsAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
@@ -573,7 +574,8 @@ class FormBuilder
         $list = [],
         $selected = null,
         array $selectAttributes = [],
-        array $optionsAttributes = []
+        array $optionsAttributes = [],
+        array $optgroupsAttributes = []
     ) {
         $this->type = 'select';
 
@@ -599,8 +601,9 @@ class FormBuilder
         }
 
         foreach ($list as $value => $display) {
-            $optionAttributes = isset($optionsAttributes[$value]) ? $optionsAttributes[$value] : [];
-            $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes);
+            $optionAttributes = $optionsAttributes[$value] ?? [];
+            $optgroupAttributes = $optgroupsAttributes[$value] ?? [];
+            $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes, $optgroupAttributes);
         }
 
         // Once we have all of this HTML, we can join this into a single element after
@@ -675,13 +678,14 @@ class FormBuilder
      * @param  string $value
      * @param  string $selected
      * @param  array  $attributes
+     * @param  array  $optgroupAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function getSelectOption($display, $value, $selected, array $attributes = [])
+    public function getSelectOption($display, $value, $selected, array $attributes = [], array $optgroupAttributes = [])
     {
         if (is_array($display)) {
-            return $this->optionGroup($display, $value, $selected, $attributes);
+            return $this->optionGroup($display, $value, $selected, $optgroupAttributes, $attributes);
         }
 
         return $this->option($display, $value, $selected, $attributes);
@@ -694,18 +698,21 @@ class FormBuilder
      * @param  string $label
      * @param  string $selected
      * @param  array  $attributes
+     * @param  array  $optionsAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function optionGroup($list, $label, $selected, array $attributes = [])
+    protected function optionGroup($list, $label, $selected, array $attributes = [], array $optionsAttributes = [])
     {
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->option($display, $value, $selected, $attributes);
-        }
+            $optionAttributes = $optionsAttributes[$value] ?? [];
 
-        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
+            $html[] = $this->option($display, $value, $selected, $optionAttributes);
+        }
+        
+        return $this->toHtmlString('<optgroup label="' . e($label) . '"' . $this->html->attributes($attributes) . '>' . implode('', $html) . '</optgroup>');
     }
 
     /**
@@ -724,7 +731,12 @@ class FormBuilder
 
         $options = ['value' => $value, 'selected' => $selected] + $attributes;
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        $string = '<option' . $this->html->attributes($options) . '>';
+        if ($display !== null) {
+            $string .= e($display) . '</option>';
+        }
+
+        return $this->toHtmlString($string);
     }
 
     /**
