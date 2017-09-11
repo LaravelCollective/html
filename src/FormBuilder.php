@@ -658,32 +658,27 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function optionGroup($list, $label, $selected,$level = 0)
+    protected function optionGroup($list, $label, $selected, $level = 0)
     {
         $html = [];
 
         foreach ($list as $value => $display) {
-            if (is_array($display))
-            {
-                $html[] = $this->optionGroup($display, $value, $selected,$level+1);
-            }
-            else
-            {
+            if (is_array($display)) {
+                $html[] = $this->optionGroup($display, $value, $selected, $level+1);
+            } else {
                 $chiledLevel = $level;
-                if ($level > 0 && $display == reset($list))
-                {
+                if ($level > 0 && $display == reset($list)) {
                     $chiledLevel = $level-1;
                 }
 
-                $html[] = $this->option($display, $value, $selected,$chiledLevel);
+                $html[] = $this->option($display, $value, $selected, $chiledLevel);
             }
         }
         // as browser || HTML dosn't support multi levet optgroup we just add options
-        if ($level > 0)
-        {
+        if ($level > 0) {
             return implode('', $html);
         }
-        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>')."\n\n";
+        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
     }
 
     /**
@@ -695,13 +690,13 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function option($display, $value, $selected,$level = 0)
+    protected function option($display, $value, $selected, $level = 0)
     {
         $selected = $this->getSelectedValue($value, $selected);
 
         $options = ['value' => $value, 'selected' => $selected];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' .(($level > 0) ? str_repeat('-',$level).' ' : ''). e($display) . '</option>')."\n";
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' .(($level > 0) ? str_repeat('-', $level).' ' : ''). e($display) . '</option>');
     }
 
     /**
