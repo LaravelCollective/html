@@ -1,41 +1,54 @@
 {
-  "name": "laravelcollective/html",
-  "description": "HTML and Form Builders for the Laravel Framework",
-  "license": "MIT",
-  "homepage": "http://laravelcollective.com",
-  "support": {
-    "issues": "https://github.com/LaravelCollective/html/issues",
-    "source": "https://github.com/LaravelCollective/html"
-  },
-  "authors": [
-    {
-      "name": "Adam Engebretson",
-      "email": "adam@laravelcollective.com"
+    "name": "laravelcollective/html",
+    "description": "HTML and Form Builders for the Laravel Framework",
+    "license": "MIT",
+    "homepage": "http://laravelcollective.com",
+    "support": {
+        "issues": "https://github.com/LaravelCollective/html/issues",
+        "source": "https://github.com/LaravelCollective/html"
     },
-    {
-      "name": "Taylor Otwell",
-      "email": "taylorotwell@gmail.com"
-    }
-  ],
-  "require": {
-    "php": ">=5.6.4",
-    "illuminate/http": "5.4.*",
-    "illuminate/routing": "5.4.*",
-    "illuminate/session": "5.4.*",
-    "illuminate/support": "5.4.*",
-    "illuminate/view": "5.4.*"
-  },
-  "require-dev": {
-    "illuminate/database": "5.4.*",
-    "mockery/mockery": "~0.9.4",
-    "phpunit/phpunit": "~5.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "Collective\\Html\\": "src/"
+    "authors": [
+        {
+            "name": "Adam Engebretson",
+            "email": "adam@laravelcollective.com"
+        },
+        {
+            "name": "Taylor Otwell",
+            "email": "taylorotwell@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "illuminate/http": "5.5.*",
+        "illuminate/routing": "5.5.*",
+        "illuminate/session": "5.5.*",
+        "illuminate/support": "5.5.*",
+        "illuminate/view": "5.5.*"
     },
-    "files": [
-      "src/helpers.php"
-    ]
-  }
+    "require-dev": {
+        "illuminate/database": "5.5.*",
+        "mockery/mockery": "~0.9.4",
+        "phpunit/phpunit": "~5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Collective\\Html\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Collective\\Html\\HtmlServiceProvider"
+            ],
+            "aliases": {
+                "Form": "Collective\\Html\\FormFacade",
+                "Html": "Collective\\Html\\HtmlFacade"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
