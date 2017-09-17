@@ -580,7 +580,10 @@ class FormBuilder
         // When building a select box the "value" attribute is really the selected one
         // so we will use that when checking the model or session for a value which
         // should provide a convenient method of re-populating the forms on post.
-        $selected = $this->getValueAttribute($name, $selected);
+        // if selected is null
+        if($selected==null){
+            $selected = $this->getValueAttribute($name, $selected);
+        }
 
         $selectAttributes['id'] = $this->getIdAttribute($name, $selectAttributes);
 
