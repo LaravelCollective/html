@@ -775,7 +775,7 @@ class FormBuilder
             return $selected->contains($value) ? 'selected' : null;
         }
 
-        return ((string) $value == (string) $selected) ? 'selected' : null;
+        return ((string) $value === (string) $selected) ? 'selected' : null;
     }
 
     /**
@@ -856,7 +856,7 @@ class FormBuilder
                 return $this->getRadioCheckedState($name, $value, $checked);
 
             default:
-                return $this->getValueAttribute($name) == $value;
+                return $this->getValueAttribute($name) === $value;
         }
     }
 
@@ -909,7 +909,7 @@ class FormBuilder
             return $checked;
         }
 
-        return $this->getValueAttribute($name) == $value;
+        return $this->getValueAttribute($name) === $value;
     }
 
     /**
@@ -1008,7 +1008,7 @@ class FormBuilder
     {
         $method = strtoupper($method);
 
-        return $method != 'GET' ? 'POST' : $method;
+        return $method !== 'GET' ? 'POST' : $method;
     }
 
     /**
@@ -1110,7 +1110,7 @@ class FormBuilder
         // If the method is something other than GET we will go ahead and attach the
         // CSRF token to the form, as this can't hurt and is convenient to simply
         // always have available on every form the developers creates for them.
-        if ($method != 'GET') {
+        if ($method !== 'GET') {
             $appendage .= $this->token();
         }
 
@@ -1152,7 +1152,7 @@ class FormBuilder
 
         $old = $this->old($name);
 
-        if (! is_null($old) && $name != '_method') {
+        if (! is_null($old) && $name !== '_method') {
             return $old;
         }
 
@@ -1163,7 +1163,7 @@ class FormBuilder
             if ($hasNullMiddleware
                 && is_null($old)
                 && is_null($value)
-                && !is_null($this->view->shared('errors'))
+                && ! is_null($this->view->shared('errors'))
                 && count($this->view->shared('errors')) > 0
             ) {
                 return null;
@@ -1171,7 +1171,7 @@ class FormBuilder
         }
 
         $request = $this->request($name);
-        if (!is_null($request)) {
+        if (! is_null($request)) {
             return $request;
         }
 
@@ -1191,7 +1191,7 @@ class FormBuilder
      */
     protected function request($name)
     {
-        if (!isset($this->request)) {
+        if (! isset($this->request)) {
             return null;
         }
 
@@ -1229,16 +1229,16 @@ class FormBuilder
             $key = $this->transformKey($name);
             $payload = $this->session->getOldInput($key);
 
-            if (!is_array($payload)) {
+            if (! is_array($payload)) {
                 return $payload;
             }
 
-            if (!in_array($this->type, ['select', 'checkbox'])) {
-                if (!isset($this->payload[$key])) {
+            if (! in_array($this->type, ['select', 'checkbox'])) {
+                if (! isset($this->payload[$key])) {
                     $this->payload[$key] = collect($payload);
                 }
 
-                if (!empty($this->payload[$key])) {
+                if (! empty($this->payload[$key])) {
                     $value = $this->payload[$key]->shift();
                     return $value;
                 }
@@ -1255,7 +1255,7 @@ class FormBuilder
      */
     public function oldInputIsEmpty()
     {
-        return (isset($this->session) && count($this->session->getOldInput()) == 0);
+        return (isset($this->session) && count($this->session->getOldInput()) === 0);
     }
 
     /**
