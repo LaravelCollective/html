@@ -723,6 +723,51 @@ class FormBuilder
     }
 
     /**
+     * Create a datalist.
+     *
+     * @param  string $id
+     * @param  array  $list
+     * @param  array  $listAttributes
+     * @param  array  $optionsAttributes
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function datalist(
+        $id,
+        $list = [],
+        array $listAttributes = [],
+        array $optionsAttributes = []
+    ) {
+        $this->type = 'datalist';
+
+        $listAttributes['id'] = $id;
+
+        // We will simply loop through the options and build an HTML value for each of
+        // them until we have an array of HTML declarations. Then we will join them
+        // all together into one single HTML element that can be put on the form.
+        $html = [];
+
+        foreach ($list as $value => $display) {
+            // If using a non-associative array, use array values as option values
+            if (gettype($value) === 'integer') {
+                $value = $display;
+                $display = null;
+            }
+            $optionAttributes = isset($optionsAttributes[$value]) ? $optionsAttributes[$value] : [];
+            $html[] = $this->option($display, $value, false, $optionAttributes);
+        }
+
+        // Once we have all of this HTML, we can join this into a single element after
+        // formatting the attributes into an HTML "attributes" string, then we will
+        // build out a final select statement, which will contain all the values.
+        $listAttributes = $this->html->attributes($listAttributes);
+
+        $list = implode('', $html);
+
+        return $this->toHtmlString("<datalist{$listAttributes}>{$list}</datalist>");
+    }
+
+    /**
      * Get the select option for the given value.
      *
      * @param  string $display

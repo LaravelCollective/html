@@ -569,6 +569,49 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertContains('<select name="month"><option value="1" selected="selected">January</option>', $month2);
         $this->assertContains('<select id="foo" name="month"><option value="1">January</option>', $month3);
     }
+    
+    public function testDatalist()
+    {
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['L' => 'Large', 'S' => 'Small']
+        );
+        $this->assertEquals($list,
+          '<datalist id="size"><option value="L">Large</option><option value="S">Small</option></datalist>');
+
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['Large', 'Small']
+        );
+        $this->assertEquals($list,
+          '<datalist id="size"><option value="Large"><option value="Small"></datalist>');
+
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['Large', 'Small'],
+          ['class' => 'class-name']
+        );
+        $this->assertEquals($list,
+          '<datalist class="class-name" id="size"><option value="Large"><option value="Small"></datalist>');
+
+        $list = $this->formBuilder->datalist(
+            'encoded_html',
+            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;']
+        );
+
+        $this->assertEquals($list,
+            '<datalist id="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></datalist>'
+        );
+
+        $list = $this->formBuilder->datalist(
+            'size',
+            ['L' => 'Large', 'S' => 'Small'],
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($list,
+            '<datalist id="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></datalist>');
+    }
 
     public function testFormCheckbox()
     {
