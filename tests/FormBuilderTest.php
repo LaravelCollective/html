@@ -164,6 +164,136 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="img" type="file">', $form);
     }
 
+    public function testFormColor()
+    {
+        $form1 = $this->formBuilder->color('foo');
+        $form2 = $this->formBuilder->color('foo', '#ff0000');
+        $form3 = $this->formBuilder->color('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="color">', $form1);
+        $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
+    }
+
+    public function testFormDate()
+    {
+        $form1 = $this->formBuilder->date('foo');
+        $form2 = $this->formBuilder->date('foo', '2015-02-20');
+        $form3 = $this->formBuilder->date('foo', \Carbon\Carbon::now());
+        $form4 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="date">', $form1);
+        $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form2);
+        $this->assertEquals('<input name="foo" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">',
+          $form3);
+        $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
+    }
+
+    public function testFormEmail()
+    {
+        $form1 = $this->formBuilder->email('foo');
+        $form2 = $this->formBuilder->email('foo', 'foo@bar.com');
+        $form3 = $this->formBuilder->email('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="email">', $form1);
+        $this->assertEquals('<input name="foo" type="email" value="foo@bar.com">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="email">', $form3);
+    }
+
+    public function testFormFile()
+    {
+        $form1 = $this->formBuilder->file('foo');
+        $form2 = $this->formBuilder->file('foo', ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="file">', $form1);
+        $this->assertEquals('<input class="span2" name="foo" type="file">', $form2);
+    }
+
+    public function testFormHidden()
+    {
+        $form1 = $this->formBuilder->hidden('foo');
+        $form2 = $this->formBuilder->hidden('foo', 'foobar');
+        $form3 = $this->formBuilder->hidden('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="hidden">', $form1);
+        $this->assertEquals('<input name="foo" type="hidden" value="foobar">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="hidden">', $form3);
+    }
+
+    public function testFormMonth()
+    {
+        $form1 = $this->formBuilder->month('foo');
+        $form2 = $this->formBuilder->month('foo', \Carbon\Carbon::now());
+        $form3 = $this->formBuilder->month('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="month">', $form1);
+        $this->assertEquals('<input name="foo" type="month" value="' . \Carbon\Carbon::now()->format('Y-m') . '">',
+          $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="month">', $form3);
+    }
+
+    public function testFormNumber()
+    {
+        $form1 = $this->formBuilder->number('foo');
+        $form2 = $this->formBuilder->number('foo', 1);
+        $form3 = $this->formBuilder->number('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="number">', $form1);
+        $this->assertEquals('<input name="foo" type="number" value="1">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
+    }
+
+    public function testFormPassword()
+    {
+        $form1 = $this->formBuilder->password('foo');
+        $form2 = $this->formBuilder->password('foo', ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="password" value="">', $form1);
+        $this->assertEquals('<input class="span2" name="foo" type="password" value="">', $form2);
+    }
+
+    public function testFormRange()
+    {
+        $form1 = $this->formBuilder->range('foo');
+        $form2 = $this->formBuilder->range('foo', 1);
+        $form3 = $this->formBuilder->range('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="range">', $form1);
+        $this->assertEquals('<input name="foo" type="range" value="1">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="range">', $form3);
+    }
+
+    public function testFormSearch()
+    {
+        $form1 = $this->formBuilder->search('foo');
+        $form2 = $this->formBuilder->search('foo', 'foobar');
+        $form3 = $this->formBuilder->search('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="search">', $form1);
+        $this->assertEquals('<input name="foo" type="search" value="foobar">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="search">', $form3);
+    }
+
+    public function testFormSubmit()
+    {
+        $form1 = $this->formBuilder->submit('foo');
+        $form2 = $this->formBuilder->submit('foo', ['class' => 'span2']);
+
+        $this->assertEquals('<input type="submit" value="foo">', $form1);
+        $this->assertEquals('<input class="span2" type="submit" value="foo">', $form2);
+    }
+
+    public function testFormTel()
+    {
+        $form1 = $this->formBuilder->tel('foo');
+        $form2 = $this->formBuilder->tel('foo', 'foobar');
+        $form3 = $this->formBuilder->tel('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="tel">', $form1);
+        $this->assertEquals('<input name="foo" type="tel" value="foobar">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="tel">', $form3);
+    }
+
     public function testFormText()
     {
         $form1 = $this->formBuilder->input('text', 'foo');
@@ -220,107 +350,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="letters[1]" type="text" value="b">', $input);
     }
 
-    public function testFormPassword()
-    {
-        $form1 = $this->formBuilder->password('foo');
-        $form2 = $this->formBuilder->password('foo', ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="password" value="">', $form1);
-        $this->assertEquals('<input class="span2" name="foo" type="password" value="">', $form2);
-    }
-
-    public function testFormHidden()
-    {
-        $form1 = $this->formBuilder->hidden('foo');
-        $form2 = $this->formBuilder->hidden('foo', 'foobar');
-        $form3 = $this->formBuilder->hidden('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="hidden">', $form1);
-        $this->assertEquals('<input name="foo" type="hidden" value="foobar">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="hidden">', $form3);
-    }
-
-    public function testFormRange()
-    {
-        $form1 = $this->formBuilder->range('foo');
-        $form2 = $this->formBuilder->range('foo', 1);
-        $form3 = $this->formBuilder->range('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="range">', $form1);
-        $this->assertEquals('<input name="foo" type="range" value="1">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="range">', $form3);
-    }
-
-    public function testFormSearch()
-    {
-        $form1 = $this->formBuilder->search('foo');
-        $form2 = $this->formBuilder->search('foo', 'foobar');
-        $form3 = $this->formBuilder->search('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="search">', $form1);
-        $this->assertEquals('<input name="foo" type="search" value="foobar">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="search">', $form3);
-    }
-
-    public function testFormEmail()
-    {
-        $form1 = $this->formBuilder->email('foo');
-        $form2 = $this->formBuilder->email('foo', 'foobar');
-        $form3 = $this->formBuilder->email('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="email">', $form1);
-        $this->assertEquals('<input name="foo" type="email" value="foobar">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="email">', $form3);
-    }
-
-    public function testFormTel()
-    {
-        $form1 = $this->formBuilder->tel('foo');
-        $form2 = $this->formBuilder->tel('foo', 'foobar');
-        $form3 = $this->formBuilder->tel('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="tel">', $form1);
-        $this->assertEquals('<input name="foo" type="tel" value="foobar">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="tel">', $form3);
-    }
-
-    public function testFormNumber()
-    {
-        $form1 = $this->formBuilder->number('foo');
-        $form2 = $this->formBuilder->number('foo', 1);
-        $form3 = $this->formBuilder->number('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="number">', $form1);
-        $this->assertEquals('<input name="foo" type="number" value="1">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
-    }
-
-    public function testFormDate()
-    {
-        $form1 = $this->formBuilder->date('foo');
-        $form2 = $this->formBuilder->date('foo', '2015-02-20');
-        $form3 = $this->formBuilder->date('foo', \Carbon\Carbon::now());
-        $form4 = $this->formBuilder->date('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="date">', $form1);
-        $this->assertEquals('<input name="foo" type="date" value="2015-02-20">', $form2);
-        $this->assertEquals('<input name="foo" type="date" value="' . \Carbon\Carbon::now()->format('Y-m-d') . '">',
-          $form3);
-        $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
-    }
-
-    public function testFormMonth()
-    {
-        $form1 = $this->formBuilder->month('foo');
-        $form2 = $this->formBuilder->month('foo', \Carbon\Carbon::now());
-        $form3 = $this->formBuilder->month('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="month">', $form1);
-        $this->assertEquals('<input name="foo" type="month" value="' . \Carbon\Carbon::now()->format('Y-m') . '">',
-          $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="month">', $form3);
-    }
-
     public function testFormTime()
     {
         $form1 = $this->formBuilder->time('foo');
@@ -333,6 +362,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="time">', $form3);
     }
 
+    public function testFormUrl()
+    {
+        $form1 = $this->formBuilder->url('foo');
+        $form2 = $this->formBuilder->url('foo', 'http://foobar.com');
+        $form3 = $this->formBuilder->url('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="url">', $form1);
+        $this->assertEquals('<input name="foo" type="url" value="http://foobar.com">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="url">', $form3);
+    }
+
     public function testFormWeek()
     {
         $form1 = $this->formBuilder->week('foo');
@@ -343,15 +383,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="week" value="' . \Carbon\Carbon::now()->format('Y-\WW') . '">',
           $form2);
         $this->assertEquals('<input class="span2" name="foo" type="week">', $form3);
-    }
-
-    public function testFormFile()
-    {
-        $form1 = $this->formBuilder->file('foo');
-        $form2 = $this->formBuilder->file('foo', ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="file">', $form1);
-        $this->assertEquals('<input class="span2" name="foo" type="file">', $form2);
     }
 
     public function testFormTextarea()
@@ -504,6 +535,49 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($select,
           '<select name="size[key]"><option value="L">Large</option><option value="M">Medium</option><option value="S" selected="selected">Small</option></select>');
     }
+    
+    public function testDatalist()
+    {
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['L' => 'Large', 'S' => 'Small']
+        );
+        $this->assertEquals($list,
+          '<datalist id="size"><option value="L">Large</option><option value="S">Small</option></datalist>');
+
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['Large', 'Small']
+        );
+        $this->assertEquals($list,
+          '<datalist id="size"><option value="Large"><option value="Small"></datalist>');
+
+        $list = $this->formBuilder->datalist(
+          'size',
+          ['Large', 'Small'],
+          ['class' => 'class-name']
+        );
+        $this->assertEquals($list,
+          '<datalist class="class-name" id="size"><option value="Large"><option value="Small"></datalist>');
+
+        $list = $this->formBuilder->datalist(
+            'encoded_html',
+            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;']
+        );
+
+        $this->assertEquals($list,
+            '<datalist id="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></datalist>'
+        );
+
+        $list = $this->formBuilder->datalist(
+            'size',
+            ['L' => 'Large', 'S' => 'Small'],
+            [],
+            ['L' => ['data-foo' => 'bar', 'disabled']]
+        );
+        $this->assertEquals($list,
+            '<datalist id="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></datalist>');
+    }
 
     public function testFormWithOptionalPlaceholder()
     {
@@ -568,49 +642,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           $month1);
         $this->assertContains('<select name="month"><option value="1" selected="selected">January</option>', $month2);
         $this->assertContains('<select id="foo" name="month"><option value="1">January</option>', $month3);
-    }
-    
-    public function testDatalist()
-    {
-        $list = $this->formBuilder->datalist(
-          'size',
-          ['L' => 'Large', 'S' => 'Small']
-        );
-        $this->assertEquals($list,
-          '<datalist id="size"><option value="L">Large</option><option value="S">Small</option></datalist>');
-
-        $list = $this->formBuilder->datalist(
-          'size',
-          ['Large', 'Small']
-        );
-        $this->assertEquals($list,
-          '<datalist id="size"><option value="Large"><option value="Small"></datalist>');
-
-        $list = $this->formBuilder->datalist(
-          'size',
-          ['Large', 'Small'],
-          ['class' => 'class-name']
-        );
-        $this->assertEquals($list,
-          '<datalist class="class-name" id="size"><option value="Large"><option value="Small"></datalist>');
-
-        $list = $this->formBuilder->datalist(
-            'encoded_html',
-            ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;']
-        );
-
-        $this->assertEquals($list,
-            '<datalist id="encoded_html"><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></datalist>'
-        );
-
-        $list = $this->formBuilder->datalist(
-            'size',
-            ['L' => 'Large', 'S' => 'Small'],
-            [],
-            ['L' => ['data-foo' => 'bar', 'disabled']]
-        );
-        $this->assertEquals($list,
-            '<datalist id="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></datalist>');
     }
 
     public function testFormCheckbox()
@@ -712,15 +743,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="radio" type="radio" value="2">', $radio2);
     }
 
-    public function testFormSubmit()
-    {
-        $form1 = $this->formBuilder->submit('foo');
-        $form2 = $this->formBuilder->submit('foo', ['class' => 'span2']);
-
-        $this->assertEquals('<input type="submit" value="foo">', $form1);
-        $this->assertEquals('<input class="span2" type="submit" value="foo">', $form2);
-    }
-
     public function testFormButton()
     {
         $form1 = $this->formBuilder->button('foo');
@@ -742,17 +764,6 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $image = $this->formBuilder->image($url);
 
         $this->assertEquals('<input src="' . $url . '" type="image">', $image);
-    }
-
-    public function testFormColor()
-    {
-        $form1 = $this->formBuilder->color('foo');
-        $form2 = $this->formBuilder->color('foo', '#ff0000');
-        $form3 = $this->formBuilder->color('foo', null, ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="color">', $form1);
-        $this->assertEquals('<input name="foo" type="color" value="#ff0000">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
     }
 
     public function testBooleanAttributes()
