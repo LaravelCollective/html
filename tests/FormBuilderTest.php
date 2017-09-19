@@ -240,6 +240,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="hidden">', $form3);
     }
 
+    public function testFormRange()
+    {
+        $form1 = $this->formBuilder->range('foo');
+        $form2 = $this->formBuilder->range('foo', 1);
+        $form3 = $this->formBuilder->range('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="range">', $form1);
+        $this->assertEquals('<input name="foo" type="range" value="1">', $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="range">', $form3);
+    }
+
     public function testFormSearch()
     {
         $form1 = $this->formBuilder->search('foo');
@@ -298,6 +309,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="date">', $form4);
     }
 
+    public function testFormMonth()
+    {
+        $form1 = $this->formBuilder->month('foo');
+        $form2 = $this->formBuilder->month('foo', \Carbon\Carbon::now());
+        $form3 = $this->formBuilder->month('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="month">', $form1);
+        $this->assertEquals('<input name="foo" type="month" value="' . \Carbon\Carbon::now()->format('Y-m') . '">',
+          $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="month">', $form3);
+    }
+
     public function testFormTime()
     {
         $form1 = $this->formBuilder->time('foo');
@@ -308,6 +331,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo" type="time" value="' . \Carbon\Carbon::now()->format('H:i') . '">',
           $form2);
         $this->assertEquals('<input class="span2" name="foo" type="time">', $form3);
+    }
+
+    public function testFormWeek()
+    {
+        $form1 = $this->formBuilder->week('foo');
+        $form2 = $this->formBuilder->week('foo', \Carbon\Carbon::now());
+        $form3 = $this->formBuilder->week('foo', null, ['class' => 'span2']);
+
+        $this->assertEquals('<input name="foo" type="week">', $form1);
+        $this->assertEquals('<input name="foo" type="week" value="' . \Carbon\Carbon::now()->format('Y-\WW') . '">',
+          $form2);
+        $this->assertEquals('<input class="span2" name="foo" type="week">', $form3);
     }
 
     public function testFormFile()
