@@ -744,7 +744,7 @@ class FormBuilder
             'value' => '',
         ];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . ' hidden="hidden">' . e($display) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . ' hidden=\"hidden\">' . e($display) . '</option>');
     }
 
     /**
