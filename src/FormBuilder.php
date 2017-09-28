@@ -700,13 +700,43 @@ class FormBuilder
     protected function optionGroup($list, $label, $selected, array $attributes = [])
     {
         $html = [];
-
         foreach ($list as $value => $display) {
-            $html[] = $this->option($display, $value, $selected, $attributes);
+            if(is_array($display)){
+                $html[] = $this->optionArray($display, $value, $selected, $attributes, 5, $value);
+            }else{
+                $html[] = $this->option($display, $value, $selected, $attributes);
+            }
         }
-
         return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
     }
+
+
+    /**
+     * Create an option group form array-recursively.
+     *
+     * @param  array  $list
+     * @param  string $label
+     * @param  string $selected
+     * @param  array  $attributes
+     * @param  integer  $level
+     * @param  string  $label
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    protected function optionArray($display, $value, $selected, array $attributes = [],$level = 0, $label)
+    {
+        $html = [];
+        $space = str_repeat("&nbsp;",$level);
+        foreach($display as $key => $val){
+            if(is_array($val)){
+                $html[] = $this->optionArray($val, $value, $selected, $attributes, $level+5, $key);
+            }else{
+                $html[] = $this->option($space.$val, $key, $selected, $attributes);
+            }
+        }
+        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
+    }
+
 
     /**
      * Create a select element option.
