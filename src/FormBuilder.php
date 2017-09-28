@@ -702,9 +702,9 @@ class FormBuilder
         $html = [];
         $space = str_repeat("&nbsp;",$level);
         foreach ($list as $value => $display) {
-            if(is_array($display)){
+            if (is_array($display)) {
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $level+5);
-            }else{
+            } else {
                 $html[] = $this->option($space.$display, $value, $selected, $attributes);
             }
         }
