@@ -700,7 +700,7 @@ class FormBuilder
     protected function optionGroup($list, $label, $selected, array $attributes = [], $level = 0)
     {
         $html = [];
-        $space = str_repeat("&nbsp;",$level);
+        $space = str_repeat("&nbsp;", $level);
         foreach ($list as $value => $display) {
             if (is_array($display)) {
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $level+5);
