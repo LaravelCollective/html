@@ -694,6 +694,7 @@ class FormBuilder
      * @param  string $label
      * @param  string $selected
      * @param  array  $attributes
+     * @param  integer  $level
      *
      * @return \Illuminate\Support\HtmlString
      */
