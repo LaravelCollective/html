@@ -48,7 +48,7 @@ if (! function_exists('link_to_route')) {
      */
     function link_to_route($name, $title = null, $parameters = [], $attributes = [] , $escape = true)
     {
-        return app('html')->linkRoute($name, $title, $parameters, $attributes , $escape);
+        return app('html')->linkRoute($name, $title, $parameters, $attributes, $escape);
     }
 }
 
