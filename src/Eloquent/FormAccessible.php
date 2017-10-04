@@ -51,6 +51,8 @@ trait FormAccessible
 
             if ($this->hasFormMutator($key)) {
                 return $relatedModel->getFormValue($key);
+            } elseif ($relatedModel && method_exists($relatedModel, 'hasFormMutator') && $relatedModel->hasFormMutator($key)) {
+                return $relatedModel->getFormValue($key);
             }
 
             return data_get($relatedModel, $key);
@@ -81,7 +83,7 @@ trait FormAccessible
      *
      * @return bool
      */
-    protected function hasFormMutator($key)
+    public function hasFormMutator($key)
     {
         $methods = $this->getReflection()->getMethods(ReflectionMethod::IS_PUBLIC);
 

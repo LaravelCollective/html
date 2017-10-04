@@ -44,10 +44,24 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 $capsule->schema()->dropIfExists('models');
+$capsule->schema()->dropIfExists('main');
+$capsule->schema()->dropIfExists('related');
 
 $capsule->schema()->create('models', function (Blueprint $table) {
     $table->increments('id');
     $table->string('string');
     $table->string('email');
+    $table->timestamps();
+});
+
+$capsule->schema()->create('main', function (Blueprint $table) {
+    $table->increments('id');
+    $table->integer('related_id')->unsigned();
+    $table->timestamps();
+});
+
+$capsule->schema()->create('related', function (Blueprint $table) {
+    $table->increments('id');
+    $table->string('type');
     $table->timestamps();
 });

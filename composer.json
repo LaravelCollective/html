@@ -38,6 +38,11 @@
             "src/helpers.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "TestModels\\": "tests/TestModels"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
