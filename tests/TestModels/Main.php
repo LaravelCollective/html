@@ -2,7 +2,6 @@
 
 namespace TestModels;
 
-
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Model;
 

@@ -14,7 +14,6 @@ use TestModels\Related;
 
 class FormAccessibleOnRelatedTest extends PHPUnit_Framework_TestCase
 {
-
     public function setUp()
     {
         Capsule::table('main')->truncate();
@@ -41,7 +40,6 @@ class FormAccessibleOnRelatedTest extends PHPUnit_Framework_TestCase
         $value = $this->formBuilder->getValueAttribute('related[type]');
 
         $this->assertEquals($expected, $value);
-
     }
 
     public function relatedModelDataProvider()
@@ -51,5 +49,4 @@ class FormAccessibleOnRelatedTest extends PHPUnit_Framework_TestCase
             [2, ['type' => 'sneakyCase'], 'sneaky_case']
         ];
     }
-
 }
