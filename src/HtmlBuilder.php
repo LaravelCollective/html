@@ -78,7 +78,7 @@ class HtmlBuilder
     {
         $attributes['src'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<script' . $this->attributes($attributes) . '></script>' . PHP_EOL);
+        return $this->toHtmlString('<script' . $this->attributes($attributes) . '></script>');
     }
 
     /**
@@ -98,7 +98,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>');
     }
 
     /**
@@ -136,7 +136,7 @@ class HtmlBuilder
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
-        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<link' . $this->attributes($attributes) . '>');
     }
 
     /**
@@ -511,7 +511,7 @@ class HtmlBuilder
 
         $attributes = array_merge($defaults, $attributes);
 
-        return $this->toHtmlString('<meta' . $this->attributes($attributes) . '>' . PHP_EOL);
+        return $this->toHtmlString('<meta' . $this->attributes($attributes) . '>');
     }
 
     /**
@@ -526,7 +526,7 @@ class HtmlBuilder
     public function tag($tag, $content, array $attributes = [])
     {
         $content = is_array($content) ? implode(PHP_EOL, $content) : $content;
-        return $this->toHtmlString('<' . $tag . $this->attributes($attributes) . '>' . PHP_EOL . $this->toHtmlString($content) . PHP_EOL . '</' . $tag . '>' . PHP_EOL);
+        return $this->toHtmlString('<' . $tag . $this->attributes($attributes) . '>' . $this->toHtmlString($content) . '</' . $tag . '>');
     }
 
     /**
