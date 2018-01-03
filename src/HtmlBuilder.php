@@ -525,7 +525,7 @@ class HtmlBuilder
      */
     public function tag($tag, $content, array $attributes = [])
     {
-        $content = is_array($content) ? implode(PHP_EOL, $content) : $content;
+        $content = is_array($content) ? implode('', $content) : $content;
         return $this->toHtmlString('<' . $tag . $this->attributes($attributes) . '>' . $this->toHtmlString($content) . '</' . $tag . '>');
     }
 
