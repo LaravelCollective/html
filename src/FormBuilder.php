@@ -1243,7 +1243,7 @@ class FormBuilder
      */
     public function oldInputIsEmpty()
     {
-        return (isset($this->session) && count($this->session->getOldInput()) == 0);
+        return (isset($this->session) && count((array) $this->session->getOldInput()) == 0);
     }
 
     /**
