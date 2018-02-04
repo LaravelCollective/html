@@ -1201,7 +1201,7 @@ class FormBuilder
             return $this->model->getFormValue($key);
         }
 
-        return data_get($this->model, $this->transformKey($name));
+        return data_get($this->model, $key);
     }
 
     /**
