@@ -865,7 +865,7 @@ class FormBuilder
             return false;
         }
 
-        if ($this->missingOldAndModel($name) && !$request) {
+        if ($this->missingOldAndModel($name) && is_null($request)) {
             return $checked;
         }
 
