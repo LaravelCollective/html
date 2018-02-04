@@ -130,6 +130,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="foo-check" type="checkbox" value="1">', $form6);
     }
 
+    public function testFormInputPreventsValueResolve()
+    {
+        $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
+
+        $session->shouldReceive('getOldInput')->never();
+
+        $form = $this->formBuilder->input('hidden', 'foo', 'bar', [], false);
+
+        $this->assertEquals('<input name="foo" type="hidden" value="bar">', $form);
+    }
+
     public function testMacroField()
     {
         $this->formBuilder->macro('data_field', function ($name, $value, $data) {

@@ -269,10 +269,11 @@ class FormBuilder
      * @param  string $name
      * @param  string $value
      * @param  array  $options
+     * @param  bool   $resolveValue
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function input($type, $name, $value = null, $options = [])
+    public function input($type, $name, $value = null, $options = [], $resolveValue = true)
     {
         $this->type = $type;
 
@@ -285,7 +286,7 @@ class FormBuilder
         // in the model instance if one is set. Otherwise we will just use empty.
         $id = $this->getIdAttribute($name, $options);
 
-        if (! in_array($type, $this->skipValueTypes)) {
+        if (! in_array($type, $this->skipValueTypes) && $resolveValue) {
             $value = $this->getValueAttribute($name, $value);
         }
 
@@ -332,12 +333,13 @@ class FormBuilder
      * @param  string $name
      * @param  string $value
      * @param  array  $options
+     * @param  bool   $resolveValue
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function hidden($name, $value = null, $options = [])
+    public function hidden($name, $value = null, $options = [], $resolveValue = true)
     {
-        return $this->input('hidden', $name, $value, $options);
+        return $this->input('hidden', $name, $value, $options, $resolveValue);
     }
 
     /**
@@ -1099,7 +1101,7 @@ class FormBuilder
         // method spoofer hidden input to the form. This allows us to use regular
         // form to initiate PUT and DELETE requests in addition to the typical.
         if (in_array($method, $this->spoofedMethods)) {
-            $appendage .= $this->hidden('_method', $method);
+            $appendage .= $this->hidden('_method', $method, [], false);
         }
 
         // If the method is something other than GET we will go ahead and attach the
