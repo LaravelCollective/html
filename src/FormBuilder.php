@@ -702,7 +702,8 @@ class FormBuilder
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->option($display, $value, $selected, $attributes);
+            $optionAttributes = isset($attributes[$value]) ? $attributes[$value] : $attributes;
+            $html[] = $this->option($display, $value, $selected, $optionAttributes);
         }
 
         return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
