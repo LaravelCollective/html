@@ -190,6 +190,16 @@ class FormBuilder
     {
         $this->model = $model;
     }
+    
+    /**
+     * Get the current model instance on the form builder.
+     *
+     * @return mixed $model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
 
     /**
      * Close the current form.
@@ -729,7 +739,7 @@ class FormBuilder
     {
         $selected = $this->getSelectedValue($value, $selected);
 
-        $options = ['value' => $value, 'selected' => $selected] + $attributes;
+        $options = array_merge(['value' => $value, 'selected' => $selected], $attributes);
 
         $string = '<option' . $this->html->attributes($options) . '>';
         if ($display !== null) {
