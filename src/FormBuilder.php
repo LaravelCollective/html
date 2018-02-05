@@ -190,6 +190,16 @@ class FormBuilder
     {
         $this->model = $model;
     }
+    
+    /**
+     * Get the current model instance on the form builder.
+     *
+     * @return mixed $model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
 
     /**
      * Close the current form.
