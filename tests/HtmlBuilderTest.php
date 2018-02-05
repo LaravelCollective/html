@@ -65,7 +65,7 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
     {
         $result = $this->htmlBuilder->meta('description', 'Lorem ipsum dolor sit amet.');
 
-        $this->assertEquals('<meta name="description" content="Lorem ipsum dolor sit amet.">' . PHP_EOL, $result);
+        $this->assertEquals('<meta name="description" content="Lorem ipsum dolor sit amet.">', $result);
     }
 
     public function testTag()
@@ -83,17 +83,17 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 
         $result4 = $this->htmlBuilder->tag('div', $content, ['class' => 'row']);
 
-        $this->assertEquals('<p>' . PHP_EOL . 'Lorem ipsum dolor sit amet.' . PHP_EOL . '</p>' . PHP_EOL, $result1);
-        $this->assertEquals('<p class="text-center">' . PHP_EOL . 'Lorem ipsum dolor sit amet.' . PHP_EOL . '</p>' . PHP_EOL, $result2);
-        $this->assertEquals('<div class="row">' . PHP_EOL . '<p>Lorem ipsum dolor sit amet.</p>' . PHP_EOL . '</div>' . PHP_EOL, $result3);
-        $this->assertEquals('<div class="row">' . PHP_EOL . '<img src="http://example.com/image1">' . PHP_EOL . '<img src="http://example.com/image2">' . PHP_EOL . '</div>' . PHP_EOL, $result4);
+        $this->assertEquals('<p>Lorem ipsum dolor sit amet.</p>', $result1);
+        $this->assertEquals('<p class="text-center">Lorem ipsum dolor sit amet.</p>', $result2);
+        $this->assertEquals('<div class="row"><p>Lorem ipsum dolor sit amet.</p></div>', $result3);
+        $this->assertEquals('<div class="row"><img src="http://example.com/image1"><img src="http://example.com/image2"></div>', $result4);
     }
 
     public function testMetaOpenGraph()
     {
         $result = $this->htmlBuilder->meta(null, 'website', ['property' => 'og:type']);
 
-        $this->assertEquals('<meta content="website" property="og:type">' . PHP_EOL, $result);
+        $this->assertEquals('<meta content="website" property="og:type">', $result);
     }
 
     public function testFavicon()
@@ -102,7 +102,7 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
         $target = $this->urlGenerator->to('bar.ico');
         $result = $this->htmlBuilder->favicon('http://foo.com/bar.ico');
 
-        $this->assertEquals('<link rel="shortcut icon" type="image/x-icon" href="' . $target . '">' . PHP_EOL, $result);
+        $this->assertEquals('<link rel="shortcut icon" type="image/x-icon" href="' . $target . '">', $result);
     }
 
     public function testComponentRegistration()
@@ -118,8 +118,11 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
 
         $result2 = $this->htmlBuilder->link("http://www.example.com", "<span>Example.com</span>", ["class" => "example-link"], null, false);
 
+        $result3 = $this->htmlBuilder->link("https://a.com/b?id=4&not_id=5", "URL which needs escaping");
+
         $this->assertEquals('<a href="http://www.example.com" class="example-link">&lt;span&gt;Example.com&lt;/span&gt;</a>', $result1);
         $this->assertEquals('<a href="http://www.example.com" class="example-link"><span>Example.com</span></a>', $result2);
+        $this->assertEquals('<a href="https://a.com/b?id=4&amp;not_id=5">URL which needs escaping</a>', $result3);
     }
 
     public function testMailto()
