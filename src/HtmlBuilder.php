@@ -162,7 +162,7 @@ class HtmlBuilder
             $title = $this->entities($title);
         }
 
-        return $this->toHtmlString('<a href="' . $url . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
+        return $this->toHtmlString('<a href="' . $this->entities($url) . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
     }
 
     /**
@@ -357,7 +357,7 @@ class HtmlBuilder
     {
         $html = '';
 
-        if (count($list) == 0) {
+        if (count($list) === 0) {
             return $html;
         }
 
@@ -451,7 +451,7 @@ class HtmlBuilder
         }
 
         // Treat boolean attributes as HTML properties
-        if (is_bool($value) && $key != 'value') {
+        if (is_bool($value) && $key !== 'value') {
             return $value ? $key : '';
         }
 

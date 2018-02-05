@@ -403,6 +403,37 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
 
         $select = $this->formBuilder->select(
+            'size',
+            [
+                'Large sizes' => [
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ],
+                'M' => 'Medium',
+                'Small sizes' => [
+                    'S' => 'Small',
+                    'XS' => 'Extra Small',
+                ],
+            ],
+            null,
+            [],
+            [
+                'Large sizes' => [
+                    'L' => ['disabled']
+                ],
+                'M' => ['disabled'],
+            ],
+            [
+                'Small sizes' => ['disabled'],
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select name="size"><optgroup label="Large sizes"><option value="L" disabled>Large</option><option value="XL">Extra Large</option></optgroup><option value="M" disabled>Medium</option><optgroup label="Small sizes" disabled><option value="S">Small</option><option value="XS">Extra Small</option></optgroup></select>'
+        );
+
+        $select = $this->formBuilder->select(
             'encoded_html',
             ['no_break_space' => '&nbsp;', 'ampersand' => '&amp;', 'lower_than' => '&lt;'],
             null

@@ -575,6 +575,7 @@ class FormBuilder
      * @param  string $selected
      * @param  array  $selectAttributes
      * @param  array  $optionsAttributes
+     * @param  array  $optgroupsAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
@@ -583,7 +584,8 @@ class FormBuilder
         $list = [],
         $selected = null,
         array $selectAttributes = [],
-        array $optionsAttributes = []
+        array $optionsAttributes = [],
+        array $optgroupsAttributes = []
     ) {
         $this->type = 'select';
 
@@ -609,8 +611,9 @@ class FormBuilder
         }
 
         foreach ($list as $value => $display) {
-            $optionAttributes = isset($optionsAttributes[$value]) ? $optionsAttributes[$value] : [];
-            $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes);
+            $optionAttributes = $optionsAttributes[$value] ?? [];
+            $optgroupAttributes = $optgroupsAttributes[$value] ?? [];
+            $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes, $optgroupAttributes);
         }
 
         // Once we have all of this HTML, we can join this into a single element after
@@ -685,13 +688,14 @@ class FormBuilder
      * @param  string $value
      * @param  string $selected
      * @param  array  $attributes
+     * @param  array  $optgroupAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function getSelectOption($display, $value, $selected, array $attributes = [])
+    public function getSelectOption($display, $value, $selected, array $attributes = [], array $optgroupAttributes = [])
     {
         if (is_array($display)) {
-            return $this->optionGroup($display, $value, $selected, $attributes);
+            return $this->optionGroup($display, $value, $selected, $optgroupAttributes, $attributes);
         }
 
         return $this->option($display, $value, $selected, $attributes);
@@ -704,18 +708,21 @@ class FormBuilder
      * @param  string $label
      * @param  string $selected
      * @param  array  $attributes
+     * @param  array  $optionsAttributes
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function optionGroup($list, $label, $selected, array $attributes = [])
+    protected function optionGroup($list, $label, $selected, array $attributes = [], array $optionsAttributes = [])
     {
         $html = [];
 
         foreach ($list as $value => $display) {
-            $html[] = $this->option($display, $value, $selected, $attributes);
-        }
+            $optionAttributes = $optionsAttributes[$value] ?? [];
 
-        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
+            $html[] = $this->option($display, $value, $selected, $optionAttributes);
+        }
+        
+        return $this->toHtmlString('<optgroup label="' . e($label) . '"' . $this->html->attributes($attributes) . '>' . implode('', $html) . '</optgroup>');
     }
 
     /**
@@ -734,7 +741,12 @@ class FormBuilder
 
         $options = array_merge(['value' => $value, 'selected' => $selected], $attributes);
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        $string = '<option' . $this->html->attributes($options) . '>';
+        if ($display !== null) {
+            $string .= e($display) . '</option>';
+        }
+
+        return $this->toHtmlString($string);
     }
 
     /**
@@ -773,7 +785,7 @@ class FormBuilder
             return $selected->contains($value) ? 'selected' : null;
         }
 
-        return ((string) $value == (string) $selected) ? 'selected' : null;
+        return ((string) $value === (string) $selected) ? 'selected' : null;
     }
 
     /**
@@ -854,7 +866,7 @@ class FormBuilder
                 return $this->getRadioCheckedState($name, $value, $checked);
 
             default:
-                return $this->getValueAttribute($name) == $value;
+                return $this->getValueAttribute($name) === $value;
         }
     }
 
@@ -907,7 +919,7 @@ class FormBuilder
             return $checked;
         }
 
-        return $this->getValueAttribute($name) == $value;
+        return $this->getValueAttribute($name) === $value;
     }
 
     /**
@@ -1006,7 +1018,7 @@ class FormBuilder
     {
         $method = strtoupper($method);
 
-        return $method != 'GET' ? 'POST' : $method;
+        return $method !== 'GET' ? 'POST' : $method;
     }
 
     /**
@@ -1108,7 +1120,7 @@ class FormBuilder
         // If the method is something other than GET we will go ahead and attach the
         // CSRF token to the form, as this can't hurt and is convenient to simply
         // always have available on every form the developers creates for them.
-        if ($method != 'GET') {
+        if ($method !== 'GET') {
             $appendage .= $this->token();
         }
 
@@ -1150,7 +1162,7 @@ class FormBuilder
 
         $old = $this->old($name);
 
-        if (! is_null($old) && $name != '_method') {
+        if (! is_null($old) && $name !== '_method') {
             return $old;
         }
 
@@ -1161,7 +1173,7 @@ class FormBuilder
             if ($hasNullMiddleware
                 && is_null($old)
                 && is_null($value)
-                && !is_null($this->view->shared('errors'))
+                && ! is_null($this->view->shared('errors'))
                 && count($this->view->shared('errors')) > 0
             ) {
                 return null;
@@ -1169,7 +1181,7 @@ class FormBuilder
         }
 
         $request = $this->request($name);
-        if (! is_null($request) && $name != '_method') {
+        if (! is_null($request)) {
             return $request;
         }
 
@@ -1189,7 +1201,7 @@ class FormBuilder
      */
     protected function request($name)
     {
-        if (!isset($this->request)) {
+        if (! isset($this->request)) {
             return null;
         }
 
@@ -1227,16 +1239,16 @@ class FormBuilder
             $key = $this->transformKey($name);
             $payload = $this->session->getOldInput($key);
 
-            if (!is_array($payload)) {
+            if (! is_array($payload)) {
                 return $payload;
             }
 
-            if (!in_array($this->type, ['select', 'checkbox'])) {
-                if (!isset($this->payload[$key])) {
+            if (! in_array($this->type, ['select', 'checkbox'])) {
+                if (! isset($this->payload[$key])) {
                     $this->payload[$key] = collect($payload);
                 }
 
-                if (!empty($this->payload[$key])) {
+                if (! empty($this->payload[$key])) {
                     $value = $this->payload[$key]->shift();
                     return $value;
                 }
@@ -1253,7 +1265,7 @@ class FormBuilder
      */
     public function oldInputIsEmpty()
     {
-        return (isset($this->session) && count($this->session->getOldInput()) == 0);
+        return (isset($this->session) && count($this->session->getOldInput()) === 0);
     }
 
     /**
