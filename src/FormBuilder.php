@@ -704,18 +704,22 @@ class FormBuilder
      * @param  string $label
      * @param  string $selected
      * @param  array  $attributes
+     * @param  integer  $level
      *
      * @return \Illuminate\Support\HtmlString
      */
-    protected function optionGroup($list, $label, $selected, array $attributes = [])
+    protected function optionGroup($list, $label, $selected, array $attributes = [], $level = 0)
     {
         $html = [];
-
+        $space = str_repeat("&nbsp;", $level);
         foreach ($list as $value => $display) {
-            $html[] = $this->option($display, $value, $selected, $attributes);
+            if (is_array($display)) {
+                $html[] = $this->optionGroup($display, $value, $selected, $attributes, $level+5);
+            } else {
+                $html[] = $this->option($space.$display, $value, $selected, $attributes);
+            }
         }
-
-        return $this->toHtmlString('<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>');
+        return $this->toHtmlString('<optgroup label="' . e($space.$label) . '">' . implode('', $html) . '</optgroup>');
     }
 
     /**
