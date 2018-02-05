@@ -42,10 +42,13 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
     public function testItCanMutateValuesForForms()
     {
         $model = new ModelThatUsesForms($this->modelData);
+        $user = new User(['name' => 'Anton']);
+        $model->setRelation('user', $user);
         $this->formBuilder->setModel($model);
 
         $this->assertEquals($model->getFormValue('string'), 'ponmlkjihgfedcba');
         $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp);
+        $this->assertEquals('Get name for form: Anton', $model->getFormValue('user.name'));
     }
 
     public function testItCanMutateRelatedValuesForForms()
@@ -157,5 +160,15 @@ class ModelThatDoesntUseForms extends Model
     public function getCreatedAtAttribute($value)
     {
         return '1 second ago';
+    }
+}
+
+class User extends Model
+{
+    use FormAccessible;
+
+    public function formNameAttribute($value)
+    {
+        return 'Get name for form: ' . $value;
     }
 }
