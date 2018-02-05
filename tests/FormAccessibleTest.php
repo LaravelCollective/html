@@ -48,6 +48,9 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($model->getFormValue('string'), 'ponmlkjihgfedcba');
         $this->assertEquals($model->getFormValue('created_at'), $this->now->timestamp);
+
+        $this->assertEquals($user, $model->getFormValue('user'));
+        $this->assertEquals('Get name: Anton', $model->getFormValue('user')->name);
         $this->assertEquals('Get name for form: Anton', $model->getFormValue('user.name'));
     }
 
@@ -170,5 +173,10 @@ class User extends Model
     public function formNameAttribute($value)
     {
         return 'Get name for form: ' . $value;
+    }
+
+    public function getNameAttribute($value)
+    {
+        return 'Get name: ' . $value;
     }
 }
