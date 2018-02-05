@@ -303,7 +303,7 @@ class FormBuilder
     }
 
     /**
-     * Create a text input field.
+     * Create a color input field.
      *
      * @param  string $name
      * @param  string $value
@@ -311,92 +311,9 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function text($name, $value = null, $options = [])
+    public function color($name, $value = null, $options = [])
     {
-        return $this->input('text', $name, $value, $options);
-    }
-
-    /**
-     * Create a password input field.
-     *
-     * @param  string $name
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function password($name, $options = [])
-    {
-        return $this->input('password', $name, '', $options);
-    }
-
-    /**
-     * Create a hidden input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function hidden($name, $value = null, $options = [])
-    {
-        return $this->input('hidden', $name, $value, $options);
-    }
-
-    /**
-     * Create a search input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function search($name, $value = null, $options = [])
-    {
-        return $this->input('search', $name, $value, $options);
-    }
-
-    /**
-     * Create an e-mail input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function email($name, $value = null, $options = [])
-    {
-        return $this->input('email', $name, $value, $options);
-    }
-
-    /**
-     * Create a tel input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function tel($name, $value = null, $options = [])
-    {
-        return $this->input('tel', $name, $value, $options);
-    }
-
-    /**
-     * Create a number input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function number($name, $value = null, $options = [])
-    {
-        return $this->input('number', $name, $value, $options);
+        return $this->input('color', $name, $value, $options);
     }
 
     /**
@@ -454,6 +371,190 @@ class FormBuilder
     }
 
     /**
+     * Create an e-mail input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function email($name, $value = null, $options = [])
+    {
+        return $this->input('email', $name, $value, $options);
+    }
+
+    /**
+     * Create a file input field.
+     *
+     * @param  string $name
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function file($name, $options = [])
+    {
+        return $this->input('file', $name, null, $options);
+    }
+
+    /**
+     * Create a hidden input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function hidden($name, $value = null, $options = [])
+    {
+        return $this->input('hidden', $name, $value, $options);
+    }
+
+    /**
+     * Create a HTML image input element.
+     *
+     * @param  string $url
+     * @param  string $name
+     * @param  array  $attributes
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function image($url, $name = null, $attributes = [])
+    {
+        $attributes['src'] = $this->url->asset($url);
+
+        return $this->input('image', $name, null, $attributes);
+    }
+
+    /**
+     * Create a month input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function month($name, $value = null, $options = [])
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-m');
+        }
+
+        return $this->input('month', $name, $value, $options);
+    }
+
+    /**
+     * Create a number input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function number($name, $value = null, $options = [])
+    {
+        return $this->input('number', $name, $value, $options);
+    }
+
+    /**
+     * Create a password input field.
+     *
+     * @param  string $name
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function password($name, $options = [])
+    {
+        return $this->input('password', $name, '', $options);
+    }
+
+    /**
+     * Create a range input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function range($name, $value = null, $options = [])
+    {
+        return $this->input('range', $name, $value, $options);
+    }
+
+    /**
+     * Create a HTML reset input element.
+     *
+     * @param  string $value
+     * @param  array  $attributes
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function reset($value, $attributes = [])
+    {
+        return $this->input('reset', null, $value, $attributes);
+    }
+
+    /**
+     * Create a search input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function search($name, $value = null, $options = [])
+    {
+        return $this->input('search', $name, $value, $options);
+    }
+
+    /**
+     * Create a submit button element.
+     *
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function submit($value = null, $options = [])
+    {
+        return $this->input('submit', null, $value, $options);
+    }
+
+    /**
+     * Create a tel input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function tel($name, $value = null, $options = [])
+    {
+        return $this->input('tel', $name, $value, $options);
+    }
+
+    /**
+     * Create a text input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function text($name, $value = null, $options = [])
+    {
+        return $this->input('text', $name, $value, $options);
+    }
+
+    /**
      * Create a time input field.
      *
      * @param  string $name
@@ -464,6 +565,10 @@ class FormBuilder
      */
     public function time($name, $value = null, $options = [])
     {
+        if ($value instanceof DateTime) {
+            $value = $value->format('H:i');
+        }
+
         return $this->input('time', $name, $value, $options);
     }
 
@@ -482,16 +587,21 @@ class FormBuilder
     }
 
     /**
-     * Create a file input field.
+     * Create a week input field.
      *
      * @param  string $name
+     * @param  string $value
      * @param  array  $options
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function file($name, $options = [])
+    public function week($name, $value = null, $options = [])
     {
-        return $this->input('file', $name, null, $options);
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-\WW');
+        }
+
+        return $this->input('week', $name, $value, $options);
     }
 
     /**
@@ -679,6 +789,51 @@ class FormBuilder
     }
 
     /**
+     * Create a datalist.
+     *
+     * @param  string $id
+     * @param  array  $list
+     * @param  array  $listAttributes
+     * @param  array  $optionsAttributes
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function datalist(
+        $id,
+        $list = [],
+        array $listAttributes = [],
+        array $optionsAttributes = []
+    ) {
+        $this->type = 'datalist';
+
+        $listAttributes['id'] = $id;
+
+        // We will simply loop through the options and build an HTML value for each of
+        // them until we have an array of HTML declarations. Then we will join them
+        // all together into one single HTML element that can be put on the form.
+        $html = [];
+
+        foreach ($list as $value => $display) {
+            // If using a non-associative array, use array values as option values
+            if (gettype($value) === 'integer') {
+                $value = $display;
+                $display = null;
+            }
+            $optionAttributes = isset($optionsAttributes[$value]) ? $optionsAttributes[$value] : [];
+            $html[] = $this->option($display, $value, false, $optionAttributes);
+        }
+
+        // Once we have all of this HTML, we can join this into a single element after
+        // formatting the attributes into an HTML "attributes" string, then we will
+        // build out a final select statement, which will contain all the values.
+        $listAttributes = $this->html->attributes($listAttributes);
+
+        $list = implode('', $html);
+
+        return $this->toHtmlString("<datalist{$listAttributes}>{$list}</datalist>");
+    }
+
+    /**
      * Get the select option for the given value.
      *
      * @param  string $display
@@ -734,7 +889,12 @@ class FormBuilder
 
         $options = array_merge(['value' => $value, 'selected' => $selected], $attributes);
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
+        $string = '<option' . $this->html->attributes($options) . '>';
+        if ($display !== null) {
+            $string .= e($display) . '</option>';
+        }
+
+        return $this->toHtmlString($string);
     }
 
     /**
@@ -920,62 +1080,6 @@ class FormBuilder
     protected function missingOldAndModel($name)
     {
         return (is_null($this->old($name)) && is_null($this->getModelValueAttribute($name)));
-    }
-
-    /**
-     * Create a HTML reset input element.
-     *
-     * @param  string $value
-     * @param  array  $attributes
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function reset($value, $attributes = [])
-    {
-        return $this->input('reset', null, $value, $attributes);
-    }
-
-    /**
-     * Create a HTML image input element.
-     *
-     * @param  string $url
-     * @param  string $name
-     * @param  array  $attributes
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function image($url, $name = null, $attributes = [])
-    {
-        $attributes['src'] = $this->url->asset($url);
-
-        return $this->input('image', $name, null, $attributes);
-    }
-
-    /**
-     * Create a color input field.
-     *
-     * @param  string $name
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function color($name, $value = null, $options = [])
-    {
-        return $this->input('color', $name, $value, $options);
-    }
-
-    /**
-     * Create a submit button element.
-     *
-     * @param  string $value
-     * @param  array  $options
-     *
-     * @return \Illuminate\Support\HtmlString
-     */
-    public function submit($value = null, $options = [])
-    {
-        return $this->input('submit', null, $value, $options);
     }
 
     /**
