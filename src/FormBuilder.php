@@ -572,7 +572,7 @@ class FormBuilder
      *
      * @param  string $name
      * @param  array  $list
-     * @param  string $selected
+     * @param  string|bool $selected
      * @param  array  $selectAttributes
      * @param  array  $optionsAttributes
      * @param  array  $optgroupsAttributes
