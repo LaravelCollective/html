@@ -19,14 +19,14 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "illuminate/http": "5.6.x-dev",
-        "illuminate/routing": "5.6.x-dev",
-        "illuminate/session": "5.6.x-dev",
-        "illuminate/support": "5.6.x-dev",
-        "illuminate/view": "5.6.x-dev"
+        "illuminate/http": "5.6.*",
+        "illuminate/routing": "5.6.*",
+        "illuminate/session": "5.6.*",
+        "illuminate/support": "5.6.*",
+        "illuminate/view": "5.6.*"
     },
     "require-dev": {
-        "illuminate/database": "5.6.x-dev",
+        "illuminate/database": "5.6.*",
         "mockery/mockery": "~0.9.4",
         "phpunit/phpunit": "~5.4"
     },
@@ -39,9 +39,6 @@
         ]
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "5.6-dev"
-        },
         "laravel": {
             "providers": [
                 "Collective\\Html\\HtmlServiceProvider"
