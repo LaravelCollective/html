@@ -722,10 +722,10 @@ class FormBuilder
             if (is_array($display)) {
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $optionAttributes, $level+5);
             } else {
-                $html[] = $this->option($space.$display, $value, $selected, $attributes, $optionAttributes);
+                $html[] = $this->option($space.$display, $value, $selected, $optionAttributes);
             }
         }
-        return $this->toHtmlString('<optgroup label="' . e($space.$label, false) . '">' . implode('', $html) . '</optgroup>');
+        return $this->toHtmlString('<optgroup label="' . e($space.$label, false) . '"' . $this->html->attributes($attributes) . '>' . implode('', $html) . '</optgroup>');
     }
 
     /**
