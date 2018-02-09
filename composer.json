@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "illuminate/database": "5.6.*",
-        "mockery/mockery": "~0.9.4",
+        "mockery/mockery": "~1.0",
         "phpunit/phpunit": "~5.4"
     },
     "autoload": {
