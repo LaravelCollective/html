@@ -572,7 +572,7 @@ class FormBuilder
      *
      * @param  string $name
      * @param  array  $list
-     * @param  string $selected
+     * @param  string|bool $selected
      * @param  array  $selectAttributes
      * @param  array  $optionsAttributes
      * @param  array  $optgroupsAttributes
@@ -784,7 +784,9 @@ class FormBuilder
         } elseif ($selected instanceof Collection) {
             return $selected->contains($value) ? 'selected' : null;
         }
-
+        if (is_int($value) && is_bool($selected)) {
+            return (bool)$value === $selected;
+        }
         return ((string) $value === (string) $selected) ? 'selected' : null;
     }
 
