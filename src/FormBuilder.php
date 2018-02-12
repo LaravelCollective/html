@@ -785,7 +785,7 @@ class FormBuilder
             return $selected->contains($value) ? 'selected' : null;
         }
         if (is_int($value) && is_bool($selected)) {
-                        return (bool)$value === $selected;
+            return (bool)$value === $selected;
         }
         return ((string) $value === (string) $selected) ? 'selected' : null;
     }
