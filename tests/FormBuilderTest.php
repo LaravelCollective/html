@@ -464,6 +464,12 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             '<select name="countries"><option value="1" selected="selected">L</option><option value="2">M</option></select>',
             $result
         );
+
+        $select = $this->formBuilder->select('avc', [1 => 'Yes', 0 => 'No'], true, ['placeholder' => 'Select']);
+        $this->assertEquals(
+            '<select name="avc"><option value="" hidden="hidden">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
+            $select
+        );
     }
 
     public function testSelectCollection()
