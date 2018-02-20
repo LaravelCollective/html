@@ -769,7 +769,11 @@ class FormBuilder
             'value' => '',
         ];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . ' hidden="hidden">' . e($display, false) . '</option>');
+        if (!config('html.select.always_keep_placeholder')){
+            $options['hidden'] = 'hidden';
+        }
+
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display, false) . '</option>');
     }
 
     /**
