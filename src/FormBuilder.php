@@ -769,7 +769,7 @@ class FormBuilder
             'value' => '',
         ];
 
-        if (!config('html.select.always_keep_placeholder')){
+        if (!function_exists('config') || !config('html.select.always_keep_placeholder')) {
             $options['hidden'] = 'hidden';
         }
 
