@@ -929,7 +929,7 @@ class FormBuilder
 
     /**
      * Determine if the provide value loosely compares to the value assigned to the field.
-     * Use loose comparison because Laravel model casting may be in affect and therfore
+     * Use loose comparison because Laravel model casting may be in affect and therefore
      * 1 == true and 0 == false.
      *
      * @param  string $name
