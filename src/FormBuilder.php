@@ -190,7 +190,7 @@ class FormBuilder
     {
         $this->model = $model;
     }
-    
+
     /**
      * Get the current model instance on the form builder.
      *
@@ -868,7 +868,7 @@ class FormBuilder
                 return $this->getRadioCheckedState($name, $value, $checked);
 
             default:
-                return $this->getValueAttribute($name) === $value;
+                return $this->compareValues($name, $value);
         }
     }
 
@@ -921,7 +921,21 @@ class FormBuilder
             return $checked;
         }
 
-        return $this->getValueAttribute($name) === $value;
+        return $this->compareValues($name, $value);
+    }
+
+    /**
+     * Determine if the provide value loosely compares to the value assigned to the field.
+     * Use loose comparison because Laravel model casting may be in affect and therefore
+     * 1 == true and 0 == false.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @return bool
+     */
+    protected function compareValues($name, $value)
+    {
+        return $this->getValueAttribute($name) == $value;
     }
 
     /**
