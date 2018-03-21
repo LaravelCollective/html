@@ -1183,7 +1183,7 @@ class FormBuilder
         }
 
         $request = $this->request($name);
-        if (! is_null($request)) {
+        if (! is_null($request) && $name !== '_method') {
             return $request;
         }
 
