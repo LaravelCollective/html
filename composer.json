@@ -51,7 +51,5 @@
                 "Html": "Collective\\Html\\HtmlFacade"
             }
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
