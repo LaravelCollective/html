@@ -94,7 +94,7 @@ class HtmlBuilder
     {
         $defaults = ['media' => 'all', 'type' => 'text/css', 'rel' => 'stylesheet'];
 
-        $attributes = array_merge($attributes, $defaults);
+        $attributes = array_merge($defaults, $attributes);
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
