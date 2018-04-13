@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Session\Store;
 use Mockery as m;
 
-class FormBuilderTest extends PHPUnit_Framework_TestCase
+class FormBuilderTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @var FormBuilder

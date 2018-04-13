@@ -7,7 +7,7 @@ use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Mockery as m;
 
-class HtmlBuilderTest extends PHPUnit_Framework_TestCase
+class HtmlBuilderTest extends PHPUnit\Framework\TestCase
 {
 
     /**
