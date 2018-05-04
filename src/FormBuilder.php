@@ -330,6 +330,20 @@ class FormBuilder
     }
 
     /**
+     * Create a range input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function range($name, $value = null, $options = [])
+    {
+        return $this->input('range', $name, $value, $options);
+    }
+
+    /**
      * Create a hidden input field.
      *
      * @param  string $name
@@ -464,6 +478,10 @@ class FormBuilder
      */
     public function time($name, $value = null, $options = [])
     {
+        if ($value instanceof DateTime) {
+            $value = $value->format('H:i');
+        }
+
         return $this->input('time', $name, $value, $options);
     }
 
@@ -481,6 +499,24 @@ class FormBuilder
         return $this->input('url', $name, $value, $options);
     }
 
+    /**
+     * Create a week input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function week($name, $value = null, $options = [])
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-\WW');
+        }
+
+        return $this->input('week', $name, $value, $options);
+    }
+    
     /**
      * Create a file input field.
      *
@@ -966,6 +1002,24 @@ class FormBuilder
         $attributes['src'] = $this->url->asset($url);
 
         return $this->input('image', $name, null, $attributes);
+    }
+
+    /**
+     * Create a month input field.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @param  array  $options
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function month($name, $value = null, $options = [])
+    {
+        if ($value instanceof DateTime) {
+            $value = $value->format('Y-m');
+        }
+
+        return $this->input('month', $name, $value, $options);
     }
 
     /**
