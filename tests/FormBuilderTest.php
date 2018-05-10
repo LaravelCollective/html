@@ -784,6 +784,18 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<textarea readonly name="test" cols="50" rows="10"></textarea>', $input);
     }
 
+    public function testArrayClassAttributes()
+    {
+        $input = $this->formBuilder->text('test', null, ['class' => ['class-a', 'class-b']]);
+        $this->assertEquals('<input class="class-a class-b" name="test" type="text">', $input);
+
+        $input = $this->formBuilder->text('test', null, ['class' => [
+            'class-a',
+            false ? 'class-b' : 'class-c'
+        ]]);
+        $this->assertEquals('<input class="class-a class-c" name="test" type="text">', $input);
+    }
+
     protected function setModel(array $data, $object = true)
     {
         if ($object) {
