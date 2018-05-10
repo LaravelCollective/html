@@ -365,15 +365,6 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<input class="span2" name="foo" type="file">', $form2);
     }
 
-    public function testFormFile()
-    {
-        $form1 = $this->formBuilder->file('foo');
-        $form2 = $this->formBuilder->file('foo', ['class' => 'span2']);
-
-        $this->assertEquals('<input name="foo" type="file">', $form1);
-        $this->assertEquals('<input class="span2" name="foo" type="file">', $form2);
-    }
-
     public function testFormTextarea()
     {
         $form1 = $this->formBuilder->textarea('foo');
