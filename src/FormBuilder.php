@@ -50,9 +50,9 @@ class FormBuilder
     protected $csrfToken;
 
     /**
-	 * Consider Request variables while auto fill.
-	 * @var bool
-	 */
+     * Consider Request variables while auto fill.
+     * @var bool
+     */
     protected $considerRequest = false;
 
     /**
@@ -766,7 +766,7 @@ class FormBuilder
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $optionAttributes, $level+5);
             } else {
                 $html[] = $this->option($space.$display, $value, $selected, $optionAttributes);
-        }
+            }
         }
         return $this->toHtmlString('<optgroup label="' . e($space.$label, false) . '"' . $this->html->attributes($attributes) . '>' . implode('', $html) . '</optgroup>');
     }
@@ -790,7 +790,7 @@ class FormBuilder
         $string = '<option' . $this->html->attributes($options) . '>';
         if ($display !== null) {
             $string .= e($display, false) . '</option>';
-    }
+        }
 
         return $this->toHtmlString($string);
     }
@@ -832,7 +832,7 @@ class FormBuilder
         }
         if (is_int($value) && is_bool($selected)) {
             return (bool)$value === $selected;
-    }
+        }
         return ((string) $value === (string) $selected) ? 'selected' : null;
     }
 
@@ -1275,13 +1275,13 @@ class FormBuilder
     }
 
     /**
-	 * Take Request in fill process
-	 * @param bool $consider
-	 */
-	public function considerRequest($consider = true)
-	{
-		$this->considerRequest = $consider;
-	}
+     * Take Request in fill process
+     * @param bool $consider
+     */
+    public function considerRequest($consider = true)
+    {
+        $this->considerRequest = $consider;
+    }
 
     /**
      * Get value from current Request
@@ -1290,9 +1290,9 @@ class FormBuilder
      */
     protected function request($name)
     {
-		if (!$this->considerRequest) {
-			return null;
-		}
+        if (!$this->considerRequest) {
+            return null;
+        }
 
         if (!isset($this->request)) {
             return null;
