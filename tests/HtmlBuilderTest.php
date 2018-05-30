@@ -151,4 +151,18 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals('', trim($result2));
     }
+
+    public function testArrayClassAttributes()
+    {
+        $result = $this->htmlBuilder->attributes(['class' => ['class-a', 'class-b']]);
+
+        $this->assertEquals('class="class-a class-b"', trim($result));
+
+        $result = $this->htmlBuilder->attributes(['class' => [
+            'class-a',
+            false ? 'class-b' : 'class-c'
+        ]]);
+
+        $this->assertEquals('class="class-a class-c"', trim($result));
+    }
 }
