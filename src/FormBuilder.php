@@ -625,10 +625,10 @@ class FormBuilder
     public function select(
         $name,
         $list = [],
-        $selected = null,
         array $selectAttributes = [],
         array $optionsAttributes = [],
-        array $optgroupsAttributes = []
+        array $optgroupsAttributes = [],
+        $selected = null
     ) {
         $this->type = 'select';
 
