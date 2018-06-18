@@ -537,6 +537,58 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         );
         $this->assertEquals($select,
             '<select name="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></select>');
+
+        $select = $this->formBuilder->select(
+            'size',
+            collect([
+                'Large sizes' => collect([
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ]),
+                'S' => 'Small',
+            ]),
+            null,
+            [
+                'class' => 'class-name',
+                'id' => 'select-id',
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
+        );
+
+        $select = $this->formBuilder->select(
+            'size',
+            collect([
+                'Large sizes' => collect([
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ]),
+                'M' => 'Medium',
+                'Small sizes' => collect([
+                    'S' => 'Small',
+                    'XS' => 'Extra Small',
+                ]),
+            ]),
+            null,
+            [],
+            [
+                'Large sizes' => [
+                    'L' => ['disabled']
+                ],
+                'M' => ['disabled'],
+            ],
+            [
+                'Small sizes' => ['disabled'],
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select name="size"><optgroup label="Large sizes"><option value="L" disabled>Large</option><option value="XL">Extra Large</option></optgroup><option value="M" disabled>Medium</option><optgroup label="Small sizes" disabled><option value="S">Small</option><option value="XS">Extra Small</option></optgroup></select>'
+        );
     }
 
     public function testFormSelectRepopulation()

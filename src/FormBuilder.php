@@ -737,7 +737,7 @@ class FormBuilder
      */
     public function getSelectOption($display, $value, $selected, array $attributes = [], array $optgroupAttributes = [])
     {
-        if (is_array($display)) {
+        if (is_iterable($display)) {
             return $this->optionGroup($display, $value, $selected, $optgroupAttributes, $attributes);
         }
 
@@ -762,7 +762,7 @@ class FormBuilder
         $space = str_repeat("&nbsp;", $level);
         foreach ($list as $value => $display) {
             $optionAttributes = $optionsAttributes[$value] ?? [];
-            if (is_array($display)) {
+            if (is_iterable($display)) {
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $optionAttributes, $level+5);
             } else {
                 $html[] = $this->option($space.$display, $value, $selected, $optionAttributes);
