@@ -123,6 +123,9 @@ class FormBuilder
         $this->view = $view;
         $this->csrfToken = $csrfToken;
         $this->request = $request;
+        if (function_exists('config')) {
+            $this->considerRequest = config('form.consider_request', false);
+        }
     }
 
     /**
