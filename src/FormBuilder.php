@@ -1164,7 +1164,7 @@ class FormBuilder
 
         $old = $this->old($name);
 
-        if (! is_null($old) && $name !== '_method') {
+        if (! is_null($old) && is_string($old) && $name !== '_method') {
             return $old;
         }
 
@@ -1183,7 +1183,7 @@ class FormBuilder
         }
 
         $request = $this->request($name);
-        if (! is_null($request) && $name !== '_method') {
+        if (! is_null($request) && is_string($request) && $name !== '_method') {
             return $request;
         }
 
