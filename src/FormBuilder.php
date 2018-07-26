@@ -285,6 +285,9 @@ class FormBuilder
     public function input($type, $name, $value = null, $options = [])
     {
         $this->type = $type;
+        if (!is_array($options)){
+            $options = json_decode($options);   
+        }
 
         if (! isset($options['name'])) {
             $options['name'] = $name;
