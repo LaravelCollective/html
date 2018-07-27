@@ -521,7 +521,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
 
         $select = $this->formBuilder->select('avc', [1 => 'Yes', 0 => 'No'], true, ['placeholder' => 'Select']);
         $this->assertEquals(
-            '<select name="avc"><option value="">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
+            '<select name="avc"><option disabled value="">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
             $select
         );
     }
@@ -622,7 +622,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" disabled value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
