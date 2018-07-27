@@ -809,6 +809,7 @@ class FormBuilder
 
         $options = [
             'selected' => $selected,
+            'disabled' => true,
             'value' => '',
         ];
 
