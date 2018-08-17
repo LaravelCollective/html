@@ -658,6 +658,21 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="radio" value="foobar">', $form4);
     }
 
+    public function testFormRadioWithAttributeCastToBoolean()
+    {
+        $this->setModel(['itemA' => true, 'itemB' => false]);
+
+        $radio1 = $this->formBuilder->radio('itemA', 1);
+        $radio2 = $this->formBuilder->radio('itemA', 0);
+        $radio3 = $this->formBuilder->radio('itemB', 1);
+        $radio4 = $this->formBuilder->radio('itemB', 0);
+
+        $this->assertEquals('<input checked="checked" name="itemA" type="radio" value="1">', $radio1);
+        $this->assertEquals('<input name="itemA" type="radio" value="0">', $radio2);
+        $this->assertEquals('<input name="itemB" type="radio" value="1">', $radio3);
+        $this->assertEquals('<input checked="checked" name="itemB" type="radio" value="0">', $radio4);
+    }
+
     public function testFormRadioRepopulation()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
