@@ -521,7 +521,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
 
         $select = $this->formBuilder->select('avc', [1 => 'Yes', 0 => 'No'], true, ['placeholder' => 'Select']);
         $this->assertEquals(
-            '<select name="avc"><option value="">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
+            '<select name="avc"><option value="" disabled>Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
             $select
         );
     }
@@ -622,7 +622,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" value="" disabled>Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -631,7 +631,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option value="" disabled>Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
             'encoded_html',
@@ -640,7 +640,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
             ['placeholder' => 'Select the &nbsp;']
         );
         $this->assertEquals($select,
-            '<select name="encoded_html"><option selected="selected" value="">Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
+            '<select name="encoded_html"><option selected="selected" value="" disabled>Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
     }
 
