@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Session\Store;
 use Mockery as m;
 
-class FormBuilderTest extends PHPUnit_Framework_TestCase
+class FormBuilderTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @var FormBuilder
@@ -31,10 +31,10 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('/foo', 'GET', [
             "person" => [
                 "name" => "John",
-                "surname" => "Doe"
+                "surname" => "Doe",
             ],
-            "aggree" => 1,
-            "checkbox_array" => [1,2,3]
+            "agree" => 1,
+            "checkbox_array" => [1, 2, 3],
         ]);
 
         $request = Request::createFromBase($request);
@@ -52,14 +52,15 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testRequestValue()
     {
-        $name = $this->formBuilder->text("person[name]");
-        $surname = $this->formBuilder->text("person[surname]");
+        $this->formBuilder->considerRequest();
+        $name = $this->formBuilder->text("person[name]", "Not John");
+        $surname = $this->formBuilder->text("person[surname]", "Not Doe");
         $this->assertEquals('<input name="person[name]" type="text" value="John">', $name);
         $this->assertEquals('<input name="person[surname]" type="text" value="Doe">', $surname);
 
-        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $checked = $this->formBuilder->checkbox("agree", 1);
         $unchecked = $this->formBuilder->checkbox("no_value", 1);
-        $this->assertEquals('<input checked="checked" name="aggree" type="checkbox" value="1">', $checked);
+        $this->assertEquals('<input checked="checked" name="agree" type="checkbox" value="1">', $checked);
         $this->assertEquals('<input name="no_value" type="checkbox" value="1">', $unchecked);
 
         $checked_array = $this->formBuilder->checkbox("checkbox_array[]", 1);
@@ -67,10 +68,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input checked="checked" name="checkbox_array[]" type="checkbox" value="1">', $checked_array);
         $this->assertEquals('<input name="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
 
-        $checked = $this->formBuilder->radio("aggree", 1);
+        $checked = $this->formBuilder->radio("agree", 1);
         $unchecked = $this->formBuilder->radio("no_value", 1);
-        $this->assertEquals('<input checked="checked" name="aggree" type="radio" value="1">', $checked);
+        $this->assertEquals('<input checked="checked" name="agree" type="radio" value="1">', $checked);
         $this->assertEquals('<input name="no_value" type="radio" value="1">', $unchecked);
+
+        // now we check that Request is ignored and value take precedence
+        $this->formBuilder->considerRequest(false);
+        $name = $this->formBuilder->text("person[name]", "Not John");
+        $surname = $this->formBuilder->text("person[surname]", "Not Doe");
+        $this->assertEquals('<input name="person[name]" type="text" value="Not John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Not Doe">', $surname);
     }
 
     public function testOpeningForm()
@@ -513,7 +521,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $select = $this->formBuilder->select('avc', [1 => 'Yes', 0 => 'No'], true, ['placeholder' => 'Select']);
         $this->assertEquals(
-            '<select name="avc"><option value="" hidden="hidden">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
+            '<select name="avc"><option value="">Select</option><option value="1" selected>Yes</option><option value="0" >No</option></select>',
             $select
         );
     }
@@ -529,6 +537,58 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
             '<select name="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></select>');
+
+        $select = $this->formBuilder->select(
+            'size',
+            collect([
+                'Large sizes' => collect([
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ]),
+                'S' => 'Small',
+            ]),
+            null,
+            [
+                'class' => 'class-name',
+                'id' => 'select-id',
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select class="class-name" id="select-id" name="size"><optgroup label="Large sizes"><option value="L">Large</option><option value="XL">Extra Large</option></optgroup><option value="S">Small</option></select>'
+        );
+
+        $select = $this->formBuilder->select(
+            'size',
+            collect([
+                'Large sizes' => collect([
+                    'L' => 'Large',
+                    'XL' => 'Extra Large',
+                ]),
+                'M' => 'Medium',
+                'Small sizes' => collect([
+                    'S' => 'Small',
+                    'XS' => 'Extra Small',
+                ]),
+            ]),
+            null,
+            [],
+            [
+                'Large sizes' => [
+                    'L' => ['disabled']
+                ],
+                'M' => ['disabled'],
+            ],
+            [
+                'Small sizes' => ['disabled'],
+            ]
+        );
+
+        $this->assertEquals(
+            $select,
+            '<select name="size"><optgroup label="Large sizes"><option value="L" disabled>Large</option><option value="XL">Extra Large</option></optgroup><option value="M" disabled>Medium</option><optgroup label="Small sizes" disabled><option value="S">Small</option><option value="XS">Extra Small</option></optgroup></select>'
+        );
     }
 
     public function testFormSelectRepopulation()
@@ -562,7 +622,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option selected="selected" value="" hidden="hidden">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option selected="selected" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
           'size',
@@ -571,7 +631,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
           ['placeholder' => 'Select One...']
         );
         $this->assertEquals($select,
-          '<select name="size"><option value="" hidden="hidden">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
+          '<select name="size"><option value="">Select One...</option><option value="L" selected="selected">Large</option><option value="S">Small</option></select>');
 
         $select = $this->formBuilder->select(
             'encoded_html',
@@ -580,7 +640,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
             ['placeholder' => 'Select the &nbsp;']
         );
         $this->assertEquals($select,
-            '<select name="encoded_html"><option selected="selected" value="" hidden="hidden">Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
+            '<select name="encoded_html"><option selected="selected" value="">Select the &nbsp;</option><option value="no_break_space">&nbsp;</option><option value="ampersand">&amp;</option><option value="lower_than">&lt;</option></select>'
         );
     }
 
@@ -704,6 +764,21 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input class="span2" name="foo" type="radio" value="foobar">', $form4);
     }
 
+    public function testFormRadioWithAttributeCastToBoolean()
+    {
+        $this->setModel(['itemA' => true, 'itemB' => false]);
+
+        $radio1 = $this->formBuilder->radio('itemA', 1);
+        $radio2 = $this->formBuilder->radio('itemA', 0);
+        $radio3 = $this->formBuilder->radio('itemB', 1);
+        $radio4 = $this->formBuilder->radio('itemB', 0);
+
+        $this->assertEquals('<input checked="checked" name="itemA" type="radio" value="1">', $radio1);
+        $this->assertEquals('<input name="itemA" type="radio" value="0">', $radio2);
+        $this->assertEquals('<input name="itemB" type="radio" value="1">', $radio3);
+        $this->assertEquals('<input checked="checked" name="itemB" type="radio" value="0">', $radio4);
+    }
+
     public function testFormRadioRepopulation()
     {
         $this->formBuilder->setSessionStore($session = m::mock('Illuminate\Contracts\Session\Session'));
@@ -785,6 +860,18 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
 
         $input = $this->formBuilder->textarea('test', null, ['readonly']);
         $this->assertEquals('<textarea readonly name="test" cols="50" rows="10"></textarea>', $input);
+    }
+
+    public function testArrayClassAttributes()
+    {
+        $input = $this->formBuilder->text('test', null, ['class' => ['class-a', 'class-b']]);
+        $this->assertEquals('<input class="class-a class-b" name="test" type="text">', $input);
+
+        $input = $this->formBuilder->text('test', null, ['class' => [
+            'class-a',
+            false ? 'class-b' : 'class-c'
+        ]]);
+        $this->assertEquals('<input class="class-a class-c" name="test" type="text">', $input);
     }
 
     protected function setModel(array $data, $object = true)
