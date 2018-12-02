@@ -50,6 +50,12 @@ class FormBuilder
     protected $csrfToken;
 
     /**
+     * Consider Request variables while auto fill.
+     * @var bool
+     */
+    protected $considerRequest = false;
+
+    /**
      * The session store implementation.
      *
      * @var \Illuminate\Contracts\Session\Session
@@ -108,6 +114,7 @@ class FormBuilder
      * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
+     * @param  Request                                    $request
      */
     public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken, Request $request = null)
     {
@@ -190,7 +197,7 @@ class FormBuilder
     {
         $this->model = $model;
     }
-    
+
     /**
      * Get the current model instance on the form builder.
      *
@@ -516,7 +523,7 @@ class FormBuilder
 
         return $this->input('week', $name, $value, $options);
     }
-    
+
     /**
      * Create a file input field.
      *
@@ -730,7 +737,7 @@ class FormBuilder
      */
     public function getSelectOption($display, $value, $selected, array $attributes = [], array $optgroupAttributes = [])
     {
-        if (is_array($display)) {
+        if (is_iterable($display)) {
             return $this->optionGroup($display, $value, $selected, $optgroupAttributes, $attributes);
         }
 
@@ -755,7 +762,7 @@ class FormBuilder
         $space = str_repeat("&nbsp;", $level);
         foreach ($list as $value => $display) {
             $optionAttributes = $optionsAttributes[$value] ?? [];
-            if (is_array($display)) {
+            if (is_iterable($display)) {
                 $html[] = $this->optionGroup($display, $value, $selected, $attributes, $optionAttributes, $level+5);
             } else {
                 $html[] = $this->option($space.$display, $value, $selected, $optionAttributes);
@@ -805,7 +812,7 @@ class FormBuilder
             'value' => '',
         ];
 
-        return $this->toHtmlString('<option' . $this->html->attributes($options) . ' hidden="hidden">' . e($display, false) . '</option>');
+        return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display, false) . '</option>');
     }
 
     /**
@@ -907,7 +914,7 @@ class FormBuilder
                 return $this->getRadioCheckedState($name, $value, $checked);
 
             default:
-                return $this->getValueAttribute($name) === $value;
+                return $this->compareValues($name, $value);
         }
     }
 
@@ -960,7 +967,21 @@ class FormBuilder
             return $checked;
         }
 
-        return $this->getValueAttribute($name) === $value;
+        return $this->compareValues($name, $value);
+    }
+
+    /**
+     * Determine if the provide value loosely compares to the value assigned to the field.
+     * Use loose comparison because Laravel model casting may be in affect and therefore
+     * 1 == true and 0 == false.
+     *
+     * @param  string $name
+     * @param  string $value
+     * @return bool
+     */
+    protected function compareValues($name, $value)
+    {
+        return $this->getValueAttribute($name) == $value;
     }
 
     /**
@@ -1276,7 +1297,7 @@ class FormBuilder
             if ($hasNullMiddleware
                 && is_null($old)
                 && is_null($value)
-                && ! is_null($this->view->shared('errors'))
+                && !is_null($this->view->shared('errors'))
                 && count($this->view->shared('errors')) > 0
             ) {
                 return null;
@@ -1298,13 +1319,26 @@ class FormBuilder
     }
 
     /**
+     * Take Request in fill process
+     * @param bool $consider
+     */
+    public function considerRequest($consider = true)
+    {
+        $this->considerRequest = $consider;
+    }
+
+    /**
      * Get value from current Request
      * @param $name
      * @return array|null|string
      */
     protected function request($name)
     {
-        if (! isset($this->request)) {
+        if (!$this->considerRequest) {
+            return null;
+        }
+
+        if (!isset($this->request)) {
             return null;
         }
 
@@ -1342,16 +1376,16 @@ class FormBuilder
             $key = $this->transformKey($name);
             $payload = $this->session->getOldInput($key);
 
-            if (! is_array($payload)) {
+            if (!is_array($payload)) {
                 return $payload;
             }
 
-            if (! in_array($this->type, ['select', 'checkbox'])) {
-                if (! isset($this->payload[$key])) {
+            if (!in_array($this->type, ['select', 'checkbox'])) {
+                if (!isset($this->payload[$key])) {
                     $this->payload[$key] = collect($payload);
                 }
 
-                if (! empty($this->payload[$key])) {
+                if (!empty($this->payload[$key])) {
                     $value = $this->payload[$key]->shift();
                     return $value;
                 }

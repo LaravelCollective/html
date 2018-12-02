@@ -12,7 +12,7 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Mockery as m;
 
-class FormAccessibleTest extends PHPUnit_Framework_TestCase
+class FormAccessibleTest extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
@@ -74,12 +74,12 @@ class FormAccessibleTest extends PHPUnit_Framework_TestCase
         $model = new ModelThatUsesForms($this->modelData);
         $this->assertEquals($model->getFormValue('address.street'), 'abcde st');
     }
-    
+
     public function testItCanUseGetAccessorValuesWhenThereAreNoFormAccessors()
     {
         $model = new ModelThatUsesForms($this->modelData);
         $this->formBuilder->setModel($model);
-        
+
         $this->assertEquals($this->formBuilder->getValueAttribute('email'), 'mutated@tjshafer.com');
     }
 

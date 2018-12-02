@@ -7,7 +7,7 @@ use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Mockery as m;
 
-class HtmlBuilderTest extends PHPUnit_Framework_TestCase
+class HtmlBuilderTest extends PHPUnit\Framework\TestCase
 {
 
     /**
@@ -150,5 +150,19 @@ class HtmlBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('my-property', trim($result1));
 
         $this->assertEquals('', trim($result2));
+    }
+
+    public function testArrayClassAttributes()
+    {
+        $result = $this->htmlBuilder->attributes(['class' => ['class-a', 'class-b']]);
+
+        $this->assertEquals('class="class-a class-b"', trim($result));
+
+        $result = $this->htmlBuilder->attributes(['class' => [
+            'class-a',
+            false ? 'class-b' : 'class-c'
+        ]]);
+
+        $this->assertEquals('class="class-a class-c"', trim($result));
     }
 }
