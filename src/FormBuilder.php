@@ -53,7 +53,7 @@ class FormBuilder
      * Consider Request variables while auto fill.
      * @var bool
      */
-    protected $considerRequest = false;
+    protected $considerRequest = true;
 
     /**
      * The session store implementation.
