@@ -50,6 +50,12 @@ class FormBuilder
     protected $csrfToken;
 
     /**
+     * Consider Request variables while auto fill.
+     * @var bool
+     */
+    protected $considerRequest = false;
+
+    /**
      * The session store implementation.
      *
      * @var \Illuminate\Contracts\Session\Session
@@ -108,6 +114,7 @@ class FormBuilder
      * @param  \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param  \Illuminate\Contracts\View\Factory         $view
      * @param  string                                     $csrfToken
+     * @param  Request                                    $request
      */
     public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, $csrfToken, Request $request = null)
     {
@@ -747,9 +754,7 @@ class FormBuilder
 
         $options = [
             'selected' => $selected,
-            'disabled' => 'disabled',
-            'hidden' => 'hidden',
-            'value' => ''
+            'value' => '',
         ];
 
         return $this->toHtmlString('<option' . $this->html->attributes($options) . '>' . e($display) . '</option>');
@@ -766,7 +771,7 @@ class FormBuilder
     protected function getSelectedValue($value, $selected)
     {
         if (is_array($selected)) {
-            return in_array($value, $selected, true) ? 'selected' : null;
+            return in_array($value, $selected, true) || in_array((string) $value, $selected, true) ? 'selected' : null;
         } elseif ($selected instanceof Collection) {
             return $selected->contains($value) ? 'selected' : null;
         }
@@ -1167,7 +1172,7 @@ class FormBuilder
         }
 
         $request = $this->request($name);
-        if (!is_null($request)) {
+        if (! is_null($request) && $name != '_method') {
             return $request;
         }
 
@@ -1181,12 +1186,25 @@ class FormBuilder
     }
 
     /**
+     * Take Request in fill process
+     * @param bool $consider
+     */
+    public function considerRequest($consider = true)
+    {
+        $this->considerRequest = $consider;
+    }
+
+    /**
      * Get value from current Request
      * @param $name
      * @return array|null|string
      */
     protected function request($name)
     {
+        if (!$this->considerRequest) {
+            return null;
+        }
+
         if (!isset($this->request)) {
             return null;
         }
@@ -1198,11 +1216,10 @@ class FormBuilder
      * Get the model value that should be assigned to the field.
      *
      * @param  string $name
-     * @param  mixed  $model
      *
      * @return mixed
      */
-    protected function getModelValueAttribute($name, $model = null)
+    protected function getModelValueAttribute($name)
     {
         $key = $this->transformKey($name);
 

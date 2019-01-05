@@ -50,7 +50,7 @@ class HtmlBuilder
      */
     public function entities($value)
     {
-        return htmlentities($value, ENT_QUOTES, 'UTF-8', false);
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
     }
 
     /**

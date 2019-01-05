@@ -8,6 +8,7 @@ use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Session\Store;
 use Mockery as m;
 
 class FormBuilderTest extends PHPUnit_Framework_TestCase
@@ -30,10 +31,10 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('/foo', 'GET', [
             "person" => [
                 "name" => "John",
-                "surname" => "Doe"
+                "surname" => "Doe",
             ],
-            "aggree" => 1,
-            "checkbox_array" => [1,2,3]
+            "agree" => 1,
+            "checkbox_array" => [1, 2, 3],
         ]);
 
         $request = Request::createFromBase($request);
@@ -56,8 +57,9 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input name="person[name]" id="person[name]" type="text" value="John">', $name);
         $this->assertEquals('<input name="person[surname]" id="person[surname]" type="text" value="Doe">', $surname);
 
-        $checked = $this->formBuilder->checkbox("aggree", 1);
+        $checked = $this->formBuilder->checkbox("agree", 1);
         $unchecked = $this->formBuilder->checkbox("no_value", 1);
+
         $this->assertEquals('<input checked="checked" name="aggree" id="aggree" type="checkbox" value="1">', $checked);
         $this->assertEquals('<input name="no_value" id="no_value" type="checkbox" value="1">', $unchecked);
 
@@ -66,10 +68,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<input checked="checked" name="checkbox_array[]" id="checkbox_array[]" type="checkbox" value="1">', $checked_array);
         $this->assertEquals('<input name="checkbox_array[]" id="checkbox_array[]" type="checkbox" value="4">', $unchecked_array);
 
-        $checked = $this->formBuilder->radio("aggree", 1);
+        $checked = $this->formBuilder->radio("agree", 1);
         $unchecked = $this->formBuilder->radio("no_value", 1);
         $this->assertEquals('<input checked="checked" name="aggree" id="aggree" type="radio" value="1">', $checked);
         $this->assertEquals('<input name="no_value" id="no_value" type="radio" value="1">', $unchecked);
+
+        // now we check that Request is ignored and value take precedence
+        $this->formBuilder->considerRequest(false);
+        $name = $this->formBuilder->text("person[name]", "Not John");
+        $surname = $this->formBuilder->text("person[surname]", "Not Doe");
+        $this->assertEquals('<input name="person[name]" type="text" value="Not John">', $name);
+        $this->assertEquals('<input name="person[surname]" type="text" value="Not Doe">', $surname);
     }
 
     public function testOpeningForm()
@@ -421,6 +430,17 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
             '<select id="size" name="size"><option value="L" data-foo="bar" disabled>Large</option><option value="S">Small</option></select>');
+
+        $store = new Store('name', new \SessionHandler());
+        $store->put('_old_input', ['countries' => ['1']]);
+        $this->formBuilder->setSessionStore($store);
+
+        $result = $this->formBuilder->select('countries', [1 => 'L', 2 => 'M']);
+
+        $this->assertEquals(
+            '<select name="countries"><option value="1" selected="selected">L</option><option value="2">M</option></select>',
+            $result
+        );
     }
 
     public function testSelectCollection()
@@ -468,7 +488,7 @@ class FormBuilderTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($select,
           '<select id="size" name="size"><option selected="selected" disabled="disabled" hidden="hidden" value="">Select One...</option><option value="L">Large</option><option value="S">Small</option></select>');
-
+      
         $select = $this->formBuilder->select(
           'size',
           ['L' => 'Large', 'S' => 'Small'],
