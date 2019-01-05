@@ -271,7 +271,9 @@ class FormBuilder
 
         if (! isset($options['name'])) {
             $options['name'] = $name;
-            $options['id'] = $name;
+			if(! isset($options['id'])) {
+				$options['id'] = $name;
+			}
         }
 
         // We will get the appropriate value for the given field. We will look for the
@@ -587,7 +589,9 @@ class FormBuilder
 
         if (! isset($selectAttributes['name'])) {
             $selectAttributes['name'] = $name;
-            $selectAttributes['id'] = $name;
+			if(! isset($selectAttributes['id'])) {
+				$selectAttributes['id'] = $name;
+			}
         }
 
         // We will simply loop through the options and build an HTML value for each of
