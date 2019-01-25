@@ -52,6 +52,15 @@ class FormAccessibleTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($user, $model->getFormValue('user'));
         $this->assertEquals('Get name: Anton', $model->getFormValue('user')->name);
         $this->assertEquals('Get name for form: Anton', $model->getFormValue('user.name'));
+
+        $custom_array = [
+            1 => 10,
+            2 => 20,
+            3 => 30,
+        ];
+        $this->assertEquals($custom_array, $model->getFormValue('custom_array.1'));
+        $this->assertEquals($custom_array, $model->getFormValue('custom_array.2'));
+        $this->assertEquals($custom_array, $model->getFormValue('custom_array.3'));
     }
 
     public function testItCanMutateRelatedValuesForForms()
@@ -138,6 +147,15 @@ class ModelThatUsesForms extends Model
     public function formCreatedAtAttribute(Carbon $value)
     {
         return $value->timestamp;
+    }
+
+    public function formCustomArrayAttribute()
+    {
+        return [
+            1 => 10,
+            2 => 20,
+            3 => 30,
+        ];
     }
 
     public function getCreatedAtAttribute($value)
