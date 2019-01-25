@@ -37,8 +37,9 @@ trait FormAccessible
         // If the attribute has a get mutator, we will call that then return what
         // it returns as the value, which is useful for transforming values on
         // retrieval from the model to a form that is more useful for usage.
-        if ($this->hasFormMutator($key)) {
-            return $this->mutateFormAttribute($key, $value);
+        $mutatorKey = strtok($key, '.');
+        if ($this->hasFormMutator($mutatorKey)) {
+            return $this->mutateFormAttribute($mutatorKey, $value);
         }
 
         $keys = explode('.', $key);
