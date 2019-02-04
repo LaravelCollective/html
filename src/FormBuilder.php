@@ -1267,6 +1267,12 @@ class FormBuilder
             $appendage .= $this->token();
         }
 
+        // If we create more than one form on the same page, the injectCsrfToken property
+        // will remain the same across every forms since the form builder is resolved once.
+        // In order to ensure the next form will start with a csrf_token by default, we
+        // need to set it to true.
+        $this->injectCsrfToken = true;
+
         return $appendage;
     }
 
