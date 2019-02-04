@@ -148,7 +148,7 @@ class FormBuilder
         // If the method is PUT, PATCH or DELETE we will need to add a spoofer hidden
         // field that will instruct the Symfony request to pretend the method is a
         // different method than it actually is, for convenience from the forms.
-        $append = $this->getAppendage($method);
+        $append = $this->getAppendage($method, $options['csrf_token'] ?? true);
 
         if (isset($options['files']) && $options['files']) {
             $options['enctype'] = 'multipart/form-data';
@@ -1227,10 +1227,11 @@ class FormBuilder
      * Get the form appendage for the given method.
      *
      * @param  string $method
+     * @param bool $with_csrf_token
      *
      * @return string
      */
-    protected function getAppendage($method)
+    protected function getAppendage($method, $with_csrf_token)
     {
         list($method, $appendage) = [strtoupper($method), ''];
 
@@ -1241,10 +1242,9 @@ class FormBuilder
             $appendage .= $this->hidden('_method', $method);
         }
 
-        // If the method is something other than GET we will go ahead and attach the
-        // CSRF token to the form, as this can't hurt and is convenient to simply
-        // always have available on every form the developers creates for them.
-        if ($method !== 'GET') {
+        // If the method is something other than GET and $with_csrf_token is true,
+        // we will attach the CSRF token to the form.
+        if ($method !== 'GET' && $with_csrf_token) {
             $appendage .= $this->token();
         }
 
