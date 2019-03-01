@@ -1,17 +1,13 @@
 {
-    "name": "ranabd36/laravelcollective",
+    "name": "laravelcollective/html",
     "description": "HTML and Form Builders for the Laravel Framework",
     "license": "MIT",
     "homepage": "https://laravelcollective.com",
     "support": {
-        "issues": "https://github.com/ranabd36/laravelcollective/issues",
-        "source": "https://github.com/ranabd36/laravelcollective"
+        "issues": "https://github.com/LaravelCollective/html/issues",
+        "source": "https://github.com/LaravelCollective/html"
     },
     "authors": [
-        {
-            "name" : "Ibrahim Rana",
-            "email" : "ranabd36@gmail.com"
-        },
         {
             "name": "Adam Engebretson",
             "email": "adam@laravelcollective.com"
@@ -44,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "5.8-dev"
+            "dev-master": "5.7-dev"
         },
         "laravel": {
             "providers": [
