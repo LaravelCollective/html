@@ -50,6 +50,13 @@ class FormBuilder
     protected $csrfToken;
 
     /**
+     * Inject the csrf_token hidden input automatically
+     *
+     * @var bool
+     */
+    protected $injectCsrfToken = true;
+
+    /**
      * Consider Request variables while auto fill.
      * @var bool
      */
@@ -232,6 +239,18 @@ class FormBuilder
         $token = ! empty($this->csrfToken) ? $this->csrfToken : $this->session->token();
 
         return $this->hidden('_token', $token);
+    }
+
+    /**
+     * Enable or disable automatic csrf_token injection
+     *
+     * @return self
+     */
+    public function withoutCsrf()
+    {
+        $this->injectCsrfToken = false;
+
+        return $this;
     }
 
     /**
@@ -1241,12 +1260,17 @@ class FormBuilder
             $appendage .= $this->hidden('_method', $method);
         }
 
-        // If the method is something other than GET we will go ahead and attach the
-        // CSRF token to the form, as this can't hurt and is convenient to simply
-        // always have available on every form the developers creates for them.
-        if ($method !== 'GET') {
+        // If the method is something other than GET and $injectCsrfToken property is true,
+        // we will attach the CSRF token to the form.
+        if ($method !== 'GET' && $this->injectCsrfToken) {
             $appendage .= $this->token();
         }
+
+        // If we create more than one form on the same page, the injectCsrfToken property
+        // will remain the same across every forms since the form builder is resolved once.
+        // In order to ensure the next form will start with a csrf_token by default, we
+        // need to set it to true.
+        $this->injectCsrfToken = true;
 
         return $appendage;
     }
