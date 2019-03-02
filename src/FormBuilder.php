@@ -243,13 +243,12 @@ class FormBuilder
 
     /**
      * Enable or disable automatic csrf_token injection
-     * @param bool $inject
      *
      * @return self
      */
-    public function injectCsrfToken($inject = true)
+    public function withoutCsrf()
     {
-        $this->injectCsrfToken = $inject;
+        $this->injectCsrfToken = false;
 
         return $this;
     }
