@@ -50,7 +50,7 @@ class HtmlBuilder
      */
     public function entities($value)
     {
-        return htmlentities($value, ENT_QUOTES, 'UTF-8', false);
+        return e($value, false);
     }
 
     /**
@@ -62,7 +62,7 @@ class HtmlBuilder
      */
     public function decode($value)
     {
-        return html_entity_decode($value, ENT_QUOTES, 'UTF-8');
+        return e($value, true);
     }
 
     /**
