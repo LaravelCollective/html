@@ -835,6 +835,24 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<input class="span2" name="foo" type="color">', $form3);
     }
 
+    public function testDatalist()
+    {
+        // Associative array with string keys.
+        $genders = ['M' => 'Male', 'F' => 'Female'];
+        $datalist = $this->formBuilder->datalist('genders', $genders);
+        $this->assertEquals('<datalist id="genders"><option value="M">Male</option><option value="F">Female</option></datalist>', $datalist);
+
+        // Associative array with numeric Keys
+        $genders = [5 => 'Male', 6 => 'Female'];
+        $datalist = $this->formBuilder->datalist('genders', $genders);
+        $this->assertEquals('<datalist id="genders"><option value="5">Male</option><option value="6">Female</option></datalist>', $datalist);
+
+        // Not associative array.
+        $genders = ['Male', 'Female'];
+        $datalist = $this->formBuilder->datalist('genders', $genders);
+        $this->assertEquals('<datalist id="genders"><option value="Male">Male</option><option value="Female">Female</option></datalist>', $datalist);
+    }
+
     public function testBooleanAttributes()
     {
         $input = $this->formBuilder->text('test', null, ['disabled']);

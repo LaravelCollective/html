@@ -132,7 +132,7 @@ class HtmlBuilder
     {
         $defaults = ['rel' => 'shortcut icon', 'type' => 'image/x-icon'];
 
-        $attributes = array_merge($attributes, $defaults);
+        $attributes = array_merge($defaults, $attributes);
 
         $attributes['href'] = $this->url->asset($url, $secure);
 
