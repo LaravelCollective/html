@@ -9,8 +9,6 @@
          processIsolation="false"
          stopOnError="false"
          stopOnFailure="false"
-         syntaxCheck="true"
-         strict="false"
          verbose="true"
 >
     <testsuites>
