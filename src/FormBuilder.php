@@ -1298,7 +1298,7 @@ class FormBuilder
                 && is_null($old)
                 && is_null($value)
                 && !is_null($this->view->shared('errors'))
-                && count(php_sapi_name() === 'cli' ? [] : $this->view->shared('errors')) > 0
+                && count(is_countable($this->view->shared('errors')) ? $this->view->shared('errors') : []) > 0
             ) {
                 return null;
             }
