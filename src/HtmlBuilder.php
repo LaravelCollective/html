@@ -35,7 +35,7 @@ class HtmlBuilder
      * @param \Illuminate\Contracts\Routing\UrlGenerator $url
      * @param \Illuminate\Contracts\View\Factory         $view
      */
-    public function __construct(UrlGenerator $url, Factory $view)
+    public function __construct(UrlGenerator $url = null, Factory $view)
     {
         $this->url = $url;
         $this->view = $view;
@@ -428,7 +428,7 @@ class HtmlBuilder
             }
         }
 
-        return implode(' ', $html);
+        return count($html) > 0 ? ' ' . implode(' ', $html) : '';
     }
 
     /**
