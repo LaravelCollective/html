@@ -1201,7 +1201,7 @@ class FormBuilder
     protected function getRouteAction($options)
     {
         if (is_array($options)) {
-            return $this->url->route($options[0], array_slice($options, 1));
+            return $this->url->route($options[0], head(array_slice($options, 1)));
         }
 
         return $this->url->route($options);
