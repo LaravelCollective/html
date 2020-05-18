@@ -82,6 +82,30 @@ class HtmlBuilder
     }
 
     /**
+     * Generate a single or group of link to a JavaScript file.
+     *
+     * @param string $url
+     * @param array  $attributes
+     * @param bool   $secure
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function scripts($url, $attributes = [], $secure = null)
+    {
+        if (is_array($url)) {
+            $arr = [];
+
+            foreach ($url as $key => $value) {
+                $arr[] = $this->script($value, $attributes, $secure);
+            }
+
+            return implode("\r\n", $arr);
+        } else {
+            return $this->script($url, $attributes, $secure);
+        }
+    }
+
+    /**
      * Generate a link to a CSS file.
      *
      * @param string $url
@@ -99,6 +123,30 @@ class HtmlBuilder
         $attributes['href'] = $this->url->asset($url, $secure);
 
         return $this->toHtmlString('<link' . $this->attributes($attributes) . '>');
+    }
+
+    /**
+     * Generate a single or group of link to a CSS file.
+     *
+     * @param string $url
+     * @param array  $attributes
+     * @param bool   $secure
+     *
+     * @return \Illuminate\Support\HtmlString
+     */
+    public function styles($url, $attributes = [], $secure = null)
+    {
+        if (is_array($url)) {
+            $arr = [];
+
+            foreach ($url as $key => $value) {
+                $arr[] = $this->style($value, $attributes, $secure);
+            }
+
+            return implode("\r\n", $arr);
+        } else {
+            return $this->style($url, $attributes, $secure);
+        }
     }
 
     /**
