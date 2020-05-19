@@ -387,7 +387,7 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<textarea class="span2" name="foo" cols="50" rows="10"></textarea>', $form3);
         $this->assertEquals('<textarea name="foo" cols="60" rows="15"></textarea>', $form4);
         $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp; Sausage</textarea>', $form5);
-        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp;&amp; Sausage</textarea>', $form6);
+        $this->assertEquals('<textarea name="encoded_html" cols="60" rows="50">Eggs &amp;amp;&amp;amp; Sausage</textarea>', $form6);
     }
 
     public function testSelect()
