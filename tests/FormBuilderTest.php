@@ -4,6 +4,7 @@ use Collective\Html\FormBuilder;
 use Collective\Html\HtmlBuilder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
@@ -97,6 +98,24 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
           $form4);
         $this->assertEquals('<form method="POST" action="http://localhost/foo" accept-charset="UTF-8"><input name="_method" type="hidden" value="PUT"><input name="_token" type="hidden" value="abc">',
           $form5);
+    }
+
+    public function testFormRoute()
+    {
+        $routes = new RouteCollection();
+        $routes->get('user/{id}');
+        $routes->add(new Route(['GET'], 'user/{id}', ['as' => 'user.show']));
+        $this->urlGenerator->setRoutes($routes);
+
+        $form1 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', 1, 'foo' => 'bar']]);
+        $form2 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', 'id' => 2, 'foo' => 'bar']]);
+        $form3 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', [3, 'foo' => 'bar']]]);
+        $form4 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', ['id' => 4, 'foo' => 'bar']]]);
+
+        $this->assertEquals('<form method="GET" action="http://localhost/user/1?foo=bar" accept-charset="UTF-8">', $form1);
+        $this->assertEquals('<form method="GET" action="http://localhost/user/2?foo=bar" accept-charset="UTF-8">', $form2);
+        $this->assertEquals('<form method="GET" action="http://localhost/user/3?foo=bar" accept-charset="UTF-8">', $form3);
+        $this->assertEquals('<form method="GET" action="http://localhost/user/4?foo=bar" accept-charset="UTF-8">', $form4);
     }
 
     public function testClosingForm()
