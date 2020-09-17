@@ -713,10 +713,10 @@ class FormBuilder
      *
      * @return \Illuminate\Support\HtmlString
      */
-    public function selectMonth($name, $selected = null, $options = [], $format = '%B')
+    public function selectMonth($name, $selected = null, $options = [], $format = '%B',$locale = null)
     {
         $months = [];
-
+        setlocale(LC_TIME,$locale);
         foreach (range(1, 12) as $month) {
             $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
         }
