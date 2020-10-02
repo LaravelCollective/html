@@ -1,4 +1,4 @@
-![LaravelCollective HTML](LaravelCollectiveHTML-banner.png)
+![LaravelCollective HTML](LaravelCollectiveHTML-banner.png).
 
 [![Build Status](https://travis-ci.org/LaravelCollective/html.svg)](https://travis-ci.org/LaravelCollective/html)
 [![Total Downloads](https://poser.pugx.org/LaravelCollective/html/downloads)](https://packagist.org/packages/laravelcollective/html)
