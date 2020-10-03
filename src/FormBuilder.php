@@ -305,8 +305,19 @@ class FormBuilder
         $merge = compact('type', 'value', 'id');
 
         $options = array_merge($options, $merge);
+        
+      $options['autocomplete'] = 'new-'.$name.'_090_'.time();
 
-        return $this->toHtmlString('<input' . $this->html->attributes($options) . '>');
+        if(!isset($options['class'])) $options['class'] = '';
+        $error_feedback = '';
+        if($this->request->session()->get('errors')) {
+            if($this->request->session()->get('errors')->has($name)) {
+                $options['class'] = $options['class'] . ' is-invalid';
+                $error_feedback = '<span class="invalid-feedback" role="alert"><strong>'.$this->request->session()->get('errors')->first($name).'</strong></span>';
+            }
+        }
+
+        return $this->toHtmlString('<input' . $this->html->attributes($options) . '/>'.$error_feedback);
     }
 
     /**
@@ -658,7 +669,16 @@ class FormBuilder
             $optgroupAttributes = $optgroupsAttributes[$value] ?? [];
             $html[] = $this->getSelectOption($display, $value, $selected, $optionAttributes, $optgroupAttributes);
         }
+                $selectAttributes['autocomplete'] = 'new-'.$name.'_090_'.time();
 
+        if(!isset($selectAttributes['class'])) $selectAttributes['class'] = '';
+        $error_feedback = '';
+        if($this->request->session()->get('errors')) {
+            if($this->request->session()->get('errors')->has($name)) {
+                $selectAttributes['class'] = $selectAttributes['class'] . ' is-invalid';
+                $error_feedback = '<span class="invalid-feedback" role="alert"><strong>'.$this->request->session()->get('errors')->first($name).'</strong></span>';
+            }
+        }
         // Once we have all of this HTML, we can join this into a single element after
         // formatting the attributes into an HTML "attributes" string, then we will
         // build out a final select statement, which will contain all the values.
@@ -666,7 +686,7 @@ class FormBuilder
 
         $list = implode('', $html);
 
-        return $this->toHtmlString("<select{$selectAttributes}>{$list}</select>");
+        return $this->toHtmlString("<select{$selectAttributes}>{$list}</select>",$error_feedback);
     }
 
     /**
