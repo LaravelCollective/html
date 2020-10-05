@@ -51,3 +51,4 @@ $capsule->schema()->create('models', function (Blueprint $table) {
     $table->string('email');
     $table->timestamps();
 });
+//awesome project
