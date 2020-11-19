@@ -1362,7 +1362,7 @@ class FormBuilder
     {
         $key = $this->transformKey($name);
 
-        if (method_exists($this->model, 'getFormValue')) {
+        if ((is_string($this->model) || is_object($this->model)) && method_exists($this->model, 'getFormValue')) {
             return $this->model->getFormValue($key);
         }
 
