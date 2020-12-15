@@ -669,11 +669,11 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $select2 = (string) $this->formBuilder->selectYear('year', 2000, 2020, null, ['id' => 'foo']);
         $select3 = (string) $this->formBuilder->selectYear('year', 2000, 2020, '2000');
 
-        $this->assertContains('<select name="year"><option value="2000">2000</option><option value="2001">2001</option>',
+        $this->assertStringContainsString('<select name="year"><option value="2000">2000</option><option value="2001">2001</option>',
           $select1);
-        $this->assertContains('<select id="foo" name="year"><option value="2000">2000</option><option value="2001">2001</option>',
+        $this->assertStringContainsString('<select id="foo" name="year"><option value="2000">2000</option><option value="2001">2001</option>',
           $select2);
-        $this->assertContains('<select name="year"><option value="2000" selected="selected">2000</option><option value="2001">2001</option>',
+        $this->assertStringContainsString('<select name="year"><option value="2000" selected="selected">2000</option><option value="2001">2001</option>',
           $select3);
     }
 
@@ -681,8 +681,8 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
     {
         $range = (string) $this->formBuilder->selectRange('dob', 1900, 2013);
 
-        $this->assertContains('<select name="dob"><option value="1900">1900</option>', $range);
-        $this->assertContains('<option value="2013">2013</option>', $range);
+        $this->assertStringContainsString('<select name="dob"><option value="1900">1900</option>', $range);
+        $this->assertStringContainsString('<option value="2013">2013</option>', $range);
     }
 
     public function testFormSelectMonth()
@@ -691,10 +691,10 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $month2 = (string) $this->formBuilder->selectMonth('month', '1');
         $month3 = (string) $this->formBuilder->selectMonth('month', null, ['id' => 'foo']);
 
-        $this->assertContains('<select name="month"><option value="1">January</option><option value="2">February</option>',
+        $this->assertStringContainsString('<select name="month"><option value="1">January</option><option value="2">February</option>',
           $month1);
-        $this->assertContains('<select name="month"><option value="1" selected="selected">January</option>', $month2);
-        $this->assertContains('<select id="foo" name="month"><option value="1">January</option>', $month3);
+        $this->assertStringContainsString('<select name="month"><option value="1" selected="selected">January</option>', $month2);
+        $this->assertStringContainsString('<select id="foo" name="month"><option value="1">January</option>', $month3);
     }
 
     public function testFormCheckbox()
