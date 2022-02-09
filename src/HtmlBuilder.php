@@ -442,7 +442,7 @@ class HtmlBuilder
      * Build a single attribute element.
      *
      * @param string $key
-     * @param string $value
+     * @param string|bool|array|null $value
      *
      * @return string
      */
@@ -510,7 +510,7 @@ class HtmlBuilder
     /**
      * Generate a meta tag.
      *
-     * @param string $name
+     * @param string|null $name
      * @param string $content
      * @param array  $attributes
      *
