@@ -615,7 +615,7 @@ class FormBuilder
      *
      * @param  string $name
      * @param  array  $list
-     * @param  string|bool $selected
+     * @param  string|bool|Collection $selected
      * @param  array  $selectAttributes
      * @param  array  $optionsAttributes
      * @param  array  $optgroupsAttributes
@@ -729,7 +729,7 @@ class FormBuilder
      *
      * @param  string $display
      * @param  string $value
-     * @param  string $selected
+     * @param  string|bool|Collection $selected
      * @param  array  $attributes
      * @param  array  $optgroupAttributes
      *
@@ -749,7 +749,7 @@ class FormBuilder
      *
      * @param  array  $list
      * @param  string $label
-     * @param  string $selected
+     * @param  string|bool|Collection $selected
      * @param  array  $attributes
      * @param  array  $optionsAttributes
      * @param  integer  $level
@@ -776,7 +776,7 @@ class FormBuilder
      *
      * @param  string $display
      * @param  string $value
-     * @param  string $selected
+     * @param  string|bool|Collection $selected
      * @param  array  $attributes
      *
      * @return \Illuminate\Support\HtmlString
@@ -798,8 +798,8 @@ class FormBuilder
     /**
      * Create a placeholder select element option.
      *
-     * @param $display
-     * @param $selected
+     * @param string $display
+     * @param string|bool|Collection $selected
      *
      * @return \Illuminate\Support\HtmlString
      */
@@ -819,7 +819,7 @@ class FormBuilder
      * Determine if the value is selected.
      *
      * @param  string $value
-     * @param  string $selected
+     * @param  string|bool|Collection $selected
      *
      * @return null|string
      */
