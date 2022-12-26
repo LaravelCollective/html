@@ -3,6 +3,7 @@
 namespace Collective\Html;
 
 use BadMethodCallException;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Contracts\Session\Session;
@@ -718,7 +719,7 @@ class FormBuilder
         $months = [];
 
         foreach (range(1, 12) as $month) {
-            $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+            $months[$month] = Carbon::create()->day(1)->month($month)->translatedFormat('F');
         }
 
         return $this->select($name, $months, $selected, $options);
