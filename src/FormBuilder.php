@@ -673,8 +673,8 @@ class FormBuilder
      * Create a select range field.
      *
      * @param  string $name
-     * @param  string $begin
-     * @param  string $end
+     * @param  int    $begin
+     * @param  int    $end
      * @param  string $selected
      * @param  array  $options
      *
