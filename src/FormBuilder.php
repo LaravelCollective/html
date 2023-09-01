@@ -963,7 +963,7 @@ class FormBuilder
     {
         $request = $this->request($name);
 
-        if ($this->missingOldAndModel($name) && !$request) {
+        if ($this->missingOldAndModel($name) && is_null($request)) {
             return $checked;
         }
 
