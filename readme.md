@@ -1,4 +1,4 @@
-![LaravelCollective HTML](LaravelCollectiveHTML-banner.png)
+<h1 style="text-align:center">![Laravel Collective HTML](LaravelCollectiveHTML-banner.png)</h1>
 
 [![Build Status](https://travis-ci.org/LaravelCollective/html.svg)](https://travis-ci.org/LaravelCollective/html)
 [![Total Downloads](https://poser.pugx.org/LaravelCollective/html/downloads)](https://packagist.org/packages/laravelcollective/html)
