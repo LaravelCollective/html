@@ -49,7 +49,7 @@ trait FormAccessible
             unset($keys[0]);
             $key = implode('.', $keys);
 
-            if (method_exists($relatedModel, 'hasFormMutator') && $key !== '' && $relatedModel->hasFormMutator($key)) {
+            if ($relatedModel && method_exists($relatedModel, 'hasFormMutator') && $key !== '' && $relatedModel->hasFormMutator($key)) {
                 return $relatedModel->getFormValue($key);
             }
 
