@@ -118,6 +118,24 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<form method="GET" action="http://localhost/user/4?foo=bar" accept-charset="UTF-8">', $form4);
     }
 
+    public function testFormRouteRelative()
+    {
+        $routes = new RouteCollection();
+        $routes->get('user/{id}');
+        $routes->add(new Route(['GET'], 'user/{id}', ['as' => 'user.show']));
+        $this->urlGenerator->setRoutes($routes);
+
+        $form1 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', 1, 'foo' => 'bar'], 'relative' => true]);
+        $form2 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', 'id' => 2, 'foo' => 'bar'], 'relative' => true]);
+        $form3 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', [3, 'foo' => 'bar']], 'relative' => true]);
+        $form4 = $this->formBuilder->open(['method' => 'GET', 'route' => ['user.show', ['id' => 4, 'foo' => 'bar']], 'relative' => true]);
+
+        $this->assertEquals('<form method="GET" action="/user/1?foo=bar" accept-charset="UTF-8">', $form1);
+        $this->assertEquals('<form method="GET" action="/user/2?foo=bar" accept-charset="UTF-8">', $form2);
+        $this->assertEquals('<form method="GET" action="/user/3?foo=bar" accept-charset="UTF-8">', $form3);
+        $this->assertEquals('<form method="GET" action="/user/4?foo=bar" accept-charset="UTF-8">', $form4);
+    }
+
     public function testClosingForm()
     {
         $this->assertEquals('</form>', $this->formBuilder->close());

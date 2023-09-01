@@ -83,7 +83,7 @@ class FormBuilder
      *
      * @var array
      */
-    protected $reserved = ['method', 'url', 'route', 'action', 'files'];
+    protected $reserved = ['method', 'url', 'route', 'action', 'files', 'relative'];
 
     /**
      * The form methods that should be spoofed, in uppercase.
@@ -136,12 +136,14 @@ class FormBuilder
     {
         $method = Arr::get($options, 'method', 'post');
 
+        $relative = Arr::exists($options, 'relative');
+
         // We need to extract the proper method from the attributes. If the method is
         // something other than GET or POST we'll use POST since we will spoof the
         // actual method since forms don't support the reserved methods in HTML.
         $attributes['method'] = $this->getMethod($method);
 
-        $attributes['action'] = $this->getAction($options);
+        $attributes['action'] = $this->getAction($options, $relative);
 
         $attributes['accept-charset'] = 'UTF-8';
 
@@ -1149,10 +1151,11 @@ class FormBuilder
      * Get the form action from the options.
      *
      * @param  array $options
+     * @param  bool $relative
      *
      * @return string
      */
-    protected function getAction(array $options)
+    protected function getAction(array $options, bool $relative = false)
     {
         // We will also check for a "route" or "action" parameter on the array so that
         // developers can easily specify a route or controller action when creating
@@ -1162,14 +1165,14 @@ class FormBuilder
         }
 
         if (isset($options['route'])) {
-            return $this->getRouteAction($options['route']);
+            return $this->getRouteAction($options['route'], $relative);
         }
 
         // If an action is available, we are attempting to open a form to a controller
         // action route. So, we will use the URL generator to get the path to these
         // actions and return them from the method. Otherwise, we'll use current.
         elseif (isset($options['action'])) {
-            return $this->getControllerAction($options['action']);
+            return $this->getControllerAction($options['action'], $relative);
         }
 
         return $this->url->current();
@@ -1195,10 +1198,11 @@ class FormBuilder
      * Get the action for a "route" option.
      *
      * @param  array|string $options
+     * @param  bool $relative
      *
      * @return string
      */
-    protected function getRouteAction($options)
+    protected function getRouteAction($options, bool $relative = false)
     {
         if (is_array($options)) {
             $parameters = array_slice($options, 1);
@@ -1207,26 +1211,27 @@ class FormBuilder
                 $parameters = head($parameters);
             }
 
-            return $this->url->route($options[0], $parameters);
+            return $this->url->route($options[0], $parameters, !$relative);
         }
 
-        return $this->url->route($options);
+        return $this->url->route($options, !$relative);
     }
 
     /**
      * Get the action for an "action" option.
      *
      * @param  array|string $options
+     * @param  bool $relative
      *
      * @return string
      */
-    protected function getControllerAction($options)
+    protected function getControllerAction($options, bool $relative = false)
     {
         if (is_array($options)) {
-            return $this->url->action($options[0], array_slice($options, 1));
+            return $this->url->action($options[0], array_slice($options, 1), !$relative);
         }
 
-        return $this->url->action($options);
+        return $this->url->action($options, !$relative);
     }
 
     /**
