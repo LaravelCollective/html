@@ -1366,7 +1366,11 @@ class FormBuilder
             return $this->model->getFormValue($key);
         }
 
-        return data_get($this->model, $key);
+        $data = data_get($this->model, $key);
+        if($data instanceof \UnitEnum){
+            $data = $data->value;
+        }
+        return $data;
     }
 
     /**
