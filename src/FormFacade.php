@@ -1,11 +1,11 @@
 <?php
 
-namespace Collective\Html;
+namespace GP\Html;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Collective\Html\FormBuilder
+ * @see \GP\Html\FormBuilder
  */
 class FormFacade extends Facade
 {

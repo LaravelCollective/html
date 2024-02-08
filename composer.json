@@ -1,11 +1,11 @@
 {
-    "name": "laravelcollective/html",
+    "name": "gridplay/gphtml",
     "description": "HTML and Form Builders for the Laravel Framework",
     "license": "MIT",
-    "homepage": "https://laravelcollective.com",
+    "homepage": "https://gridplay.net",
     "support": {
-        "issues": "https://github.com/LaravelCollective/html/issues",
-        "source": "https://github.com/LaravelCollective/html"
+        "issues": "https://github.com/gridplay/gphtml/issues",
+        "source": "https://github.com/gridplay/gphtml"
     },
     "authors": [
         {
@@ -15,24 +15,28 @@
         {
             "name": "Taylor Otwell",
             "email": "taylorotwell@gmail.com"
+        },
+        {
+            "name": "Christopher Strachan",
+            "email": "chrisx84@live.ca"
         }
     ],
     "require": {
-        "php": ">=7.2.5",
-        "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/routing": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/session": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/view": "^6.0|^7.0|^8.0|^9.0|^10.0"
+        "php": ">=8.1",
+        "illuminate/http": "^9.0|^10.0",
+        "illuminate/routing": "^9.0|^10.0",
+        "illuminate/session": "^9.0|^10.0",
+        "illuminate/support": "^9.0|^10.0",
+        "illuminate/view": "^9.0|^10.0"
     },
     "require-dev": {
-        "illuminate/database": "^6.0|^7.0|^8.0|^9.0|^10.0",
+        "illuminate/database": "^9.0|^10.0",
         "mockery/mockery": "~1.0",
         "phpunit/phpunit": "~8.5|^9.5.10"
     },
     "autoload": {
         "psr-4": {
-            "Collective\\Html\\": "src/"
+            "GP\\Html\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -40,19 +44,18 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "6.x-dev"
+            "dev-master": "7.x-dev"
         },
         "laravel": {
             "providers": [
-                "Collective\\Html\\HtmlServiceProvider"
+                "GP\\Html\\HtmlServiceProvider"
             ],
             "aliases": {
-                "Form": "Collective\\Html\\FormFacade",
-                "Html": "Collective\\Html\\HtmlFacade"
+                "Form": "GP\\Html\\FormFacade",
+                "Html": "GP\\Html\\HtmlFacade"
             }
         }
     },
     "minimum-stability": "dev",
-    "abandoned": "spatie/laravel-html",
     "prefer-stable": true
 }

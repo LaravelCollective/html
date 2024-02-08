@@ -1,12 +1,11 @@
-![LaravelCollective HTML](LaravelCollectiveHTML-banner.png)
+# GPHtml
+## Fork of LaravelCollective's HTML package for Laravel
 
-[![Build Status](https://travis-ci.org/LaravelCollective/html.svg)](https://travis-ci.org/LaravelCollective/html)
-[![Total Downloads](https://poser.pugx.org/LaravelCollective/html/downloads)](https://packagist.org/packages/laravelcollective/html)
-[![Latest Stable Version](https://poser.pugx.org/LaravelCollective/html/v/stable.svg)](https://packagist.org/packages/laravelcollective/html)
-[![Latest Unstable Version](https://poser.pugx.org/LaravelCollective/html/v/unstable.svg)](https://packagist.org/packages/laravelcollective/html)
-[![License](https://poser.pugx.org/LaravelCollective/html/license.svg)](https://packagist.org/packages/laravelcollective/html)
+Did this mostly to keep the project alive and to get rid of those composer warnings.
 
-Official documentation for Forms & Html for The Laravel Framework can be found at the [LaravelCollective](https://laravelcollective.com/docs) website.
+Yes i know about spartie but that package docs is confusing, not facade friendly and seem to not have the Form::open i want
 
-## Replacement
-If you're looking to replace this package due to it's retirement we recommend using [Shift](https://laravelshift.com/convert-laravelcollective-html-to-spatie-laravel-html)
+No code changes yet just a change from v6 to v7 and Class name change from Collective to GP
+
+Oh and PHP min is 8.1
+

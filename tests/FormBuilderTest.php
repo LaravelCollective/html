@@ -1,7 +1,7 @@
 <?php
 
-use Collective\Html\FormBuilder;
-use Collective\Html\HtmlBuilder;
+use GP\Html\FormBuilder;
+use GP\Html\HtmlBuilder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
