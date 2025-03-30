@@ -962,11 +962,13 @@ class FormBuilder
     protected function getRadioCheckedState($name, $value, $checked)
     {
         $request = $this->request($name);
-
-        if ($this->missingOldAndModel($name) && !$request) {
+    
+        // Changed from !$request to is_null() to fix 0/false values issue
+        if ($this->missingOldAndModel($name) && is_null($request)) {
             return $checked;
         }
-
+    
+      // Otherwise compare against existing values (old input > model > request)
         return $this->compareValues($name, $value);
     }
 
