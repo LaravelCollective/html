@@ -28,7 +28,7 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
     public function testDl()
     {
         $list = [
-          'foo'  => 'bar',
+          'foo'  => 'bar apple',
           'bing' => 'baz',
         ];
 
