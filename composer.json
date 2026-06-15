@@ -18,17 +18,16 @@
         }
     ],
     "require": {
-        "php": ">=7.2.5",
-        "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/routing": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/session": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/view": "^6.0|^7.0|^8.0|^9.0|^10.0"
+        "php": "^7.2|^8.1",
+        "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/routing": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/session": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0"
     },
     "require-dev": {
-        "illuminate/database": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "~8.5|^9.5.10"
+        "illuminate/database": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+        "mockery/mockery": "^1.2",
+        "phpunit/phpunit": "^8.5|^9|^10|^11|^12"
     },
     "autoload": {
         "psr-4": {
@@ -39,9 +38,6 @@
         ]
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "6.x-dev"
-        },
         "laravel": {
             "providers": [
                 "Collective\\Html\\HtmlServiceProvider"
@@ -52,7 +48,6 @@
             }
         }
     },
-    "minimum-stability": "dev",
-    "abandoned": "spatie/laravel-html",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
